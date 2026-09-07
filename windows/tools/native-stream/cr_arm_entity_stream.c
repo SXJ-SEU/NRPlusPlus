@@ -15,11 +15,48 @@
 #define CONTEXT_BATTLE 0x90ULL
 #define BATTLE_HP_STATE 0xa8ULL
 #define HP_STATE_REGISTRY 0x08ULL
+#define HP_STATE_PLAYER_COUNT 0x60ULL
+#define HP_STATE_PLAYER_RESOURCE 0xe0ULL
 #define REGISTRY_COLLECTION 0x40ULL
+#define PLAYER_RESOURCE_PENDING 0x248ULL
+#define PLAYER_RESOURCE_ELIXIR 0x2f8ULL
 #define MAX_OBJECTS 2048
 #define ENTITY_SIZE 0x124
 
 static int read_exact(int fd, uint64_t address, void *output, size_t size);
+
+static int read_player_elixir(int fd, uint64_t hp_state, int player_index,
+                              int32_t *elixir) {
+  int32_t player_count = 0, raw_elixir = 0, pending_count = 0;
+  uint64_t resource = 0, pending = 0, pending_data = 0;
+  if (!hp_state || player_index < 0 || player_index > 1 ||
+      !read_exact(fd, hp_state + HP_STATE_PLAYER_COUNT, &player_count, 4) ||
+      player_count <= player_index || player_count > 100 ||
+      !read_exact(fd, hp_state + HP_STATE_PLAYER_RESOURCE + (uint64_t)player_index * 8,
+                  &resource, 8) || !resource ||
+      !read_exact(fd, resource + PLAYER_RESOURCE_ELIXIR, &raw_elixir, 4))
+    return 0;
+
+  // The game stores elixir in ten-thousandths. Cards waiting to be committed
+  // remain in a small pending list and their costs must be deducted, matching
+  // the game's own elixir-bar calculation.
+  if (read_exact(fd, resource + PLAYER_RESOURCE_PENDING, &pending, 8) && pending &&
+      read_exact(fd, pending + 0x1c, &pending_count, 4) && pending_count > 0 &&
+      pending_count <= 16 && read_exact(fd, pending + 0x10, &pending_data, 8) &&
+      pending_data) {
+    for (int i = 0; i < pending_count; ++i) {
+      uint64_t item = 0;
+      int32_t cost = 0;
+      if (read_exact(fd, pending_data + (uint64_t)i * 8, &item, 8) && item &&
+          read_exact(fd, item + 0x10, &cost, 4) && cost >= 0 && cost <= 10)
+        raw_elixir -= cost * 10000;
+    }
+  }
+  if (raw_elixir < 0) raw_elixir = 0;
+  if (raw_elixir > 100000) raw_elixir = 100000;
+  *elixir = raw_elixir / 10000;
+  return 1;
+}
 
 static int read_battle_ui(int fd, uint64_t holder, int32_t *elixir, float *clock,
                           int32_t hand[4], int32_t *next_index, int32_t deck[8]) {
@@ -131,7 +168,7 @@ int main(int argc, char **argv) {
     return 2;
   }
   int pid = atoi(argv[1]);
-  int interval_ms = argc == 3 ? atoi(argv[2]) : 100;
+  int interval_ms = argc == 3 ? atoi(argv[2]) : 20;
   if (pid <= 0 || interval_ms < 10 || interval_ms > 5000) return 2;
 
   uint64_t libg = find_libg_base(pid);
@@ -167,17 +204,23 @@ int main(int argc, char **argv) {
         read_exact(fd, collection + 0x14, &count, 4) && count >= 0 && count <= MAX_OBJECTS &&
         read_exact(fd, data, addresses, (size_t)count * sizeof(addresses[0]));
 
-    int32_t elixir = -1, hand[4] = {-1, -1, -1, -1}, next_index = -1, deck[8];
+    int32_t elixir = -1, side_elixir[2] = {-1, -1};
+    int32_t hand[4] = {-1, -1, -1, -1}, next_index = -1, deck[8];
     float battle_clock = -1.0f;
     for (int i = 0; i < 8; ++i) deck[i] = -1;
     uint64_t roots[] = {manager, context, battle, hp_state, registry, collection};
     int have_battle_ui = active && find_battle_ui(fd, roots, (int)(sizeof(roots) / sizeof(roots[0])),
                                                   &elixir, &battle_clock, hand, &next_index, deck);
+    if (active) {
+      read_player_elixir(fd, hp_state, 0, &side_elixir[0]);
+      read_player_elixir(fd, hp_state, 1, &side_elixir[1]);
+    }
 
     printf("{\"event\":\"entity_stream\",\"sequence\":%" PRIu64
-           ",\"battle_active\":%s,\"own_elixir\":%d,\"battle_clock\":%.3f,\"hand\":[",
-           sequence++, active ? "true" : "false", have_battle_ui ? elixir : -1,
-           have_battle_ui ? battle_clock : -1.0f);
+           ",\"battle_active\":%s,\"local_side\":1,\"side_elixir\":[%d,%d],"
+           "\"own_elixir\":%d,\"battle_clock\":%.3f,\"hand\":[",
+           sequence++, active ? "true" : "false", side_elixir[0], side_elixir[1],
+           have_battle_ui ? elixir : -1, have_battle_ui ? battle_clock : -1.0f);
     if (have_battle_ui) for (int i = 0; i < 4; ++i) {
       if (i) putchar(',');
       int id = (hand[i] >= 0 && hand[i] < 8) ? deck[hand[i]] : -1;

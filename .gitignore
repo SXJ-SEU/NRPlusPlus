@@ -1,0 +1,13 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Runtime captures / generated outputs
+/windows/captures/
+
+# Zig build cache and local toolchain
+/windows/runtime/zig-cache/
+/windows/runtime/zig/
+
+# Local notes / commands
+/windows/运行命令.txt

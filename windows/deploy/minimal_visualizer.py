@@ -12,10 +12,11 @@ SCREEN_SIZE = (760, 720)
 ARENA = pygame.Rect(30, 76, 338, 600)
 ARENA_WIDTH = 18_000
 ARENA_HEIGHT = 32_000
+DEFAULT_LOCAL_SIDE = 1
 
 
 def _load_card_names() -> dict[int, str]:
-    path = Path(__file__).resolve().parents[1] / "upstream-original" / "deploy" / "cards.json"
+    path = Path(__file__).resolve().parents[2] / "deploy" / "cards.json"
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
         return {
@@ -41,16 +42,22 @@ def _entity_label(entity: dict[str, Any]) -> str:
     return "Entity"
 
 
-def _arena_point(entity: dict[str, Any]) -> tuple[int, int] | None:
+def _arena_point(
+    entity: dict[str, Any],
+    local_side: int = DEFAULT_LOCAL_SIDE,
+) -> tuple[int, int] | None:
     x = entity.get("x")
     y = entity.get("y")
     if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
         return None
     x = max(0.0, min(float(x), ARENA_WIDTH))
     y = max(0.0, min(float(y), ARENA_HEIGHT))
+    if local_side == 0:
+        x = ARENA_WIDTH - x
+        y = ARENA_HEIGHT - y
     return (
         round(ARENA.left + x / ARENA_WIDTH * ARENA.width),
-        round(ARENA.bottom - y / ARENA_HEIGHT * ARENA.height),
+        round(ARENA.top + y / ARENA_HEIGHT * ARENA.height),
     )
 
 
@@ -58,6 +65,7 @@ def _draw_arena(
     screen: pygame.Surface,
     entities: list[dict[str, Any]],
     label_font: pygame.font.Font,
+    local_side: int = DEFAULT_LOCAL_SIDE,
 ) -> None:
     pygame.draw.rect(screen, (35, 57, 48), ARENA)
     pygame.draw.rect(screen, (104, 117, 105), ARENA, 2)
@@ -74,11 +82,11 @@ def _draw_arena(
         )
 
     for entity in entities:
-        point = _arena_point(entity)
+        point = _arena_point(entity, local_side)
         if point is None:
             continue
         side = entity.get("side")
-        color = (72, 184, 213) if side == 0 else (231, 105, 91)
+        color = (72, 184, 213) if side == local_side else (231, 105, 91)
         kind = entity.get("kind")
         if kind == 12:
             shape = pygame.Rect(0, 0, 30, 30)
@@ -128,6 +136,9 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
         entities = []
         if snapshot is not None and isinstance(snapshot.get("entities"), list):
             entities = [item for item in snapshot["entities"] if isinstance(item, dict)]
+        local_side = DEFAULT_LOCAL_SIDE
+        if snapshot is not None and snapshot.get("local_side") in (0, 1):
+            local_side = snapshot["local_side"]
 
         screen.fill((19, 22, 28))
         screen.blit(title_font.render("Battle state", True, (225, 229, 233)), (30, 26))
@@ -139,13 +150,25 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
         status_color = (96, 201, 132) if entities else (151, 158, 169)
         screen.blit(detail_font.render(status, True, status_color), (402, 32))
 
-        _draw_arena(screen, entities, label_font)
+        _draw_arena(screen, entities, label_font, local_side)
 
         panel_x = 402
-        screen.blit(detail_font.render("Local elixir", True, (184, 190, 200)), (panel_x, 92))
+        screen.blit(detail_font.render("Local elixir", True, (72, 184, 213)), (panel_x, 92))
         elixir = None if snapshot is None else snapshot.get("own_elixir")
         elixir_text = "--" if elixir is None else str(elixir)
         screen.blit(value_font.render(elixir_text, True, (207, 93, 238)), (panel_x, 118))
+
+        opponent_x = panel_x + 150
+        screen.blit(
+            detail_font.render("Opponent elixir", True, (231, 105, 91)),
+            (opponent_x, 92),
+        )
+        opponent_elixir = None if snapshot is None else snapshot.get("opponent_elixir")
+        opponent_elixir_text = "--" if opponent_elixir is None else str(opponent_elixir)
+        screen.blit(
+            value_font.render(opponent_elixir_text, True, (207, 93, 238)),
+            (opponent_x, 118),
+        )
 
         battle_clock = None if snapshot is None else snapshot.get("battle_clock")
         clock_text = "--" if battle_clock is None else f"{float(battle_clock):.1f}"
@@ -170,8 +193,11 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
         next_label = CARD_NAMES.get(next_id, str(next_id) if next_id is not None else "--")
         screen.blit(detail_font.render(f"Next  {next_label}", True, (184, 190, 200)), (panel_x, 556))
 
-        own_count = sum(entity.get("side") == 0 for entity in entities)
-        opponent_count = sum(entity.get("side") == 1 for entity in entities)
+        own_count = sum(entity.get("side") == local_side for entity in entities)
+        opponent_count = sum(
+            entity.get("side") in (0, 1) and entity.get("side") != local_side
+            for entity in entities
+        )
         screen.blit(detail_font.render("Entities", True, (184, 190, 200)), (panel_x, 284))
         screen.blit(
             title_font.render(str(len(entities)), True, (225, 229, 233)),

@@ -8,7 +8,7 @@ import sys
 import threading
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,6 +21,7 @@ from proc_memory import BattleStateLocator, RootProcessMemory  # noqa: E402
 
 LOCAL_HELPER = ROOT / "runtime" / "cr-arm-entity-stream-x86_64"
 REMOTE_HELPER = "/data/local/tmp/cr-arm-entity-stream"
+DEFAULT_STREAM_INTERVAL_MS = 20
 
 
 class SnapshotStore:
@@ -35,6 +36,49 @@ class SnapshotStore:
     def current(self) -> dict[str, Any] | None:
         with self._lock:
             return None if self._snapshot is None else dict(self._snapshot)
+
+
+class BattleStateCoordinator:
+    """Coordinates the slower secondary reader with the native snapshot stream."""
+
+    def __init__(self, reader_factory: Callable[[], Callable[[], dict[str, Any] | None]]) -> None:
+        self._lock = threading.Lock()
+        self._reader_factory = reader_factory
+        self._reader: Callable[[], dict[str, Any] | None] | None = None
+        self._active = False
+        self._state: dict[str, Any] | None = None
+
+    def set_active(self, active: bool) -> None:
+        with self._lock:
+            if active == self._active:
+                return
+            self._active = active
+            self._state = None
+            self._reader = self._reader_factory() if active else None
+
+    def poll(self) -> None:
+        with self._lock:
+            if not self._active or self._reader is None:
+                return
+            reader = self._reader
+        state = reader()
+        if state is not None:
+            with self._lock:
+                if self._active and reader is self._reader:
+                    if self._state is None:
+                        self._state = {}
+                    self._state.update(state)
+
+    def merge(self, snapshot: dict[str, Any]) -> dict[str, Any]:
+        with self._lock:
+            state = (
+                dict(self._state)
+                if self._active and snapshot.get("battle_active") and self._state is not None
+                else None
+            )
+        if state is not None:
+            snapshot.update(state)
+        return snapshot
 
 
 def run_command(command: list[str], *, timeout: float) -> None:
@@ -74,9 +118,20 @@ def normalize_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
         if entity.get("card_id") == -1:
             entity["card_id"] = None
         normalized_entities.append(entity)
+    local_side = payload.get("local_side")
+    if local_side not in (0, 1):
+        local_side = 1
+    side_elixir = payload.get("side_elixir")
+    if not isinstance(side_elixir, list) or len(side_elixir) < 2:
+        side_elixir = [None, None]
+    side_elixir = [
+        value if isinstance(value, int) and 0 <= value <= 10 else None
+        for value in side_elixir[:2]
+    ]
     own_elixir = payload.get("own_elixir")
     if not isinstance(own_elixir, int) or not 0 <= own_elixir <= 10:
-        own_elixir = None
+        own_elixir = side_elixir[local_side]
+    opponent_elixir = side_elixir[1 - local_side]
     battle_clock = payload.get("battle_clock")
     if not isinstance(battle_clock, (int, float)) or not 0.0 <= battle_clock <= 600.0:
         battle_clock = None
@@ -94,7 +149,10 @@ def normalize_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
         "event": "runtime_snapshot",
         "t_ms": int(time.time() * 1000),
         "battle_active": bool(payload.get("battle_active")),
+        "local_side": local_side,
         "own_elixir": own_elixir,
+        "opponent_elixir": opponent_elixir,
+        "side_elixir": side_elixir,
         "battle_clock": battle_clock,
         "hand": hand,
         "next_card": next_card,
@@ -182,7 +240,7 @@ def main() -> int:
         default=0,
         help="seconds to capture; 0 runs until the window closes",
     )
-    parser.add_argument("--interval-ms", type=int, default=100)
+    parser.add_argument("--interval-ms", type=int, default=DEFAULT_STREAM_INTERVAL_MS)
     parser.add_argument("--headless", action="store_true")
     parser.add_argument(
         "--log", type=Path, default=ROOT / "captures" / "native_entity_stream.jsonl"
@@ -200,23 +258,17 @@ def main() -> int:
     pid = int(
         command_output([*adb_prefix, "shell", "pidof", args.package], timeout=10).split()[0]
     )
-    battle_reader = make_battle_reader(adb_path, args.serial, pid)
-    state_lock = threading.Lock()
+    battle_state = BattleStateCoordinator(
+        lambda: make_battle_reader(adb_path, args.serial, pid)
+    )
     state_stop = threading.Event()
     native_active = threading.Event()
-    battle_state: dict[str, Any] | None = None
 
     def state_worker() -> None:
-        nonlocal battle_state
         while not state_stop.is_set():
             if not native_active.wait(0.5):
                 continue
-            state = battle_reader()
-            if state is not None:
-                with state_lock:
-                    if battle_state is None:
-                        battle_state = {}
-                    battle_state.update(state)
+            battle_state.poll()
             state_stop.wait(0.1)
 
     state_thread = threading.Thread(target=state_worker, daemon=True)
@@ -264,13 +316,12 @@ def main() -> int:
                         continue
                     snapshot = normalize_snapshot(json.loads(line))
                     if snapshot["battle_active"]:
+                        battle_state.set_active(True)
                         native_active.set()
                     else:
                         native_active.clear()
-                    with state_lock:
-                        state = None if battle_state is None else dict(battle_state)
-                    if state is not None:
-                        snapshot.update(state)
+                        battle_state.set_active(False)
+                    snapshot = battle_state.merge(snapshot)
                     store.update(snapshot)
                     encoded = json.dumps(snapshot, separators=(",", ":"))
                     log.write(encoded + "\n")
