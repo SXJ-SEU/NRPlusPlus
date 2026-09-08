@@ -204,7 +204,7 @@ int main(int argc, char **argv) {
         read_exact(fd, collection + 0x14, &count, 4) && count >= 0 && count <= MAX_OBJECTS &&
         read_exact(fd, data, addresses, (size_t)count * sizeof(addresses[0]));
 
-    int32_t elixir = -1, side_elixir[2] = {-1, -1};
+    int32_t elixir = -1, player_elixir[2] = {-1, -1};
     int32_t hand[4] = {-1, -1, -1, -1}, next_index = -1, deck[8];
     float battle_clock = -1.0f;
     for (int i = 0; i < 8; ++i) deck[i] = -1;
@@ -212,14 +212,14 @@ int main(int argc, char **argv) {
     int have_battle_ui = active && find_battle_ui(fd, roots, (int)(sizeof(roots) / sizeof(roots[0])),
                                                   &elixir, &battle_clock, hand, &next_index, deck);
     if (active) {
-      read_player_elixir(fd, hp_state, 0, &side_elixir[0]);
-      read_player_elixir(fd, hp_state, 1, &side_elixir[1]);
+      read_player_elixir(fd, hp_state, 0, &player_elixir[0]);
+      read_player_elixir(fd, hp_state, 1, &player_elixir[1]);
     }
 
     printf("{\"event\":\"entity_stream\",\"sequence\":%" PRIu64
-           ",\"battle_active\":%s,\"local_side\":1,\"side_elixir\":[%d,%d],"
+           ",\"battle_active\":%s,\"local_side\":1,\"player_elixir\":[%d,%d],"
            "\"own_elixir\":%d,\"battle_clock\":%.3f,\"hand\":[",
-           sequence++, active ? "true" : "false", side_elixir[0], side_elixir[1],
+           sequence++, active ? "true" : "false", player_elixir[0], player_elixir[1],
            have_battle_ui ? elixir : -1, have_battle_ui ? battle_clock : -1.0f);
     if (have_battle_ui) for (int i = 0; i < 4; ++i) {
       if (i) putchar(',');

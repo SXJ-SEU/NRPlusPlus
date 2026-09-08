@@ -22,6 +22,15 @@ from proc_memory import BattleStateLocator, RootProcessMemory  # noqa: E402
 LOCAL_HELPER = ROOT / "runtime" / "cr-arm-entity-stream-x86_64"
 REMOTE_HELPER = "/data/local/tmp/cr-arm-entity-stream"
 DEFAULT_STREAM_INTERVAL_MS = 20
+SECONDARY_STATE_FIELDS = frozenset(
+    {
+        "battle_clock",
+        "hand",
+        "next_card",
+        "state_diagnostics",
+        "local_player_index",
+    }
+)
 
 
 class SnapshotStore:
@@ -77,7 +86,18 @@ class BattleStateCoordinator:
                 else None
             )
         if state is not None:
-            snapshot.update(state)
+            snapshot.update(
+                {key: value for key, value in state.items() if key in SECONDARY_STATE_FIELDS}
+            )
+        player_elixir = snapshot.get("player_elixir")
+        local_player_index = snapshot.get("local_player_index")
+        if (
+            isinstance(player_elixir, list)
+            and len(player_elixir) >= 2
+            and local_player_index in (0, 1)
+        ):
+            snapshot["own_elixir"] = player_elixir[local_player_index]
+            snapshot["opponent_elixir"] = player_elixir[1 - local_player_index]
         return snapshot
 
 
@@ -121,17 +141,28 @@ def normalize_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
     local_side = payload.get("local_side")
     if local_side not in (0, 1):
         local_side = 1
-    side_elixir = payload.get("side_elixir")
-    if not isinstance(side_elixir, list) or len(side_elixir) < 2:
-        side_elixir = [None, None]
-    side_elixir = [
+    # These slots follow the battle's player-list order. The local player's
+    # index changes between battles and is resolved separately by account ID.
+    player_elixir = payload.get("player_elixir", payload.get("side_elixir"))
+    if not isinstance(player_elixir, list) or len(player_elixir) < 2:
+        player_elixir = [None, None]
+    player_elixir = [
         value if isinstance(value, int) and 0 <= value <= 10 else None
-        for value in side_elixir[:2]
+        for value in player_elixir[:2]
     ]
+    local_player_index = payload.get("local_player_index")
+    if local_player_index not in (0, 1):
+        local_player_index = None
     own_elixir = payload.get("own_elixir")
-    if not isinstance(own_elixir, int) or not 0 <= own_elixir <= 10:
-        own_elixir = side_elixir[local_side]
-    opponent_elixir = side_elixir[1 - local_side]
+    if local_player_index is not None:
+        own_elixir = player_elixir[local_player_index]
+    elif not isinstance(own_elixir, int) or not 0 <= own_elixir <= 10:
+        own_elixir = None
+    opponent_elixir = (
+        player_elixir[1 - local_player_index]
+        if local_player_index is not None
+        else None
+    )
     battle_clock = payload.get("battle_clock")
     if not isinstance(battle_clock, (int, float)) or not 0.0 <= battle_clock <= 600.0:
         battle_clock = None
@@ -150,9 +181,10 @@ def normalize_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
         "t_ms": int(time.time() * 1000),
         "battle_active": bool(payload.get("battle_active")),
         "local_side": local_side,
+        "local_player_index": local_player_index,
         "own_elixir": own_elixir,
         "opponent_elixir": opponent_elixir,
-        "side_elixir": side_elixir,
+        "player_elixir": player_elixir,
         "battle_clock": battle_clock,
         "hand": hand,
         "next_card": next_card,
@@ -169,9 +201,10 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
     diagnostics: dict[str, Any] = {"status": "starting"}
     deck_ids: list[int | None] = [None] * 8
     conflicted_indices: set[int] = set()
+    local_player_index: int | None = None
 
     def read() -> dict[str, Any] | None:
-        nonlocal pointers, retry_at
+        nonlocal pointers, retry_at, local_player_index
         try:
             if pointers is None:
                 now = time.monotonic()
@@ -180,10 +213,22 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                 retry_at = now + 1.0
                 diagnostics.update({"status": "locating"})
                 pointers = locator.locate()
+                local_player_index = None
                 diagnostics.update({"status": "located" if pointers else "no_candidate",
                                     "timing": dict(locator.last_timing)})
             if pointers is None:
                 return {"state_diagnostics": dict(diagnostics)}
+            if local_player_index is None:
+                try:
+                    local_player_index = locator.poll_local_player_index(pointers)
+                except Exception as exc:
+                    diagnostics.update({"status": "player_identity_failed", "error": str(exc)})
+                else:
+                    diagnostics.update({"status": "player_identified"})
+                    return {
+                        "local_player_index": local_player_index,
+                        "state_diagnostics": dict(diagnostics),
+                    }
             elixir = clock = None
             try:
                 elixir, clock = locator.poll_elixir(pointers)
@@ -217,10 +262,13 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                      for slot, index in enumerate(indices)]
             diagnostics.update({"status": "ready", "resolved_card_ids":
                                 sum(value is not None for value in deck_ids)})
-            return {"own_elixir": elixir, "battle_clock": clock, "hand": hand,
+            result = {"battle_clock": clock, "hand": hand,
                     "next_card": {"deck_index": next_index,
                                   "data_id": deck_ids[next_index] if 0 <= next_index < 8 else None},
                     "state_diagnostics": dict(diagnostics)}
+            if local_player_index is not None:
+                result["local_player_index"] = local_player_index
+            return result
         except Exception as exc:
             diagnostics.update({"status": "reader_failed", "error": str(exc)})
             pointers = None

@@ -404,6 +404,46 @@ class BattleStateLocator:
             raise AdbError("battle next-card pointer is no longer valid")
         return index
 
+    def poll_local_player_index(self, pointers: BattlePointers) -> int:
+        """Match the local deck model's account ID to the battle player list."""
+        player_raw = self.memory.read(pointers.model + 0x10, 0x70, timeout=20)
+        context = struct.unpack_from("<Q", player_raw)[0]
+        selector = struct.unpack_from("<i", player_raw, 0x68)[0]
+        if context == 0:
+            raise AdbError("local player context is null")
+
+        provider = struct.unpack(
+            "<Q", self.memory.read(context + 0x98, 8, timeout=20)
+        )[0]
+        if provider == 0:
+            raise AdbError("local player provider is null")
+        provider_raw = self.memory.read(provider + 0x30, 0x38, timeout=20)
+        provider_count = struct.unpack_from("<i", provider_raw, 0x30)[0]
+        if selector == 100:
+            selected_entry = provider + 0x28
+        elif 0 <= selector < provider_count <= 6:
+            selected_entry = struct.unpack_from("<Q", provider_raw, selector * 8)[0]
+        else:
+            raise AdbError("local player selector is invalid")
+        if selected_entry == 0:
+            raise AdbError("local player entry is null")
+        local_account_id = self.memory.read(selected_entry, 8, timeout=20)
+
+        hp_state = self._resolve_battle_hp_state()
+        hp_raw = self.memory.read(hp_state + 0x30, 0x38, timeout=20)
+        player_count = struct.unpack_from("<i", hp_raw, 0x30)[0]
+        if not 1 <= player_count <= 6:
+            raise AdbError("battle player count is invalid")
+        entries = struct.unpack_from(f"<{player_count}Q", hp_raw)
+        nonzero_entries = [(index, entry) for index, entry in enumerate(entries) if entry]
+        account_ids = self.memory.read_many(
+            [(entry, 8) for _, entry in nonzero_entries], timeout=20
+        )
+        for (index, _), account_id in zip(nonzero_entries, account_ids, strict=True):
+            if account_id == local_account_id:
+                return index
+        raise AdbError("local account is absent from battle player list")
+
     @staticmethod
     def _valid_card_data_id(value: int) -> bool:
         return 23_000_000 <= value < 29_000_000
@@ -545,7 +585,7 @@ class BattleStateLocator:
             level=level_index + 1,
         )
 
-    def _resolve_battle_entity_collection(self) -> int:
+    def _resolve_battle_hp_state(self) -> int:
         if self._libg_base is None:
             mappings = [
                 mapping for mapping in self.memory.maps() if mapping.path.endswith("/libg.so")
@@ -561,6 +601,16 @@ class BattleStateLocator:
         context = pointer(manager + self.MANAGER_CONTEXT)
         battle = pointer(context + self.CONTEXT_BATTLE)
         hp_state = pointer(battle + self.BATTLE_HP_STATE)
+        if not hp_state:
+            raise AdbError("battle player state is null")
+        return hp_state
+
+    def _resolve_battle_entity_collection(self) -> int:
+        hp_state = self._resolve_battle_hp_state()
+
+        def pointer(address: int) -> int:
+            return struct.unpack("<Q", self.memory.read(address, 8, timeout=20))[0]
+
         registry = pointer(hp_state + self.HP_STATE_REGISTRY)
         collection = pointer(registry + self.REGISTRY_ENTITY_COLLECTION)
         if not collection:

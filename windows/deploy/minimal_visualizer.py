@@ -175,7 +175,7 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
         screen.blit(detail_font.render("Battle clock", True, (184, 190, 200)), (panel_x, 190))
         screen.blit(title_font.render(clock_text, True, (225, 229, 233)), (panel_x, 216))
 
-        screen.blit(detail_font.render("Current hand", True, (184, 190, 200)), (panel_x, 438))
+        screen.blit(detail_font.render("Current hand", True, (184, 190, 200)), (panel_x, 284))
         hand = snapshot.get("hand", []) if snapshot is not None else []
         for slot in range(4):
             item = hand[slot] if slot < len(hand) and isinstance(hand[slot], dict) else {}
@@ -183,7 +183,7 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
             label = CARD_NAMES.get(data_id, str(data_id) if data_id is not None else "--")
             if len(label) > 13:
                 label = label[:12] + "."
-            card_rect = pygame.Rect(panel_x + (slot % 2) * 132, 466 + (slot // 2) * 42, 122, 34)
+            card_rect = pygame.Rect(panel_x + (slot % 2) * 132, 312 + (slot // 2) * 42, 122, 34)
             pygame.draw.rect(screen, (43, 48, 58), card_rect, border_radius=3)
             pygame.draw.rect(screen, (91, 101, 119), card_rect, 1, border_radius=3)
             screen.blit(detail_font.render(label, True, (225, 229, 233)), (card_rect.x + 7, card_rect.y + 7))
@@ -191,26 +191,7 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
         next_card = snapshot.get("next_card") if snapshot is not None else None
         next_id = next_card.get("data_id") if isinstance(next_card, dict) else None
         next_label = CARD_NAMES.get(next_id, str(next_id) if next_id is not None else "--")
-        screen.blit(detail_font.render(f"Next  {next_label}", True, (184, 190, 200)), (panel_x, 556))
-
-        own_count = sum(entity.get("side") == local_side for entity in entities)
-        opponent_count = sum(
-            entity.get("side") in (0, 1) and entity.get("side") != local_side
-            for entity in entities
-        )
-        screen.blit(detail_font.render("Entities", True, (184, 190, 200)), (panel_x, 284))
-        screen.blit(
-            title_font.render(str(len(entities)), True, (225, 229, 233)),
-            (panel_x, 310),
-        )
-        screen.blit(
-            detail_font.render(f"Local  {own_count}", True, (72, 184, 213)),
-            (panel_x, 354),
-        )
-        screen.blit(
-            detail_font.render(f"Opponent  {opponent_count}", True, (231, 105, 91)),
-            (panel_x, 382),
-        )
+        screen.blit(detail_font.render(f"Next  {next_label}", True, (184, 190, 200)), (panel_x, 402))
 
         read_us = None if snapshot is None else snapshot.get("native_read_us")
         if isinstance(read_us, int):
