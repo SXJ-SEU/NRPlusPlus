@@ -29,6 +29,7 @@ SECONDARY_STATE_FIELDS = frozenset(
         "next_card",
         "state_diagnostics",
         "local_player_index",
+        "opponent_cards",
     }
 )
 
@@ -176,6 +177,14 @@ def normalize_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
     next_card = payload.get("next_card")
     if isinstance(next_card, dict) and next_card.get("data_id") == -1:
         next_card = {**next_card, "data_id": None}
+    opponent_cards = payload.get("opponent_cards", [])
+    if not isinstance(opponent_cards, list):
+        opponent_cards = []
+    opponent_cards = [
+        {**item, "data_id": None if item.get("data_id") == -1 else item.get("data_id")}
+        for item in opponent_cards
+        if isinstance(item, dict)
+    ]
     return {
         "event": "runtime_snapshot",
         "t_ms": int(time.time() * 1000),
@@ -188,6 +197,7 @@ def normalize_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
         "battle_clock": battle_clock,
         "hand": hand,
         "next_card": next_card,
+        "opponent_cards": opponent_cards,
         "entities": normalized_entities,
         "native_sequence": payload.get("sequence"),
         "native_read_us": payload.get("read_us"),
@@ -201,6 +211,7 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
     diagnostics: dict[str, Any] = {"status": "starting"}
     deck_ids: list[int | None] = [None] * 8
     conflicted_indices: set[int] = set()
+    opponent_deck_ids: list[int | None] = [None] * 8
     local_player_index: int | None = None
 
     def read() -> dict[str, Any] | None:
@@ -252,6 +263,16 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                     elif deck_ids[index] != data_id:
                         deck_ids[index] = None
                         conflicted_indices.add(index)
+            if local_player_index is not None and any(
+                value is None for value in opponent_deck_ids
+            ):
+                opponent_resolved = locator.poll_opponent_card_deck(
+                    pointers, local_player_index
+                )
+                if opponent_resolved is not None:
+                    for index, data_id in enumerate(opponent_resolved[:8]):
+                        if data_id is not None:
+                            opponent_deck_ids[index] = data_id
             next_index = -1
             try:
                 next_index = locator.poll_next_deck_index(pointers)
@@ -265,6 +286,10 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
             result = {"battle_clock": clock, "hand": hand,
                     "next_card": {"deck_index": next_index,
                                   "data_id": deck_ids[next_index] if 0 <= next_index < 8 else None},
+                    "opponent_cards": [
+                        {"slot": slot, "data_id": data_id}
+                        for slot, data_id in enumerate(opponent_deck_ids)
+                    ],
                     "state_diagnostics": dict(diagnostics)}
             if local_player_index is not None:
                 result["local_player_index"] = local_player_index

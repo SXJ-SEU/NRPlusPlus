@@ -193,11 +193,39 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
         next_label = CARD_NAMES.get(next_id, str(next_id) if next_id is not None else "--")
         screen.blit(detail_font.render(f"Next  {next_label}", True, (184, 190, 200)), (panel_x, 402))
 
+        screen.blit(
+            detail_font.render("Opponent deck", True, (231, 105, 91)),
+            (panel_x, 448),
+        )
+        opponent_cards = snapshot.get("opponent_cards", []) if snapshot is not None else []
+        for slot in range(8):
+            item = (
+                opponent_cards[slot]
+                if slot < len(opponent_cards) and isinstance(opponent_cards[slot], dict)
+                else {}
+            )
+            data_id = item.get("data_id")
+            label = CARD_NAMES.get(data_id, str(data_id) if data_id is not None else "--")
+            if len(label) > 13:
+                label = label[:12] + "."
+            card_rect = pygame.Rect(
+                panel_x + (slot % 2) * 132,
+                476 + (slot // 2) * 42,
+                122,
+                34,
+            )
+            pygame.draw.rect(screen, (43, 48, 58), card_rect, border_radius=3)
+            pygame.draw.rect(screen, (112, 78, 78), card_rect, 1, border_radius=3)
+            screen.blit(
+                detail_font.render(label, True, (225, 229, 233)),
+                (card_rect.x + 7, card_rect.y + 7),
+            )
+
         read_us = None if snapshot is None else snapshot.get("native_read_us")
         if isinstance(read_us, int):
             screen.blit(
                 detail_font.render(f"Memory read  {read_us} us", True, (151, 158, 169)),
-                (panel_x, 638),
+                (panel_x, 682),
             )
 
         pygame.display.flip()

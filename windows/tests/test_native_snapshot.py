@@ -92,6 +92,19 @@ class NativeSnapshotTests(unittest.TestCase):
         self.assertIsNone(snapshot["own_elixir"])
         self.assertIsNone(snapshot["opponent_elixir"])
 
+    def test_normalizes_opponent_cards(self) -> None:
+        snapshot = normalize_snapshot(
+            {
+                "opponent_cards": [
+                    {"slot": 0, "data_id": 26_000_001},
+                    {"slot": 1, "data_id": -1},
+                ]
+            }
+        )
+
+        self.assertEqual(snapshot["opponent_cards"][0]["data_id"], 26_000_001)
+        self.assertIsNone(snapshot["opponent_cards"][1]["data_id"])
+
     def test_battle_end_discards_previous_state(self) -> None:
         coordinator = BattleStateCoordinator(
             lambda: iter([

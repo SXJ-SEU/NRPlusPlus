@@ -484,50 +484,100 @@ class BattleStateLocator:
             if selected_entry == 0:
                 return None
             selected_key = self.memory.read(selected_entry, 8, timeout=20)
-
-            entries = struct.unpack_from(f"<{provider_count}Q", provider_raw)
-            nonzero_entries = [(index, entry) for index, entry in enumerate(entries) if entry]
-            entry_keys = self.memory.read_many(
-                [(entry, 8) for _, entry in nonzero_entries], timeout=20
-            )
-            provider_slot = next(
-                (
-                    index
-                    for (index, _), key in zip(nonzero_entries, entry_keys, strict=True)
-                    if key == selected_key
-                ),
-                None,
-            )
-            if provider_slot is None:
-                return None
-
-            container = struct.unpack_from("<Q", provider_raw, 0x58 + provider_slot * 8)[0]
-            if container == 0:
-                return None
-            container_raw = self.memory.read(container + 0x20, 0x10, timeout=20)
-            wrappers_data = struct.unpack_from("<Q", container_raw)[0]
-            wrapper_count, wrapper_capacity = struct.unpack_from("<ii", container_raw, 8)
-            if wrappers_data == 0 or wrapper_count != 8 or not 8 <= wrapper_capacity <= 32:
-                return None
-
-            wrappers = struct.unpack("<8Q", self.memory.read(wrappers_data, 64, timeout=20))
-            nonzero_wrappers = [(index, wrapper) for index, wrapper in enumerate(wrappers) if wrapper]
-            card_data_raw = self.memory.read_many(
-                [(wrapper + 0x10, 8) for _, wrapper in nonzero_wrappers], timeout=20
-            )
-            data_objects = [0] * 8
-            for (index, _), raw in zip(nonzero_wrappers, card_data_raw, strict=True):
-                data_objects[index] = struct.unpack("<Q", raw)[0]
-            values_raw = self.memory.read_many(
-                [(data + 0x40, 4) for data in data_objects if data], timeout=20
-            )
-            values_by_data = iter(values_raw)
-            resolved = tuple(
-                struct.unpack("<i", next(values_by_data))[0] if data else None
-                for data in data_objects
+            return self._poll_provider_card_deck(
+                provider_raw, provider_count, selected_key
             )
         except AdbError:
             return None
+
+    def poll_opponent_card_deck(
+        self, pointers: BattlePointers, local_player_index: int
+    ) -> tuple[int | None, ...] | None:
+        """Read the other player's eight card wrappers from the battle provider."""
+        try:
+            if local_player_index not in (0, 1):
+                return None
+            player_context = struct.unpack(
+                "<Q", self.memory.read(pointers.model + 0x10, 8, timeout=20)
+            )[0]
+            if player_context == 0:
+                return None
+            provider = struct.unpack(
+                "<Q", self.memory.read(player_context + 0x98, 8, timeout=20)
+            )[0]
+            if provider == 0:
+                return None
+            provider_raw = self.memory.read(provider + 0x30, 0x88, timeout=20)
+            provider_count = struct.unpack_from("<i", provider_raw, 0x30)[0]
+            if not 1 <= provider_count <= 6:
+                return None
+
+            hp_state = self._resolve_battle_hp_state()
+            hp_raw = self.memory.read(hp_state + 0x30, 0x38, timeout=20)
+            player_count = struct.unpack_from("<i", hp_raw, 0x30)[0]
+            opponent_index = 1 - local_player_index
+            if not 2 <= player_count <= 6 or opponent_index >= player_count:
+                return None
+            opponent_entry = struct.unpack_from(
+                "<Q", hp_raw, opponent_index * 8
+            )[0]
+            if opponent_entry == 0:
+                return None
+            opponent_account_id = self.memory.read(opponent_entry, 8, timeout=20)
+            return self._poll_provider_card_deck(
+                provider_raw, provider_count, opponent_account_id
+            )
+        except AdbError:
+            return None
+
+    def _poll_provider_card_deck(
+        self, provider_raw: bytes, provider_count: int, selected_key: bytes
+    ) -> tuple[int | None, ...] | None:
+        entries = struct.unpack_from(f"<{provider_count}Q", provider_raw)
+        nonzero_entries = [
+            (index, entry) for index, entry in enumerate(entries) if entry
+        ]
+        entry_keys = self.memory.read_many(
+            [(entry, 8) for _, entry in nonzero_entries], timeout=20
+        )
+        provider_slot = next(
+            (
+                index
+                for (index, _), key in zip(nonzero_entries, entry_keys, strict=True)
+                if key == selected_key
+            ),
+            None,
+        )
+        if provider_slot is None:
+            return None
+
+        container = struct.unpack_from("<Q", provider_raw, 0x58 + provider_slot * 8)[0]
+        if container == 0:
+            return None
+        container_raw = self.memory.read(container + 0x20, 0x10, timeout=20)
+        wrappers_data = struct.unpack_from("<Q", container_raw)[0]
+        wrapper_count, wrapper_capacity = struct.unpack_from("<ii", container_raw, 8)
+        if wrappers_data == 0 or wrapper_count != 8 or not 8 <= wrapper_capacity <= 32:
+            return None
+
+        wrappers = struct.unpack("<8Q", self.memory.read(wrappers_data, 64, timeout=20))
+        nonzero_wrappers = [
+            (index, wrapper) for index, wrapper in enumerate(wrappers) if wrapper
+        ]
+        card_data_raw = self.memory.read_many(
+            [(wrapper + 0x10, 8) for _, wrapper in nonzero_wrappers], timeout=20
+        )
+        data_objects = [0] * 8
+        for (index, _), raw in zip(nonzero_wrappers, card_data_raw, strict=True):
+            data_objects[index] = struct.unpack("<Q", raw)[0]
+        values_raw = self.memory.read_many(
+            [(data + 0x40, 4) for data in data_objects if data], timeout=20
+        )
+        values_by_data = iter(values_raw)
+        resolved = tuple(
+            struct.unpack("<i", next(values_by_data))[0] if data else None
+            for data in data_objects
+        )
 
         if sum(value is not None and self._valid_card_data_id(value) for value in resolved) < 4:
             return None
