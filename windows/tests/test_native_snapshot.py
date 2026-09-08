@@ -149,6 +149,138 @@ class NativeSnapshotTests(unittest.TestCase):
 
         self.assertAlmostEqual(_average_card_cost(cards), 3.7, places=1)
 
+    def test_maps_spirit_empress_battle_form_to_deck_card(self) -> None:
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 0,
+                        "opponent_cards": [{"slot": 0, "data_id": 28_000_025}],
+                    }
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+        coordinator.poll()
+
+        snapshot = coordinator.merge(
+            normalize_snapshot(
+                {
+                    "battle_active": True,
+                    "player_elixir": [10, 4],
+                    "entities": [{"side": 1, "card_id": 26_000_104}],
+                }
+            )
+        )
+
+        self.assertEqual(snapshot["opponent_cards"][0]["data_id"], 28_000_025)
+
+    def test_reveals_spell_when_same_cost_unit_did_not_redeploy(self) -> None:
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 1,
+                        "opponent_cards": [
+                            {"slot": 0, "data_id": 28_000_011},  # The Log: 2
+                            {"slot": 1, "data_id": 26_000_038},  # Ice Golem: 2
+                        ],
+                    }
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+        coordinator.poll()
+        coordinator.merge(
+            normalize_snapshot(
+                {
+                    "battle_active": True,
+                    "player_elixir": [10, 10],
+                    "entities": [
+                        {
+                            "address": "0x1000",
+                            "side": 0,
+                            "card_id": 26_000_038,
+                        }
+                    ],
+                }
+            )
+        )
+        snapshot = coordinator.merge(
+            normalize_snapshot(
+                {"battle_active": True, "player_elixir": [8, 10]}
+            )
+        )
+        for _ in range(12):
+            snapshot = coordinator.merge(
+                normalize_snapshot(
+                    {"battle_active": True, "player_elixir": [8, 10]}
+                )
+            )
+
+        self.assertEqual(snapshot["opponent_cards"][0]["data_id"], 26_000_038)
+        self.assertEqual(snapshot["opponent_cards"][1]["data_id"], 28_000_011)
+
+    def test_does_not_infer_spell_when_same_cost_unit_redeploys(self) -> None:
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 1,
+                        "opponent_cards": [
+                            {"slot": 0, "data_id": 28_000_011},
+                            {"slot": 1, "data_id": 26_000_038},
+                        ],
+                    }
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+        coordinator.poll()
+        coordinator.merge(
+            normalize_snapshot(
+                {
+                    "battle_active": True,
+                    "player_elixir": [10, 10],
+                    "entities": [
+                        {
+                            "address": "0x1000",
+                            "side": 0,
+                            "card_id": 26_000_038,
+                        }
+                    ],
+                }
+            )
+        )
+        snapshot = coordinator.merge(
+            normalize_snapshot(
+                {
+                    "battle_active": True,
+                    "player_elixir": [8, 10],
+                    "entities": [
+                        {
+                            "address": "0x2000",
+                            "side": 0,
+                            "card_id": 26_000_038,
+                        }
+                    ],
+                }
+            )
+        )
+        for _ in range(12):
+            snapshot = coordinator.merge(
+                normalize_snapshot(
+                    {"battle_active": True, "player_elixir": [8, 10]}
+                )
+            )
+
+        revealed = [
+            item["data_id"]
+            for item in snapshot["opponent_cards"]
+            if item.get("data_id") is not None
+        ]
+        self.assertEqual(revealed, [26_000_038])
+
     def test_uses_player_resource_when_ui_elixir_is_unavailable(self) -> None:
         snapshot = normalize_snapshot(
             {

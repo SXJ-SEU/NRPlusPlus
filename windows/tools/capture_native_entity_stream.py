@@ -22,6 +22,34 @@ from proc_memory import BattleStateLocator, RootProcessMemory  # noqa: E402
 LOCAL_HELPER = ROOT / "runtime" / "cr-arm-entity-stream-x86_64"
 REMOTE_HELPER = "/data/local/tmp/cr-arm-entity-stream"
 DEFAULT_STREAM_INTERVAL_MS = 20
+UNIQUE_COST_REVEAL_DELAY_SNAPSHOTS = 10
+CARD_ID_ALIASES = {
+    26_000_104: 28_000_025,
+    26_000_105: 28_000_025,
+}
+
+
+def _load_card_catalog() -> tuple[dict[int, str], dict[int, int]]:
+    try:
+        path = ROOT.parent / "deploy" / "cards.json"
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        items = [item for item in payload.get("items", []) if isinstance(item, dict)]
+        names = {
+            int(item["id"]): str(item["name"])
+            for item in items
+            if "id" in item and "name" in item
+        }
+        costs = {
+            int(item["id"]): int(item["elixirCost"])
+            for item in items
+            if "id" in item and isinstance(item.get("elixirCost"), int)
+        }
+        return names, costs
+    except (OSError, ValueError, TypeError):
+        return {}, {}
+
+
+CARD_NAMES, CARD_COSTS = _load_card_catalog()
 SECONDARY_STATE_FIELDS = frozenset(
     {
         "battle_clock",
@@ -57,7 +85,18 @@ class BattleStateCoordinator:
         self._reader: Callable[[], dict[str, Any] | None] | None = None
         self._active = False
         self._state: dict[str, Any] | None = None
-        self._observed_card_ids_by_side: tuple[list[int], list[int]] = ([], [])
+        self._observed_card_ids_by_side: tuple[
+            list[tuple[int, int]], list[tuple[int, int]]
+        ] = ([], [])
+        self._active_entity_keys_by_side: tuple[set[object], set[object]] = (
+            set(),
+            set(),
+        )
+        self._elixir_drop_events_by_side: tuple[
+            list[tuple[int, int]], list[tuple[int, int]]
+        ] = ([], [])
+        self._previous_player_elixir: list[int | None] = [None, None]
+        self._merge_sequence = 0
 
     def set_active(self, active: bool) -> None:
         with self._lock:
@@ -67,6 +106,12 @@ class BattleStateCoordinator:
             self._state = None
             for card_ids in self._observed_card_ids_by_side:
                 card_ids.clear()
+            for entity_keys in self._active_entity_keys_by_side:
+                entity_keys.clear()
+            for events in self._elixir_drop_events_by_side:
+                events.clear()
+            self._previous_player_elixir = [None, None]
+            self._merge_sequence = 0
             self._reader = self._reader_factory() if active else None
 
     def poll(self) -> None:
@@ -84,9 +129,31 @@ class BattleStateCoordinator:
 
     def merge(self, snapshot: dict[str, Any]) -> dict[str, Any]:
         with self._lock:
+            sequence = self._merge_sequence
+            self._merge_sequence += 1
             if self._active and snapshot.get("battle_active"):
+                player_elixir = snapshot.get("player_elixir")
+                if isinstance(player_elixir, list) and len(player_elixir) >= 2:
+                    for side in (0, 1):
+                        current = player_elixir[side]
+                        previous = self._previous_player_elixir[side]
+                        if (
+                            isinstance(current, int)
+                            and isinstance(previous, int)
+                            and 1 <= previous - current <= 10
+                        ):
+                            self._elixir_drop_events_by_side[side].append(
+                                (sequence, previous - current)
+                            )
+                        self._previous_player_elixir[side] = (
+                            current if isinstance(current, int) else None
+                        )
                 entities = snapshot.get("entities")
                 if isinstance(entities, list):
+                    current_entity_keys_by_side: tuple[set[object], set[object]] = (
+                        set(),
+                        set(),
+                    )
                     for entity in entities:
                         if not isinstance(entity, dict):
                             continue
@@ -95,9 +162,25 @@ class BattleStateCoordinator:
                         if (
                             side in (0, 1)
                             and isinstance(card_id, int)
-                            and card_id not in self._observed_card_ids_by_side[side]
                         ):
-                            self._observed_card_ids_by_side[side].append(card_id)
+                            address = entity.get("address")
+                            entity_key: object = (
+                                (address, card_id)
+                                if isinstance(address, (int, str))
+                                else ("card", card_id)
+                            )
+                            current_entity_keys_by_side[side].add(entity_key)
+                            if entity_key not in self._active_entity_keys_by_side[side]:
+                                previous_event = (
+                                    self._observed_card_ids_by_side[side][-1]
+                                    if self._observed_card_ids_by_side[side]
+                                    else None
+                                )
+                                if previous_event != (sequence, card_id):
+                                    self._observed_card_ids_by_side[side].append(
+                                        (sequence, card_id)
+                                    )
+                    self._active_entity_keys_by_side = current_entity_keys_by_side
             state = (
                 dict(self._state)
                 if self._active and snapshot.get("battle_active") and self._state is not None
@@ -105,6 +188,9 @@ class BattleStateCoordinator:
             )
             observed_card_ids_by_side = tuple(
                 list(card_ids) for card_ids in self._observed_card_ids_by_side
+            )
+            elixir_drop_events_by_side = tuple(
+                list(events) for events in self._elixir_drop_events_by_side
             )
         if state is not None:
             snapshot.update(
@@ -120,7 +206,7 @@ class BattleStateCoordinator:
         observed_opponent_card_ids = (
             observed_card_ids_by_side[1 - local_side]
             if local_side in (0, 1)
-            else set()
+            else []
         )
         opponent_cards = snapshot.get("opponent_cards")
         if (
@@ -133,11 +219,60 @@ class BattleStateCoordinator:
                 for item in opponent_cards
                 if isinstance(item, dict) and isinstance(item.get("data_id"), int)
             }
-            revealed_ids = [
-                card_id
-                for card_id in observed_opponent_card_ids
-                if card_id in opponent_deck_ids
-            ]
+            revealed_events: list[tuple[int, int]] = []
+            canonical_entity_events: list[tuple[int, int]] = []
+            for event_sequence, observed_id in observed_opponent_card_ids:
+                deck_id = observed_id if observed_id in opponent_deck_ids else None
+                alias = CARD_ID_ALIASES.get(observed_id)
+                if deck_id is None and alias in opponent_deck_ids:
+                    deck_id = alias
+                if deck_id is None and observed_id in CARD_NAMES:
+                    same_name = [
+                        candidate
+                        for candidate in opponent_deck_ids
+                        if CARD_NAMES.get(candidate) == CARD_NAMES[observed_id]
+                    ]
+                    if len(same_name) == 1:
+                        deck_id = same_name[0]
+                if deck_id is not None:
+                    revealed_events.append((event_sequence, deck_id))
+                    canonical_entity_events.append((event_sequence, deck_id))
+
+            if local_side in (0, 1):
+                for event_sequence, cost in elixir_drop_events_by_side[1 - local_side]:
+                    if sequence - event_sequence < UNIQUE_COST_REVEAL_DELAY_SNAPSHOTS:
+                        continue
+                    same_cost = [
+                        card_id
+                        for card_id in opponent_deck_ids
+                        if CARD_COSTS.get(card_id) == cost
+                    ]
+                    matching_entity_play = any(
+                        event_sequence <= entity_sequence
+                        <= event_sequence + UNIQUE_COST_REVEAL_DELAY_SNAPSHOTS
+                        and entity_card_id in same_cost
+                        for entity_sequence, entity_card_id in canonical_entity_events
+                    )
+                    if matching_entity_play:
+                        continue
+                    revealed_before = {
+                        card_id
+                        for reveal_sequence, card_id in revealed_events
+                        if reveal_sequence
+                        <= event_sequence + UNIQUE_COST_REVEAL_DELAY_SNAPSHOTS
+                    }
+                    unrevealed_same_cost = [
+                        card_id for card_id in same_cost if card_id not in revealed_before
+                    ]
+                    if len(unrevealed_same_cost) == 1:
+                        revealed_events.append(
+                            (event_sequence, unrevealed_same_cost[0])
+                        )
+
+            revealed_ids = []
+            for _, card_id in sorted(revealed_events):
+                if card_id not in revealed_ids:
+                    revealed_ids.append(card_id)
             snapshot["opponent_cards"] = [
                 {
                     "slot": slot,
