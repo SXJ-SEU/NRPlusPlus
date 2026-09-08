@@ -14,6 +14,7 @@ from capture_native_entity_stream import (  # noqa: E402
     DEFAULT_STREAM_INTERVAL_MS,
     normalize_snapshot,
 )
+from minimal_visualizer import _average_card_cost  # noqa: E402
 from proc_memory import BattlePointers, BattleStateLocator  # noqa: E402
 
 
@@ -69,6 +70,62 @@ class NativeSnapshotTests(unittest.TestCase):
 
         self.assertEqual(snapshot["own_elixir"], 6)
         self.assertEqual(snapshot["opponent_elixir"], 3)
+
+    def test_only_reveals_opponent_cards_seen_in_entity_stream(self) -> None:
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "opponent_cards": [
+                            {"slot": 0, "data_id": 26_000_003},
+                            {"slot": 1, "data_id": 26_000_005},
+                            {"slot": 2, "data_id": 26_000_000},
+                        ]
+                    }
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+        coordinator.poll()
+
+        first = coordinator.merge(
+            normalize_snapshot(
+                {
+                    "battle_active": True,
+                    "local_side": 1,
+                    "entities": [
+                        {"side": 0, "card_id": 26_000_003},
+                        {"side": 1, "card_id": 26_000_000},
+                    ],
+                }
+            )
+        )
+        self.assertEqual(first["opponent_cards"][0]["data_id"], 26_000_003)
+        self.assertIsNone(first["opponent_cards"][1]["data_id"])
+        self.assertIsNone(first["opponent_cards"][2]["data_id"])
+
+        second = coordinator.merge(
+            normalize_snapshot({"battle_active": True, "local_side": 1})
+        )
+        self.assertEqual(second["opponent_cards"][0]["data_id"], 26_000_003)
+
+        coordinator.set_active(False)
+        coordinator.set_active(True)
+        reset = coordinator.merge(
+            normalize_snapshot({"battle_active": True, "local_side": 1})
+        )
+        self.assertEqual(reset["opponent_cards"], [])
+
+    def test_averages_revealed_opponent_card_costs(self) -> None:
+        cards = [
+            {"data_id": 26_000_003},  # Giant: 5
+            {"data_id": 26_000_005},  # Minions: 3
+            {"data_id": 26_000_000},  # Knight: 3
+            {"data_id": 26_000_003},  # Repeated Giant is not counted twice
+            {"data_id": None},
+        ]
+
+        self.assertAlmostEqual(_average_card_cost(cards), 3.7, places=1)
 
     def test_uses_player_resource_when_ui_elixir_is_unavailable(self) -> None:
         snapshot = normalize_snapshot(

@@ -15,20 +15,39 @@ ARENA_HEIGHT = 32_000
 DEFAULT_LOCAL_SIDE = 1
 
 
-def _load_card_names() -> dict[int, str]:
+def _load_card_catalog() -> tuple[dict[int, str], dict[int, float]]:
     path = Path(__file__).resolve().parents[2] / "deploy" / "cards.json"
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
-        return {
+        items = [item for item in payload.get("items", []) if isinstance(item, dict)]
+        names = {
             int(item["id"]): str(item["name"])
-            for item in payload.get("items", [])
-            if isinstance(item, dict) and "id" in item and "name" in item
+            for item in items
+            if "id" in item and "name" in item
         }
+        costs = {
+            int(item["id"]): float(item["elixirCost"])
+            for item in items
+            if "id" in item and isinstance(item.get("elixirCost"), (int, float))
+        }
+        return names, costs
     except (OSError, ValueError, TypeError):
-        return {}
+        return {}, {}
 
 
-CARD_NAMES = _load_card_names()
+CARD_NAMES, CARD_COSTS = _load_card_catalog()
+
+
+def _average_card_cost(cards: list[dict[str, Any]]) -> float | None:
+    card_ids = {
+        data_id
+        for item in cards
+        if isinstance(item, dict)
+        and isinstance((data_id := item.get("data_id")), int)
+        and data_id in CARD_COSTS
+    }
+    costs = [CARD_COSTS[data_id] for data_id in card_ids]
+    return sum(costs) / len(costs) if costs else None
 
 
 def _entity_label(entity: dict[str, Any]) -> str:
@@ -194,10 +213,21 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
         screen.blit(detail_font.render(f"Next  {next_label}", True, (184, 190, 200)), (panel_x, 402))
 
         screen.blit(
-            detail_font.render("Opponent deck", True, (231, 105, 91)),
+            detail_font.render("Opponent cards", True, (231, 105, 91)),
             (panel_x, 448),
         )
         opponent_cards = snapshot.get("opponent_cards", []) if snapshot is not None else []
+        opponent_average = _average_card_cost(opponent_cards)
+        opponent_average_text = "--" if opponent_average is None else f"{opponent_average:.1f}"
+        average_x = panel_x + 270
+        screen.blit(
+            label_font.render("Avg cost", True, (184, 190, 200)),
+            (average_x, 448),
+        )
+        screen.blit(
+            title_font.render(opponent_average_text, True, (231, 105, 91)),
+            (average_x, 470),
+        )
         for slot in range(8):
             item = (
                 opponent_cards[slot]
@@ -205,7 +235,7 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
                 else {}
             )
             data_id = item.get("data_id")
-            label = CARD_NAMES.get(data_id, str(data_id) if data_id is not None else "--")
+            label = CARD_NAMES.get(data_id, str(data_id) if data_id is not None else "?")
             if len(label) > 13:
                 label = label[:12] + "."
             card_rect = pygame.Rect(

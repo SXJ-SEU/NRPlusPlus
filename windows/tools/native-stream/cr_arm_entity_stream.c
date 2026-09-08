@@ -237,11 +237,15 @@ int main(int argc, char **argv) {
         if (!address || !read_exact(fd, address, raw, sizeof(raw)) || !sane_entity(raw))
           continue;
         owner = load_u64(raw, 0x18);
+        // Troops and buildings have an HP component, but short-lived spell and
+        // deployment entities often do not. Emit those too so the desktop side
+        // can mark every card from the opponent's known deck as revealed.
         if (!owner || !read_exact(fd, owner + 0x10, &component, 8) || !component ||
-            !read_exact(fd, component + 0x10, hp_values, sizeof(hp_values)))
-          continue;
-        if (hp_values[0] < 0 || hp_values[1] < hp_values[0] || hp_values[1] > 50000)
-          continue;
+            !read_exact(fd, component + 0x10, hp_values, sizeof(hp_values)) ||
+            hp_values[0] < 0 || hp_values[1] < hp_values[0] || hp_values[1] > 50000) {
+          hp_values[0] = -1;
+          hp_values[1] = -1;
+        }
         if (emitted++) putchar(',');
         printf("{\"address\":\"0x%" PRIx64
                "\",\"kind\":%d,\"side\":%d,\"x\":%d,\"y\":%d,"
