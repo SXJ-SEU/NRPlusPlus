@@ -4,6 +4,7 @@ import struct
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 WINDOWS_ROOT = Path(__file__).resolve().parents[1]
@@ -12,10 +13,16 @@ sys.path.insert(0, str(WINDOWS_ROOT / "tools"))
 from capture_native_entity_stream import (  # noqa: E402
     BattleStateCoordinator,
     DEFAULT_STREAM_INTERVAL_MS,
+    make_battle_reader,
     normalize_snapshot,
+    played_hand_indices,
 )
 from minimal_visualizer import _average_card_cost  # noqa: E402
-from proc_memory import BattlePointers, BattleStateLocator  # noqa: E402
+from proc_memory import (  # noqa: E402
+    BattlePointers,
+    BattleStateLocator,
+    PlayerHandPointers,
+)
 
 
 class FakeMemory:
@@ -91,7 +98,7 @@ class NativeSnapshotTests(unittest.TestCase):
                 [
                     {
                         "local_player_index": 1,
-                        "opponent_cards": [
+                        "opponent_deck": [
                             {"slot": 0, "data_id": 26_000_005},
                             {"slot": 1, "data_id": 26_000_000},
                             {"slot": 2, "data_id": 26_000_003},
@@ -155,7 +162,7 @@ class NativeSnapshotTests(unittest.TestCase):
                 [
                     {
                         "local_player_index": 0,
-                        "opponent_cards": [{"slot": 0, "data_id": 28_000_025}],
+                        "opponent_deck": [{"slot": 0, "data_id": 28_000_025}],
                     }
                 ]
             ).__next__
@@ -175,61 +182,22 @@ class NativeSnapshotTests(unittest.TestCase):
 
         self.assertEqual(snapshot["opponent_cards"][0]["data_id"], 28_000_025)
 
-    def test_reveals_spell_when_same_cost_unit_did_not_redeploy(self) -> None:
+    def test_uses_exact_opponent_hand_transition_for_same_cost_spell(self) -> None:
         coordinator = BattleStateCoordinator(
             lambda: iter(
                 [
                     {
                         "local_player_index": 1,
-                        "opponent_cards": [
+                        "opponent_deck": [
                             {"slot": 0, "data_id": 28_000_011},  # The Log: 2
                             {"slot": 1, "data_id": 26_000_038},  # Ice Golem: 2
                         ],
-                    }
-                ]
-            ).__next__
-        )
-        coordinator.set_active(True)
-        coordinator.poll()
-        coordinator.merge(
-            normalize_snapshot(
-                {
-                    "battle_active": True,
-                    "player_elixir": [10, 10],
-                    "entities": [
-                        {
-                            "address": "0x1000",
-                            "side": 0,
-                            "card_id": 26_000_038,
-                        }
-                    ],
-                }
-            )
-        )
-        snapshot = coordinator.merge(
-            normalize_snapshot(
-                {"battle_active": True, "player_elixir": [8, 10]}
-            )
-        )
-        for _ in range(12):
-            snapshot = coordinator.merge(
-                normalize_snapshot(
-                    {"battle_active": True, "player_elixir": [8, 10]}
-                )
-            )
-
-        self.assertEqual(snapshot["opponent_cards"][0]["data_id"], 26_000_038)
-        self.assertEqual(snapshot["opponent_cards"][1]["data_id"], 28_000_011)
-
-    def test_does_not_infer_spell_when_same_cost_unit_redeploys(self) -> None:
-        coordinator = BattleStateCoordinator(
-            lambda: iter(
-                [
-                    {
-                        "local_player_index": 1,
                         "opponent_cards": [
-                            {"slot": 0, "data_id": 28_000_011},
-                            {"slot": 1, "data_id": 26_000_038},
+                            {
+                                "slot": 0,
+                                "data_id": 28_000_011,
+                                "observed_ms": 1_000,
+                            }
                         ],
                     }
                 ]
@@ -237,49 +205,93 @@ class NativeSnapshotTests(unittest.TestCase):
         )
         coordinator.set_active(True)
         coordinator.poll()
-        coordinator.merge(
-            normalize_snapshot(
-                {
-                    "battle_active": True,
-                    "player_elixir": [10, 10],
-                    "entities": [
-                        {
-                            "address": "0x1000",
-                            "side": 0,
-                            "card_id": 26_000_038,
-                        }
-                    ],
-                }
-            )
-        )
+
         snapshot = coordinator.merge(
             normalize_snapshot(
                 {
                     "battle_active": True,
+                    "local_side": 1,
                     "player_elixir": [8, 10],
-                    "entities": [
-                        {
-                            "address": "0x2000",
-                            "side": 0,
-                            "card_id": 26_000_038,
-                        }
-                    ],
                 }
             )
         )
-        for _ in range(12):
-            snapshot = coordinator.merge(
-                normalize_snapshot(
-                    {"battle_active": True, "player_elixir": [8, 10]}
-                )
-            )
 
-        revealed = [
-            item["data_id"]
-            for item in snapshot["opponent_cards"]
-            if item.get("data_id") is not None
-        ]
-        self.assertEqual(revealed, [26_000_038])
+        self.assertEqual(snapshot["opponent_cards"][0]["data_id"], 28_000_011)
+
+    def test_first_opponent_hand_is_only_a_baseline(self) -> None:
+        self.assertEqual(played_hand_indices(None, (0, 3, 5, 1)), ())
+
+    def test_detects_the_deck_index_removed_from_opponent_hand(self) -> None:
+        self.assertEqual(
+            played_hand_indices((0, 3, 5, 1), (0, 3, 7, 1)),
+            (5,),
+        )
+
+    def test_battle_reader_maps_opponent_hand_transition_to_exact_card(self) -> None:
+        class FakeLocator:
+            def __init__(self, _memory: object) -> None:
+                self.last_timing = {}
+                self.opponent_hands = iter(
+                    [(0, 3, 5, 1), (0, 3, 7, 1)]
+                )
+
+            def locate(self) -> BattlePointers:
+                return BattlePointers(1, 2, 3, 4, 5)
+
+            def poll_local_player_index(self, _pointers: BattlePointers) -> int:
+                return 1
+
+            def locate_player_hand_pointers(
+                self, _player_index: int
+            ) -> PlayerHandPointers:
+                return PlayerHandPointers(10, 11, 12)
+
+            def poll_elixir(self, _pointers: BattlePointers) -> tuple[int, float]:
+                return 10, 1.0
+
+            def poll_hand_indices(
+                self, _pointers: BattlePointers
+            ) -> tuple[int, int, int, int]:
+                return (0, 1, 2, 3)
+
+            def poll_card_object_deck(
+                self, _pointers: BattlePointers
+            ) -> tuple[None, ...]:
+                return (None,) * 8
+
+            def poll_opponent_card_deck(
+                self, _pointers: BattlePointers, _local_index: int
+            ) -> tuple[int, ...]:
+                return (
+                    26_000_000,
+                    26_000_001,
+                    26_000_002,
+                    26_000_003,
+                    26_000_004,
+                    28_000_011,
+                    26_000_038,
+                    26_000_007,
+                )
+
+            def poll_player_hand_indices(
+                self, _pointers: PlayerHandPointers
+            ) -> tuple[int, int, int, int]:
+                return next(self.opponent_hands)
+
+            def poll_next_deck_index(self, _pointers: BattlePointers) -> int:
+                return 4
+
+        with patch(
+            "capture_native_entity_stream.BattleStateLocator", FakeLocator
+        ):
+            reader = make_battle_reader(Path("adb"), "test-device", 123)
+            identity = reader()
+            baseline = reader()
+            played = reader()
+
+        self.assertEqual(identity["local_player_index"], 1)
+        self.assertEqual(baseline["opponent_cards"], [])
+        self.assertEqual(played["opponent_cards"][0]["data_id"], 28_000_011)
 
     def test_uses_player_resource_when_ui_elixir_is_unavailable(self) -> None:
         snapshot = normalize_snapshot(
@@ -409,6 +421,66 @@ class NativeSnapshotTests(unittest.TestCase):
         )
 
         self.assertEqual(index, 1)
+
+    def test_binds_each_hand_model_to_its_battle_player_account(self) -> None:
+        libg = 0x100000
+        manager = 0x200000
+        context = 0x210000
+        battle = 0x220000
+        hp_state = 0x230000
+        models = (0x300000, 0x400000)
+        player_contexts = (0x310000, 0x410000)
+        provider = 0x500000
+        provider_entries = (0x510000, 0x520000)
+        battle_entries = (0x530000, 0x540000)
+
+        model_reads = []
+        for player_context, selector in zip(player_contexts, (0, 1), strict=True):
+            raw = bytearray(0x70)
+            struct.pack_into("<Q", raw, 0, player_context)
+            struct.pack_into("<i", raw, 0x68, selector)
+            model_reads.append(bytes(raw))
+        provider_raw = bytearray(0x38)
+        struct.pack_into("<2Q", provider_raw, 0, *provider_entries)
+        struct.pack_into("<i", provider_raw, 0x30, 2)
+        hp_raw = bytearray(0x38)
+        struct.pack_into("<2Q", hp_raw, 0, *battle_entries)
+        struct.pack_into("<i", hp_raw, 0x30, 2)
+
+        reads = {
+            (models[0] + 0x10, 0x70): model_reads[0],
+            (models[1] + 0x10, 0x70): model_reads[1],
+            (player_contexts[0] + 0x98, 8): struct.pack("<Q", provider),
+            (player_contexts[1] + 0x98, 8): struct.pack("<Q", provider),
+            (provider + 0x30, 0x38): bytes(provider_raw),
+            (provider_entries[0], 8): b"PLAYER00",
+            (provider_entries[1], 8): b"PLAYER11",
+            (libg + BattleStateLocator.ARM_MANAGER_GLOBAL, 8): struct.pack(
+                "<Q", manager
+            ),
+            (manager + BattleStateLocator.MANAGER_CONTEXT, 8): struct.pack(
+                "<Q", context
+            ),
+            (context + BattleStateLocator.CONTEXT_BATTLE, 8): struct.pack(
+                "<Q", battle
+            ),
+            (battle + BattleStateLocator.BATTLE_HP_STATE, 8): struct.pack(
+                "<Q", hp_state
+            ),
+            (hp_state + 0x30, 0x38): bytes(hp_raw),
+            (battle_entries[0], 8): b"PLAYER00",
+            (battle_entries[1], 8): b"PLAYER11",
+        }
+        locator = BattleStateLocator(FakeMemory(reads))  # type: ignore[arg-type]
+        locator._libg_base = libg
+        candidates = (
+            PlayerHandPointers(models[0], 0x600000, 0x610000),
+            PlayerHandPointers(models[1], 0x700000, 0x710000),
+        )
+        locator._player_hand_candidates = candidates
+
+        self.assertEqual(locator.locate_player_hand_pointers(0), candidates[0])
+        self.assertEqual(locator.locate_player_hand_pointers(1), candidates[1])
 
 
 if __name__ == "__main__":

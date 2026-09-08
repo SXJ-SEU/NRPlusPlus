@@ -36,6 +36,13 @@ class BattlePointers:
 
 
 @dataclass(frozen=True)
+class PlayerHandPointers:
+    model: int
+    hand_array: int
+    queue_array: int
+
+
+@dataclass(frozen=True)
 class BattleValues:
     own_elixir: int
     battle_clock: float
@@ -221,6 +228,7 @@ class BattleStateLocator:
         self._raw_entity_addresses: tuple[int, ...] = ()
         self._libg_base: int | None = None
         self._battle_entity_collection: int | None = None
+        self._player_hand_candidates: tuple[PlayerHandPointers, ...] = ()
         self.last_timing: dict[str, float | int] = {}
 
     @staticmethod
@@ -271,6 +279,7 @@ class BattleStateLocator:
         loaded = self._load_snapshot()
         snapshot_done = time.perf_counter()
         if loaded is None:
+            self._player_hand_candidates = ()
             self.last_timing = {
                 "snapshot_ms": (snapshot_done - started) * 1000,
                 "scan_ms": 0.0,
@@ -284,6 +293,7 @@ class BattleStateLocator:
         model_regions = grouped[self.MODEL_CLASS]
         ui_regions = grouped[self.UI_CLASS]
         candidates: list[tuple[float, BattlePointers]] = []
+        player_hand_candidates: dict[int, PlayerHandPointers] = {}
 
         for model_region in model_regions:
             data = model_region.data
@@ -309,6 +319,10 @@ class BattleStateLocator:
                 if not (0 <= next_index <= 7):
                     continue
 
+                player_hand_candidates[model] = PlayerHandPointers(
+                    model, hand_array, queue_array
+                )
+
                 needle = struct.pack("<Q", model)
                 for holder_region in model_regions:
                     cursor = 0
@@ -329,6 +343,8 @@ class BattleStateLocator:
                             continue
                         pointers = BattlePointers(holder, ui_state, model, hand_array, queue_array)
                         candidates.append((clock, pointers))
+
+        self._player_hand_candidates = tuple(player_hand_candidates.values())
 
         if not candidates:
             finished = time.perf_counter()
@@ -397,6 +413,23 @@ class BattleStateLocator:
             raise AdbError("battle hand pointer is no longer valid")
         return indices
 
+    def poll_player_hand_indices(
+        self, pointers: PlayerHandPointers
+    ) -> tuple[int, int, int, int]:
+        """Read a specific player's hand after verifying its model pointers."""
+        model_raw, hand_raw = self.memory.read_many(
+            [(pointers.model + 0x220, 0x18), (pointers.hand_array, 16)],
+            timeout=20,
+        )
+        hand_array = struct.unpack_from("<Q", model_raw, 0)[0]
+        queue_array = struct.unpack_from("<Q", model_raw, 0x10)[0]
+        if hand_array != pointers.hand_array or queue_array != pointers.queue_array:
+            raise AdbError("player hand pointers are no longer valid")
+        indices = struct.unpack("<4i", hand_raw)
+        if not (all(0 <= value <= 7 for value in indices) and len(set(indices)) == 4):
+            raise AdbError("player hand array is no longer valid")
+        return indices
+
     def poll_next_deck_index(self, pointers: BattlePointers) -> int:
         raw = self.memory.read(pointers.queue_array, 4, timeout=20)
         index = struct.unpack("<i", raw)[0]
@@ -406,29 +439,7 @@ class BattleStateLocator:
 
     def poll_local_player_index(self, pointers: BattlePointers) -> int:
         """Match the local deck model's account ID to the battle player list."""
-        player_raw = self.memory.read(pointers.model + 0x10, 0x70, timeout=20)
-        context = struct.unpack_from("<Q", player_raw)[0]
-        selector = struct.unpack_from("<i", player_raw, 0x68)[0]
-        if context == 0:
-            raise AdbError("local player context is null")
-
-        provider = struct.unpack(
-            "<Q", self.memory.read(context + 0x98, 8, timeout=20)
-        )[0]
-        if provider == 0:
-            raise AdbError("local player provider is null")
-        provider_raw = self.memory.read(provider + 0x30, 0x38, timeout=20)
-        provider_count = struct.unpack_from("<i", provider_raw, 0x30)[0]
-        if selector == 100:
-            selected_entry = provider + 0x28
-        elif 0 <= selector < provider_count <= 6:
-            selected_entry = struct.unpack_from("<Q", provider_raw, selector * 8)[0]
-        else:
-            raise AdbError("local player selector is invalid")
-        if selected_entry == 0:
-            raise AdbError("local player entry is null")
-        local_account_id = self.memory.read(selected_entry, 8, timeout=20)
-
+        local_account_id = self._poll_model_account_id(pointers.model)
         hp_state = self._resolve_battle_hp_state()
         hp_raw = self.memory.read(hp_state + 0x30, 0x38, timeout=20)
         player_count = struct.unpack_from("<i", hp_raw, 0x30)[0]
@@ -443,6 +454,52 @@ class BattleStateLocator:
             if account_id == local_account_id:
                 return index
         raise AdbError("local account is absent from battle player list")
+
+    def _poll_model_account_id(self, model: int) -> bytes:
+        player_raw = self.memory.read(model + 0x10, 0x70, timeout=20)
+        context = struct.unpack_from("<Q", player_raw)[0]
+        selector = struct.unpack_from("<i", player_raw, 0x68)[0]
+        if context == 0:
+            raise AdbError("player context is null")
+
+        provider = struct.unpack(
+            "<Q", self.memory.read(context + 0x98, 8, timeout=20)
+        )[0]
+        if provider == 0:
+            raise AdbError("player provider is null")
+        provider_raw = self.memory.read(provider + 0x30, 0x38, timeout=20)
+        provider_count = struct.unpack_from("<i", provider_raw, 0x30)[0]
+        if selector == 100:
+            selected_entry = provider + 0x28
+        elif 0 <= selector < provider_count <= 6:
+            selected_entry = struct.unpack_from("<Q", provider_raw, selector * 8)[0]
+        else:
+            raise AdbError("player selector is invalid")
+        if selected_entry == 0:
+            raise AdbError("player entry is null")
+        return self.memory.read(selected_entry, 8, timeout=20)
+
+    def _poll_battle_player_account_id(self, player_index: int) -> bytes:
+        hp_state = self._resolve_battle_hp_state()
+        hp_raw = self.memory.read(hp_state + 0x30, 0x38, timeout=20)
+        player_count = struct.unpack_from("<i", hp_raw, 0x30)[0]
+        if not 1 <= player_count <= 6 or not 0 <= player_index < player_count:
+            raise AdbError("battle player index is invalid")
+        player_entry = struct.unpack_from("<Q", hp_raw, player_index * 8)[0]
+        if player_entry == 0:
+            raise AdbError("battle player entry is null")
+        return self.memory.read(player_entry, 8, timeout=20)
+
+    def locate_player_hand_pointers(self, player_index: int) -> PlayerHandPointers:
+        """Bind a scanned hand model to one battle player by account ID."""
+        account_id = self._poll_battle_player_account_id(player_index)
+        for candidate in self._player_hand_candidates:
+            try:
+                if self._poll_model_account_id(candidate.model) == account_id:
+                    return candidate
+            except AdbError:
+                continue
+        raise AdbError("player hand model is absent from scanned candidates")
 
     @staticmethod
     def _valid_card_data_id(value: int) -> bool:
