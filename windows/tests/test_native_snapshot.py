@@ -92,9 +92,9 @@ class NativeSnapshotTests(unittest.TestCase):
                     {
                         "local_player_index": 1,
                         "opponent_cards": [
-                            {"slot": 0, "data_id": 26_000_003},
-                            {"slot": 1, "data_id": 26_000_005},
-                            {"slot": 2, "data_id": 26_000_000},
+                            {"slot": 0, "data_id": 26_000_005},
+                            {"slot": 1, "data_id": 26_000_000},
+                            {"slot": 2, "data_id": 26_000_003},
                         ]
                     }
                 ]
@@ -120,9 +120,16 @@ class NativeSnapshotTests(unittest.TestCase):
         self.assertIsNone(first["opponent_cards"][2]["data_id"])
 
         second = coordinator.merge(
-            normalize_snapshot({"battle_active": True, "local_side": 1})
+            normalize_snapshot(
+                {
+                    "battle_active": True,
+                    "local_side": 1,
+                    "entities": [{"side": 0, "card_id": 26_000_005}],
+                }
+            )
         )
         self.assertEqual(second["opponent_cards"][0]["data_id"], 26_000_003)
+        self.assertEqual(second["opponent_cards"][1]["data_id"], 26_000_005)
 
         coordinator.set_active(False)
         coordinator.set_active(True)

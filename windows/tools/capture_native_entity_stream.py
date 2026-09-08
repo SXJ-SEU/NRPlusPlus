@@ -57,7 +57,7 @@ class BattleStateCoordinator:
         self._reader: Callable[[], dict[str, Any] | None] | None = None
         self._active = False
         self._state: dict[str, Any] | None = None
-        self._observed_card_ids_by_side: tuple[set[int], set[int]] = (set(), set())
+        self._observed_card_ids_by_side: tuple[list[int], list[int]] = ([], [])
 
     def set_active(self, active: bool) -> None:
         with self._lock:
@@ -92,15 +92,19 @@ class BattleStateCoordinator:
                             continue
                         side = entity.get("side")
                         card_id = entity.get("card_id")
-                        if side in (0, 1) and isinstance(card_id, int):
-                            self._observed_card_ids_by_side[side].add(card_id)
+                        if (
+                            side in (0, 1)
+                            and isinstance(card_id, int)
+                            and card_id not in self._observed_card_ids_by_side[side]
+                        ):
+                            self._observed_card_ids_by_side[side].append(card_id)
             state = (
                 dict(self._state)
                 if self._active and snapshot.get("battle_active") and self._state is not None
                 else None
             )
             observed_card_ids_by_side = tuple(
-                set(card_ids) for card_ids in self._observed_card_ids_by_side
+                list(card_ids) for card_ids in self._observed_card_ids_by_side
             )
         if state is not None:
             snapshot.update(
@@ -119,18 +123,27 @@ class BattleStateCoordinator:
             else set()
         )
         opponent_cards = snapshot.get("opponent_cards")
-        if snapshot.get("battle_active") and isinstance(opponent_cards, list):
+        if (
+            snapshot.get("battle_active")
+            and isinstance(opponent_cards, list)
+            and opponent_cards
+        ):
+            opponent_deck_ids = {
+                item.get("data_id")
+                for item in opponent_cards
+                if isinstance(item, dict) and isinstance(item.get("data_id"), int)
+            }
+            revealed_ids = [
+                card_id
+                for card_id in observed_opponent_card_ids
+                if card_id in opponent_deck_ids
+            ]
             snapshot["opponent_cards"] = [
                 {
-                    **item,
-                    "data_id": (
-                        item.get("data_id")
-                        if item.get("data_id") in observed_opponent_card_ids
-                        else None
-                    ),
+                    "slot": slot,
+                    "data_id": revealed_ids[slot] if slot < len(revealed_ids) else None,
                 }
-                for item in opponent_cards
-                if isinstance(item, dict)
+                for slot in range(8)
             ]
         player_elixir = snapshot.get("player_elixir")
         local_player_index = snapshot.get("local_player_index")
