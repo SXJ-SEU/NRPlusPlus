@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import pygame
 
@@ -60,6 +61,18 @@ class ArenaPerspectiveTests(unittest.TestCase):
         )
         self.assertEqual(tuple(surface.get_at(local_point)[:3]), (72, 184, 213))
         self.assertEqual(tuple(surface.get_at(opponent_point)[:3]), (231, 105, 91))
+
+    @mock.patch("minimal_visualizer.subprocess.Popen")
+    def test_blacklist_editor_is_not_launched_twice(self, popen: mock.Mock) -> None:
+        process = mock.Mock()
+        process.poll.return_value = None
+        popen.return_value = process
+        visualizer._blacklist_editor_process = None
+
+        visualizer._launch_emote_blacklist_editor()
+        visualizer._launch_emote_blacklist_editor()
+
+        popen.assert_called_once()
 
 
 if __name__ == "__main__":

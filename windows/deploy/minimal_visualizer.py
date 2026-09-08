@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -13,6 +15,21 @@ ARENA = pygame.Rect(30, 76, 338, 600)
 ARENA_WIDTH = 18_000
 ARENA_HEIGHT = 32_000
 DEFAULT_LOCAL_SIDE = 1
+EMOTE_BLACKLIST_BUTTON = pygame.Rect(402, 642, 210, 32)
+_blacklist_editor_process: subprocess.Popen[bytes] | None = None
+
+
+def _launch_emote_blacklist_editor() -> None:
+    global _blacklist_editor_process
+    if _blacklist_editor_process is not None and _blacklist_editor_process.poll() is None:
+        return
+    script = Path(__file__).with_name("emote_blacklist_ui.py")
+    creation_flags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
+    _blacklist_editor_process = subprocess.Popen(
+        [sys.executable, str(script)],
+        cwd=str(script.parent),
+        creationflags=creation_flags,
+    )
 
 
 def _load_card_catalog() -> tuple[dict[int, str], dict[int, float]]:
@@ -150,6 +167,12 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif (
+                event.type == pygame.MOUSEBUTTONUP
+                and event.button == 1
+                and EMOTE_BLACKLIST_BUTTON.collidepoint(event.pos)
+            ):
+                _launch_emote_blacklist_editor()
 
         snapshot = snapshot_provider()
         entities = []
@@ -250,6 +273,24 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
                 detail_font.render(label, True, (225, 229, 233)),
                 (card_rect.x + 7, card_rect.y + 7),
             )
+
+        pygame.draw.rect(
+            screen,
+            (43, 48, 58),
+            EMOTE_BLACKLIST_BUTTON,
+            border_radius=4,
+        )
+        pygame.draw.rect(
+            screen,
+            (91, 101, 119),
+            EMOTE_BLACKLIST_BUTTON,
+            1,
+            border_radius=4,
+        )
+        screen.blit(
+            detail_font.render("Manage emote blacklist", True, (225, 229, 233)),
+            (EMOTE_BLACKLIST_BUTTON.x + 8, EMOTE_BLACKLIST_BUTTON.y + 7),
+        )
 
         read_us = None if snapshot is None else snapshot.get("native_read_us")
         if isinstance(read_us, int):
