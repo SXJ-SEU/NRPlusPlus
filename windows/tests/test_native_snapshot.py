@@ -50,9 +50,17 @@ class NativeSnapshotTests(unittest.TestCase):
         self.assertEqual(snapshot["opponent_elixir"], 7)
         self.assertEqual(snapshot["player_elixir"], [7, 4])
 
-    def test_player_resource_order_is_not_entity_side_order(self) -> None:
+    def test_resolved_player_index_also_corrects_native_entity_side(self) -> None:
         coordinator = BattleStateCoordinator(
-            lambda: iter([{"own_elixir": 4, "local_player_index": 0}]).__next__
+            lambda: iter(
+                [
+                    {
+                        "own_elixir": 4,
+                        "local_player_index": 0,
+                        "opponent_cards": [{"slot": 0, "data_id": 26_000_034}],
+                    }
+                ]
+            ).__next__
         )
         coordinator.set_active(True)
         coordinator.poll()
@@ -64,18 +72,25 @@ class NativeSnapshotTests(unittest.TestCase):
                     "local_side": 1,
                     "player_elixir": [6, 3],
                     "own_elixir": -1,
+                    "entities": [
+                        {"side": 0, "card_id": 26_000_000},
+                        {"side": 1, "card_id": 26_000_034},
+                    ],
                 }
             )
         )
 
+        self.assertEqual(snapshot["local_side"], 0)
         self.assertEqual(snapshot["own_elixir"], 6)
         self.assertEqual(snapshot["opponent_elixir"], 3)
+        self.assertEqual(snapshot["opponent_cards"][0]["data_id"], 26_000_034)
 
     def test_only_reveals_opponent_cards_seen_in_entity_stream(self) -> None:
         coordinator = BattleStateCoordinator(
             lambda: iter(
                 [
                     {
+                        "local_player_index": 1,
                         "opponent_cards": [
                             {"slot": 0, "data_id": 26_000_003},
                             {"slot": 1, "data_id": 26_000_005},
