@@ -41,7 +41,7 @@ EVOLUTION_CYCLES: dict[int, int] = {
     27_000_002: 2,  # Mortar
     27_000_006: 2,  # Tesla
     27_000_010: 2,  # Furnace
-    27_000_012: 2,  # Goblin Cage
+    27_000_012: 1,  # Goblin Cage
     27_000_013: 2,  # Goblin Drill
     28_000_004: 2,  # Goblin Barrel
     28_000_008: 2,  # Zap

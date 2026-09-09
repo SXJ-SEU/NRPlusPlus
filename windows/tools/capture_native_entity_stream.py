@@ -71,8 +71,31 @@ def evolution_state(
 def merge_card_deployment_events(
     exact_events: list[tuple[int, int, str | None]],
     entity_events: list[tuple[int, int, str | None]],
+    exact_event_windows: list[tuple[int, int] | None] | None = None,
 ) -> list[tuple[int, int, str | None]]:
     """Merge hand transitions with entity fallbacks without double-counting."""
+    paired_entity_indexes: set[int] = set()
+    cards_with_observation_windows: set[int] = set()
+    if exact_event_windows is not None:
+        for exact_event, window in zip(exact_events, exact_event_windows):
+            if window is None:
+                continue
+            _, card_id, _ = exact_event
+            observed_after_ms, observed_ms = window
+            cards_with_observation_windows.add(card_id)
+            candidates = [
+                (entity_ms, index)
+                for index, (entity_ms, entity_card_id, _) in enumerate(entity_events)
+                if index not in paired_entity_indexes
+                and entity_card_id == card_id
+                and observed_after_ms <= entity_ms <= observed_ms
+            ]
+            if candidates:
+                # A hand transition proves one deployment occurred in this
+                # sampling interval. Pair it with the latest matching native
+                # entity report, which is closest to the transition detection.
+                paired_entity_indexes.add(max(candidates)[1])
+
     first_exact_ms_by_card: dict[int, int] = {}
     for observed_ms, card_id, _ in exact_events:
         first_exact_ms_by_card[card_id] = min(
@@ -81,14 +104,22 @@ def merge_card_deployment_events(
 
     fallback_events: list[tuple[int, int, str | None]] = []
     last_fallback_by_card: dict[int, int] = {}
-    for event in sorted(entity_events, key=lambda item: item[:2]):
+    indexed_entity_events = sorted(
+        enumerate(entity_events), key=lambda item: item[1][:2]
+    )
+    for entity_index, event in indexed_entity_events:
         observed_ms, card_id, _ = event
+        if entity_index in paired_entity_indexes:
+            continue
         first_exact_ms = first_exact_ms_by_card.get(card_id)
         # Once the hand reader has produced an exact event for this card, it is
-        # authoritative. Entity addresses can appear much later for spawned or
-        # transformed units and are not additional card deployments.
-        if first_exact_ms is not None and (
-            observed_ms >= first_exact_ms - DEPLOYMENT_EVENT_MERGE_WINDOW_MS
+        # authoritative when older readers do not provide observation windows.
+        # With windows, unmatched entity events remain useful for immediate UI
+        # updates until their corresponding hand transition arrives.
+        if (
+            card_id not in cards_with_observation_windows
+            and first_exact_ms is not None
+            and observed_ms >= first_exact_ms - DEPLOYMENT_EVENT_MERGE_WINDOW_MS
         ):
             continue
         previous_ms = last_fallback_by_card.get(card_id)
@@ -295,6 +326,7 @@ class BattleStateCoordinator:
                 and item.get("form") in ("evolution", "hero")
             }
             exact_deployment_events: list[tuple[int, int, str | None]] = []
+            exact_deployment_windows: list[tuple[int, int] | None] = []
             legacy_revealed_events: list[tuple[int, int, str | None]] = []
             for slot, item in enumerate(opponent_cards):
                 if not isinstance(item, dict) or not isinstance(item.get("data_id"), int):
@@ -306,6 +338,13 @@ class BattleStateCoordinator:
                 if isinstance(observed_ms, int):
                     exact_deployment_events.append(
                         (observed_ms, item["data_id"], form)
+                    )
+                    observed_after_ms = item.get("observed_after_ms")
+                    exact_deployment_windows.append(
+                        (observed_after_ms, observed_ms)
+                        if isinstance(observed_after_ms, int)
+                        and observed_after_ms <= observed_ms
+                        else None
                     )
                 else:
                     legacy_revealed_events.append((slot, item["data_id"], form))
@@ -339,7 +378,9 @@ class BattleStateCoordinator:
                     )
 
             deployment_events = merge_card_deployment_events(
-                exact_deployment_events, entity_deployment_events
+                exact_deployment_events,
+                entity_deployment_events,
+                exact_deployment_windows,
             )
             opponent_charges: dict[int, int] = {}
             for _, card_id, form in deployment_events:
@@ -533,12 +574,14 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
     previous_local_hand: tuple[int, ...] | None = None
     opponent_hand_pointers = None
     previous_opponent_hand: tuple[int, ...] | None = None
-    opponent_play_events: list[tuple[int, int]] = []
+    previous_opponent_hand_observed_ms: int | None = None
+    opponent_play_events: list[tuple[int, int, int]] = []
 
     def read() -> dict[str, Any] | None:
         nonlocal pointers, retry_at, local_player_index
         nonlocal previous_local_hand
         nonlocal opponent_hand_pointers, previous_opponent_hand
+        nonlocal previous_opponent_hand_observed_ms
         try:
             if pointers is None:
                 now = time.monotonic()
@@ -632,12 +675,21 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                     current_opponent_hand = locator.poll_player_hand_indices(
                         opponent_hand_pointers
                     )
+                    opponent_hand_observed_ms = int(time.time() * 1000)
                     for deck_index in played_hand_indices(
                         previous_opponent_hand, current_opponent_hand
                     ):
                         if not 0 <= deck_index < 8:
                             continue
-                        opponent_play_events.append((observed_ms, deck_index))
+                        if previous_opponent_hand_observed_ms is None:
+                            continue
+                        opponent_play_events.append(
+                            (
+                                previous_opponent_hand_observed_ms,
+                                opponent_hand_observed_ms,
+                                deck_index,
+                            )
+                        )
                         cycles = EVOLUTION_CYCLES.get(
                             opponent_deck_ids[deck_index]
                         )
@@ -651,6 +703,7 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                                 )
                             )
                     previous_opponent_hand = current_opponent_hand
+                    previous_opponent_hand_observed_ms = opponent_hand_observed_ms
                     diagnostics.pop("error", None)
                 except Exception as exc:
                     diagnostics.update(
@@ -696,6 +749,7 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                             "slot": slot,
                             "data_id": opponent_deck_ids[deck_index],
                             "form": opponent_deck_forms[deck_index],
+                            "observed_after_ms": observed_after_ms,
                             "observed_ms": observed_ms,
                             **evolution_state(
                                 opponent_deck_ids[deck_index],
@@ -703,7 +757,11 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                                 opponent_evolution_charges[deck_index],
                             ),
                         }
-                        for slot, (observed_ms, deck_index) in enumerate(
+                        for slot, (
+                            observed_after_ms,
+                            observed_ms,
+                            deck_index,
+                        ) in enumerate(
                             opponent_play_events
                         )
                         if opponent_deck_ids[deck_index] is not None

@@ -75,13 +75,13 @@ class NativeSnapshotTests(unittest.TestCase):
                 encoding="utf-8"
             )
         )
-        evolution_ids = {
-            item["id"]
+        evolution_cycles = {
+            item["id"]: item["forms"]["evolution"]["cycles"]
             for item in catalog["items"]
-            if "evolutionMedium" in item.get("iconUrls", {})
+            if item.get("forms", {}).get("evolution")
         }
 
-        self.assertTrue(evolution_ids.issubset(EVOLUTION_CYCLES))
+        self.assertEqual(EVOLUTION_CYCLES, evolution_cycles)
         self.assertEqual(EVOLUTION_CYCLES[26_000_001], 2)
         self.assertEqual(EVOLUTION_CYCLES[26_000_047], 1)
         self.assertEqual(EVOLUTION_CYCLES[26_000_043], 1)
@@ -186,6 +186,148 @@ class NativeSnapshotTests(unittest.TestCase):
         self.assertEqual(first_normal["opponent_cards"][0]["evolution_charge"], 1)
         self.assertEqual(evolved["opponent_cards"][0]["evolution_charge"], 0)
         self.assertEqual(third_normal["opponent_cards"][0]["evolution_charge"], 1)
+
+    def test_delayed_exact_event_reconciles_with_earlier_entity_deployment(self) -> None:
+        card_id = 26_000_037
+        deck = [
+            {
+                "slot": 0,
+                "data_id": card_id,
+                "form": "evolution",
+                "evolution_cycles": 2,
+                "evolution_charge": 0,
+                "evolution_ready": False,
+            }
+        ]
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 0,
+                        "opponent_cards": [],
+                        "opponent_deck": deck,
+                    },
+                    {
+                        "opponent_cards": [
+                            {
+                                "slot": 0,
+                                "data_id": card_id,
+                                "form": "evolution",
+                                "observed_after_ms": 2_000,
+                                "observed_ms": 9_070,
+                            }
+                        ]
+                    },
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+
+        coordinator.poll()
+        first_report = normalize_snapshot(
+            {
+                "battle_active": True,
+                "entities": [
+                    {"address": "0xinferno", "side": 1, "card_id": card_id}
+                ],
+            }
+        )
+        first_report["t_ms"] = 4_920
+        first = coordinator.merge(first_report)
+
+        coordinator.poll()
+        delayed_exact = normalize_snapshot(
+            {"battle_active": True, "entities": []}
+        )
+        delayed_exact["t_ms"] = 9_070
+        reconciled = coordinator.merge(delayed_exact)
+
+        self.assertEqual(first["opponent_cards"][0]["evolution_charge"], 1)
+        self.assertEqual(reconciled["opponent_cards"][0]["evolution_charge"], 1)
+
+    def test_entity_evolution_resets_before_its_delayed_exact_event(self) -> None:
+        card_id = 26_000_055
+        deck = [
+            {
+                "slot": 0,
+                "data_id": card_id,
+                "form": "evolution",
+                "evolution_cycles": 1,
+                "evolution_charge": 0,
+                "evolution_ready": False,
+            }
+        ]
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 0,
+                        "opponent_cards": [],
+                        "opponent_deck": deck,
+                    },
+                    {
+                        "opponent_cards": [
+                            {
+                                "slot": 0,
+                                "data_id": card_id,
+                                "form": "evolution",
+                                "observed_after_ms": 2_000,
+                                "observed_ms": 9_530,
+                            }
+                        ]
+                    },
+                    {
+                        "opponent_cards": [
+                            {
+                                "slot": 0,
+                                "data_id": card_id,
+                                "form": "evolution",
+                                "observed_after_ms": 2_000,
+                                "observed_ms": 9_530,
+                            },
+                            {
+                                "slot": 0,
+                                "data_id": card_id,
+                                "form": "evolution",
+                                "observed_after_ms": 90_000,
+                                "observed_ms": 99_000,
+                            },
+                        ]
+                    },
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+
+        def merge_at(observed_ms: int, address: str | None) -> dict:
+            entities = (
+                [{"address": address, "side": 1, "card_id": card_id}]
+                if address is not None
+                else []
+            )
+            snapshot = normalize_snapshot(
+                {"battle_active": True, "entities": entities}
+            )
+            snapshot["t_ms"] = observed_ms
+            return coordinator.merge(snapshot)
+
+        coordinator.poll()
+        first_normal = merge_at(5_060, "0xnormal")
+        merge_at(6_000, None)
+        coordinator.poll()
+        reconciled_normal = merge_at(9_530, None)
+        evolved = merge_at(94_720, "0xevolved")
+        coordinator.poll()
+        reconciled_evolved = merge_at(99_000, None)
+
+        self.assertEqual(first_normal["opponent_cards"][0]["evolution_charge"], 1)
+        self.assertEqual(
+            reconciled_normal["opponent_cards"][0]["evolution_charge"], 1
+        )
+        self.assertEqual(evolved["opponent_cards"][0]["evolution_charge"], 0)
+        self.assertEqual(
+            reconciled_evolved["opponent_cards"][0]["evolution_charge"], 0
+        )
 
     def test_maps_player_resource_order_to_local_and_opponent(self) -> None:
         snapshot = normalize_snapshot(
@@ -790,6 +932,10 @@ class NativeSnapshotTests(unittest.TestCase):
         self.assertEqual(baseline["opponent_cards"], [])
         self.assertEqual(played["opponent_cards"][0]["data_id"], 28_000_015)
         self.assertEqual(played["opponent_cards"][0]["form"], "hero")
+        self.assertLessEqual(
+            played["opponent_cards"][0]["observed_after_ms"],
+            played["opponent_cards"][0]["observed_ms"],
+        )
 
     def test_battle_reader_keeps_baseline_when_opponent_hand_storage_moves(self) -> None:
         class FakeLocator:
