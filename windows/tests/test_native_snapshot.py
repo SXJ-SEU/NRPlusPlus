@@ -21,6 +21,7 @@ from minimal_visualizer import _average_card_cost  # noqa: E402
 from proc_memory import (  # noqa: E402
     BattlePointers,
     BattleStateLocator,
+    CardDeckEntry,
     PlayerHandPointers,
 )
 
@@ -182,6 +183,38 @@ class NativeSnapshotTests(unittest.TestCase):
 
         self.assertEqual(snapshot["opponent_cards"][0]["data_id"], 28_000_025)
 
+    def test_revealed_opponent_card_keeps_equipped_form(self) -> None:
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 0,
+                        "opponent_deck": [
+                            {
+                                "slot": 0,
+                                "data_id": 26_000_047,
+                                "form": "evolution",
+                            }
+                        ],
+                    }
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+        coordinator.poll()
+
+        snapshot = coordinator.merge(
+            normalize_snapshot(
+                {
+                    "battle_active": True,
+                    "entities": [{"side": 1, "card_id": 26_000_047}],
+                }
+            )
+        )
+
+        self.assertEqual(snapshot["opponent_cards"][0]["data_id"], 26_000_047)
+        self.assertEqual(snapshot["opponent_cards"][0]["form"], "evolution")
+
     def test_uses_exact_opponent_hand_transition_for_same_cost_spell(self) -> None:
         coordinator = BattleStateCoordinator(
             lambda: iter(
@@ -227,6 +260,43 @@ class NativeSnapshotTests(unittest.TestCase):
             (5,),
         )
 
+    def test_reads_selected_forms_from_card_wrappers(self) -> None:
+        entry = 0x1000
+        container = 0x2000
+        wrappers_data = 0x3000
+        wrappers = tuple(0x4000 + index * 0x100 for index in range(8))
+        data_objects = tuple(0x8000 + index * 0x100 for index in range(8))
+        provider_raw = bytearray(0x88)
+        struct.pack_into("<Q", provider_raw, 0, entry)
+        struct.pack_into("<i", provider_raw, 0x30, 1)
+        struct.pack_into("<Q", provider_raw, 0x58, container)
+        container_raw = struct.pack("<Qii", wrappers_data, 8, 8)
+        reads: dict[tuple[int, int], bytes] = {
+            (entry, 8): b"PLAYER00",
+            (container + 0x20, 0x10): container_raw,
+            (wrappers_data, 64): struct.pack("<8Q", *wrappers),
+        }
+        form_levels = (1, 2, 7, 0, 0, 0, 0, 0)
+        for index, (wrapper, data, form_level) in enumerate(
+            zip(wrappers, data_objects, form_levels, strict=True)
+        ):
+            reads[(wrapper + 0x10, 0x10)] = struct.pack(
+                "<Qii", data, 0, form_level
+            )
+            reads[(data + 0x40, 4)] = struct.pack("<i", 26_000_000 + index)
+        locator = BattleStateLocator(FakeMemory(reads))  # type: ignore[arg-type]
+
+        cards = locator._poll_provider_card_deck_details(
+            bytes(provider_raw), 1, b"PLAYER00"
+        )
+
+        self.assertIsNotNone(cards)
+        assert cards is not None
+        self.assertEqual(cards[0], CardDeckEntry(26_000_000, "evolution"))
+        self.assertEqual(cards[1], CardDeckEntry(26_000_001, "hero"))
+        self.assertIsNone(cards[2].form)
+        self.assertIsNone(cards[3].form)
+
     def test_battle_reader_maps_opponent_hand_transition_to_exact_card(self) -> None:
         class FakeLocator:
             def __init__(self, _memory: object) -> None:
@@ -254,23 +324,28 @@ class NativeSnapshotTests(unittest.TestCase):
             ) -> tuple[int, int, int, int]:
                 return (0, 1, 2, 3)
 
-            def poll_card_object_deck(
+            def poll_card_object_deck_details(
                 self, _pointers: BattlePointers
-            ) -> tuple[None, ...]:
-                return (None,) * 8
+            ) -> tuple[CardDeckEntry, ...]:
+                return tuple(CardDeckEntry(None, None) for _ in range(8))
 
-            def poll_opponent_card_deck(
+            def poll_opponent_card_deck_details(
                 self, _pointers: BattlePointers, _local_index: int
-            ) -> tuple[int, ...]:
-                return (
-                    26_000_000,
-                    26_000_001,
-                    26_000_002,
-                    26_000_003,
-                    26_000_004,
-                    28_000_011,
-                    26_000_038,
-                    26_000_007,
+            ) -> tuple[CardDeckEntry, ...]:
+                return tuple(
+                    CardDeckEntry(data_id, "hero" if index == 5 else None)
+                    for index, data_id in enumerate(
+                        (
+                            26_000_000,
+                            26_000_001,
+                            26_000_002,
+                            26_000_003,
+                            26_000_004,
+                            28_000_015,
+                            26_000_038,
+                            26_000_007,
+                        )
+                    )
                 )
 
             def poll_player_hand_indices(
@@ -291,7 +366,8 @@ class NativeSnapshotTests(unittest.TestCase):
 
         self.assertEqual(identity["local_player_index"], 1)
         self.assertEqual(baseline["opponent_cards"], [])
-        self.assertEqual(played["opponent_cards"][0]["data_id"], 28_000_011)
+        self.assertEqual(played["opponent_cards"][0]["data_id"], 28_000_015)
+        self.assertEqual(played["opponent_cards"][0]["form"], "hero")
 
     def test_uses_player_resource_when_ui_elixir_is_unavailable(self) -> None:
         snapshot = normalize_snapshot(

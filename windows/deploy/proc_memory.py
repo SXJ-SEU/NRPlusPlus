@@ -43,6 +43,12 @@ class PlayerHandPointers:
 
 
 @dataclass(frozen=True)
+class CardDeckEntry:
+    data_id: int | None
+    form: str | None
+
+
+@dataclass(frozen=True)
 class BattleValues:
     own_elixir: int
     battle_clock: float
@@ -219,6 +225,9 @@ class BattleStateLocator:
     BATTLE_HP_STATE = 0xA8
     HP_STATE_REGISTRY = 0x08
     REGISTRY_ENTITY_COLLECTION = 0x40
+    CARD_WRAPPER_DATA = 0x10
+    CARD_WRAPPER_FORM_LEVEL = 0x1C
+    CARD_FORM_NAMES = {1: "evolution", 2: "hero"}
     ENTITY_CATEGORY_MIN = 5_000_000
     ENTITY_CATEGORY_MAX = 6_000_000
 
@@ -515,23 +524,32 @@ class BattleStateLocator:
         index-aligned deck.  This reproduces the non-mutating part of the
         native ``getCardByHandSlot`` path.
         """
+        details = self.poll_card_object_deck_details(pointers)
+        return (
+            tuple(card.data_id for card in details)
+            if details is not None
+            else None
+        )  # type: ignore[return-value]
+
+    def poll_card_object_deck_details(
+        self, pointers: BattlePointers
+    ) -> tuple[CardDeckEntry, ...] | None:
+        """Resolve card IDs and the selected Basic/Evolution/Hero form."""
         try:
             player_raw = self.memory.read(pointers.model + 0x10, 0x70, timeout=20)
             context = struct.unpack_from("<Q", player_raw, 0)[0]
             selector = struct.unpack_from("<i", player_raw, 0x68)[0]
             if context == 0:
                 return None
-
-            provider = struct.unpack("<Q", self.memory.read(context + 0x98, 8, timeout=20))[0]
+            provider = struct.unpack(
+                "<Q", self.memory.read(context + 0x98, 8, timeout=20)
+            )[0]
             if provider == 0:
                 return None
-            # Covers entry pointers at +0x30, count at +0x60, and the six
-            # corresponding container pointers at +0x88.
             provider_raw = self.memory.read(provider + 0x30, 0x88, timeout=20)
             provider_count = struct.unpack_from("<i", provider_raw, 0x30)[0]
             if not 1 <= provider_count <= 6:
                 return None
-
             if selector == 100:
                 selected_entry = provider + 0x28
             elif 0 <= selector < provider_count:
@@ -541,7 +559,7 @@ class BattleStateLocator:
             if selected_entry == 0:
                 return None
             selected_key = self.memory.read(selected_entry, 8, timeout=20)
-            return self._poll_provider_card_deck(
+            return self._poll_provider_card_deck_details(
                 provider_raw, provider_count, selected_key
             )
         except AdbError:
@@ -551,6 +569,17 @@ class BattleStateLocator:
         self, pointers: BattlePointers, local_player_index: int
     ) -> tuple[int | None, ...] | None:
         """Read the other player's eight card wrappers from the battle provider."""
+        details = self.poll_opponent_card_deck_details(pointers, local_player_index)
+        return (
+            tuple(card.data_id for card in details)
+            if details is not None
+            else None
+        )
+
+    def poll_opponent_card_deck_details(
+        self, pointers: BattlePointers, local_player_index: int
+    ) -> tuple[CardDeckEntry, ...] | None:
+        """Read the opponent deck and each slot's selected card form."""
         try:
             if local_player_index not in (0, 1):
                 return None
@@ -568,20 +597,17 @@ class BattleStateLocator:
             provider_count = struct.unpack_from("<i", provider_raw, 0x30)[0]
             if not 1 <= provider_count <= 6:
                 return None
-
             hp_state = self._resolve_battle_hp_state()
             hp_raw = self.memory.read(hp_state + 0x30, 0x38, timeout=20)
             player_count = struct.unpack_from("<i", hp_raw, 0x30)[0]
             opponent_index = 1 - local_player_index
             if not 2 <= player_count <= 6 or opponent_index >= player_count:
                 return None
-            opponent_entry = struct.unpack_from(
-                "<Q", hp_raw, opponent_index * 8
-            )[0]
+            opponent_entry = struct.unpack_from("<Q", hp_raw, opponent_index * 8)[0]
             if opponent_entry == 0:
                 return None
             opponent_account_id = self.memory.read(opponent_entry, 8, timeout=20)
-            return self._poll_provider_card_deck(
+            return self._poll_provider_card_deck_details(
                 provider_raw, provider_count, opponent_account_id
             )
         except AdbError:
@@ -590,6 +616,18 @@ class BattleStateLocator:
     def _poll_provider_card_deck(
         self, provider_raw: bytes, provider_count: int, selected_key: bytes
     ) -> tuple[int | None, ...] | None:
+        details = self._poll_provider_card_deck_details(
+            provider_raw, provider_count, selected_key
+        )
+        return (
+            tuple(card.data_id for card in details)
+            if details is not None
+            else None
+        )
+
+    def _poll_provider_card_deck_details(
+        self, provider_raw: bytes, provider_count: int, selected_key: bytes
+    ) -> tuple[CardDeckEntry, ...] | None:
         entries = struct.unpack_from(f"<{provider_count}Q", provider_raw)
         nonzero_entries = [
             (index, entry) for index, entry in enumerate(entries) if entry
@@ -621,12 +659,24 @@ class BattleStateLocator:
         nonzero_wrappers = [
             (index, wrapper) for index, wrapper in enumerate(wrappers) if wrapper
         ]
-        card_data_raw = self.memory.read_many(
-            [(wrapper + 0x10, 8) for _, wrapper in nonzero_wrappers], timeout=20
+        wrapper_state_raw = self.memory.read_many(
+            [
+                (
+                    wrapper + self.CARD_WRAPPER_DATA,
+                    self.CARD_WRAPPER_FORM_LEVEL - self.CARD_WRAPPER_DATA + 4,
+                )
+                for _, wrapper in nonzero_wrappers
+            ],
+            timeout=20,
         )
         data_objects = [0] * 8
-        for (index, _), raw in zip(nonzero_wrappers, card_data_raw, strict=True):
-            data_objects[index] = struct.unpack("<Q", raw)[0]
+        form_levels: list[int | None] = [None] * 8
+        for (index, _), raw in zip(nonzero_wrappers, wrapper_state_raw, strict=True):
+            data_objects[index] = struct.unpack_from("<Q", raw)[0]
+            form_level = struct.unpack_from(
+                "<i", raw, self.CARD_WRAPPER_FORM_LEVEL - self.CARD_WRAPPER_DATA
+            )[0]
+            form_levels[index] = form_level if 0 <= form_level <= 2 else None
         values_raw = self.memory.read_many(
             [(data + 0x40, 4) for data in data_objects if data], timeout=20
         )
@@ -639,9 +689,16 @@ class BattleStateLocator:
         if sum(value is not None and self._valid_card_data_id(value) for value in resolved) < 4:
             return None
         return tuple(
-            value if value is not None and self._valid_card_data_id(value) else None
-            for value in resolved
-        )  # type: ignore[return-value]
+            CardDeckEntry(
+                data_id=(
+                    value
+                    if value is not None and self._valid_card_data_id(value)
+                    else None
+                ),
+                form=self.CARD_FORM_NAMES.get(form_levels[index]),
+            )
+            for index, value in enumerate(resolved)
+        )
 
     def _raw_entity_regions(self) -> list[MemoryRegion]:
         mappings = self.memory.maps()

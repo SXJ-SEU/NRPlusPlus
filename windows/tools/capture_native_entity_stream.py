@@ -187,14 +187,24 @@ class BattleStateCoordinator:
                 for item in opponent_deck or []
                 if isinstance(item, dict) and isinstance(item.get("data_id"), int)
             }
-            revealed_events: list[tuple[int, int, int]] = []
+            opponent_forms = {
+                item["data_id"]: item.get("form")
+                for item in opponent_deck or []
+                if isinstance(item, dict)
+                and isinstance(item.get("data_id"), int)
+                and item.get("form") in ("evolution", "hero")
+            }
+            revealed_events: list[tuple[int, int, int, str | None]] = []
             for slot, item in enumerate(opponent_cards):
                 if not isinstance(item, dict) or not isinstance(item.get("data_id"), int):
                     continue
                 observed_ms = item.get("observed_ms")
                 if not isinstance(observed_ms, int):
                     observed_ms = slot
-                revealed_events.append((observed_ms, 0, item["data_id"]))
+                form = item.get("form")
+                if form not in ("evolution", "hero"):
+                    form = opponent_forms.get(item["data_id"])
+                revealed_events.append((observed_ms, 0, item["data_id"], form))
 
             for observed_ms, observed_id in observed_opponent_card_ids:
                 deck_id = observed_id if observed_id in opponent_deck_ids else None
@@ -210,16 +220,31 @@ class BattleStateCoordinator:
                     if len(same_name) == 1:
                         deck_id = same_name[0]
                 if deck_id is not None:
-                    revealed_events.append((observed_ms, 1, deck_id))
+                    revealed_events.append(
+                        (observed_ms, 1, deck_id, opponent_forms.get(deck_id))
+                    )
 
-            revealed_ids = []
-            for _, _, card_id in sorted(revealed_events):
+            revealed_cards: list[tuple[int, str | None]] = []
+            revealed_ids: set[int] = set()
+            for _, _, card_id, form in sorted(
+                revealed_events, key=lambda item: item[:3]
+            ):
                 if card_id not in revealed_ids:
-                    revealed_ids.append(card_id)
+                    revealed_ids.add(card_id)
+                    revealed_cards.append((card_id, form))
             snapshot["opponent_cards"] = [
                 {
                     "slot": slot,
-                    "data_id": revealed_ids[slot] if slot < len(revealed_ids) else None,
+                    "data_id": (
+                        revealed_cards[slot][0]
+                        if slot < len(revealed_cards)
+                        else None
+                    ),
+                    "form": (
+                        revealed_cards[slot][1]
+                        if slot < len(revealed_cards)
+                        else None
+                    ),
                 }
                 for slot in range(8)
             ]
@@ -353,8 +378,10 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
     retry_at = 0.0
     diagnostics: dict[str, Any] = {"status": "starting"}
     deck_ids: list[int | None] = [None] * 8
+    deck_forms: list[str | None] = [None] * 8
     conflicted_indices: set[int] = set()
     opponent_deck_ids: list[int | None] = [None] * 8
+    opponent_deck_forms: list[str | None] = [None] * 8
     local_player_index: int | None = None
     opponent_hand_pointers = None
     previous_opponent_hand: tuple[int, ...] | None = None
@@ -411,26 +438,33 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
             if not indices and elixir is None:
                 pointers = None
                 return {"state_diagnostics": dict(diagnostics)}
-            resolved = locator.poll_card_object_deck(pointers)
+            resolved = locator.poll_card_object_deck_details(pointers)
             if resolved is not None:
-                for index, data_id in enumerate(resolved):
+                for index, card in enumerate(resolved):
+                    data_id = card.data_id
                     if data_id is None or index in conflicted_indices:
                         continue
                     if deck_ids[index] is None:
                         deck_ids[index] = data_id
+                        deck_forms[index] = card.form
                     elif deck_ids[index] != data_id:
                         deck_ids[index] = None
+                        deck_forms[index] = None
                         conflicted_indices.add(index)
+                    else:
+                        deck_forms[index] = card.form
             if local_player_index is not None and any(
                 value is None for value in opponent_deck_ids
             ):
-                opponent_resolved = locator.poll_opponent_card_deck(
+                opponent_resolved = locator.poll_opponent_card_deck_details(
                     pointers, local_player_index
                 )
                 if opponent_resolved is not None:
-                    for index, data_id in enumerate(opponent_resolved[:8]):
+                    for index, card in enumerate(opponent_resolved[:8]):
+                        data_id = card.data_id
                         if data_id is not None:
                             opponent_deck_ids[index] = data_id
+                            opponent_deck_forms[index] = card.form
             if opponent_hand_pointers is not None:
                 try:
                     current_opponent_hand = locator.poll_player_hand_indices(
@@ -456,17 +490,20 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
             except Exception:
                 pass
             hand = [{"slot": slot, "deck_index": index,
-                     "data_id": deck_ids[index] if 0 <= index < 8 else None}
+                     "data_id": deck_ids[index] if 0 <= index < 8 else None,
+                     "form": deck_forms[index] if 0 <= index < 8 else None}
                      for slot, index in enumerate(indices)]
             diagnostics.update({"status": "ready", "resolved_card_ids":
                                 sum(value is not None for value in deck_ids)})
             result = {"battle_clock": clock, "hand": hand,
                     "next_card": {"deck_index": next_index,
-                                  "data_id": deck_ids[next_index] if 0 <= next_index < 8 else None},
+                                  "data_id": deck_ids[next_index] if 0 <= next_index < 8 else None,
+                                  "form": deck_forms[next_index] if 0 <= next_index < 8 else None},
                     "opponent_cards": [
                         {
                             "slot": slot,
                             "data_id": opponent_deck_ids[deck_index],
+                            "form": opponent_deck_forms[deck_index],
                             "observed_ms": observed_ms,
                         }
                         for slot, (observed_ms, deck_index) in enumerate(
@@ -475,7 +512,8 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                         if opponent_deck_ids[deck_index] is not None
                     ],
                     "opponent_deck": [
-                        {"slot": slot, "data_id": data_id}
+                        {"slot": slot, "data_id": data_id,
+                         "form": opponent_deck_forms[slot]}
                         for slot, data_id in enumerate(opponent_deck_ids)
                     ],
                     "state_diagnostics": dict(diagnostics)}

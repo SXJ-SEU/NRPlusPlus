@@ -62,6 +62,12 @@ class ArenaPerspectiveTests(unittest.TestCase):
         self.assertEqual(tuple(surface.get_at(local_point)[:3]), (72, 184, 213))
         self.assertEqual(tuple(surface.get_at(opponent_point)[:3]), (231, 105, 91))
 
+    def test_card_form_labels_only_mark_known_runtime_forms(self) -> None:
+        self.assertEqual(visualizer._card_form_label("evolution")[0], "Evolution")
+        self.assertEqual(visualizer._card_form_label("hero")[0], "Hero")
+        self.assertIsNone(visualizer._card_form_label(None))
+        self.assertIsNone(visualizer._card_form_label("unknown"))
+
     @mock.patch("minimal_visualizer.subprocess.Popen")
     def test_blacklist_editor_is_not_launched_twice(self, popen: mock.Mock) -> None:
         process = mock.Mock()

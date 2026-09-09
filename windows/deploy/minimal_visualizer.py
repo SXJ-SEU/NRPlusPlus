@@ -67,6 +67,36 @@ def _average_card_cost(cards: list[dict[str, Any]]) -> float | None:
     return sum(costs) / len(costs) if costs else None
 
 
+def _card_form_label(form: object) -> tuple[str, tuple[int, int, int]] | None:
+    if form == "evolution":
+        return "Evolution", (177, 126, 255)
+    if form == "hero":
+        return "Hero", (255, 205, 92)
+    return None
+
+
+def _draw_card_label(
+    screen: pygame.Surface,
+    card_rect: pygame.Rect,
+    label: str,
+    form: object,
+    detail_font: pygame.font.Font,
+    label_font: pygame.font.Font,
+) -> None:
+    form_label = _card_form_label(form)
+    name_y = card_rect.y + (2 if form_label else 7)
+    screen.blit(
+        detail_font.render(label, True, (225, 229, 233)),
+        (card_rect.x + 7, name_y),
+    )
+    if form_label is not None:
+        text, color = form_label
+        screen.blit(
+            label_font.render(text, True, color),
+            (card_rect.x + 7, card_rect.y + 19),
+        )
+
+
 def _entity_label(entity: dict[str, Any]) -> str:
     card_id = entity.get("card_id")
     if isinstance(card_id, int):
@@ -228,12 +258,24 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
             card_rect = pygame.Rect(panel_x + (slot % 2) * 132, 312 + (slot // 2) * 42, 122, 34)
             pygame.draw.rect(screen, (43, 48, 58), card_rect, border_radius=3)
             pygame.draw.rect(screen, (91, 101, 119), card_rect, 1, border_radius=3)
-            screen.blit(detail_font.render(label, True, (225, 229, 233)), (card_rect.x + 7, card_rect.y + 7))
+            _draw_card_label(
+                screen,
+                card_rect,
+                label,
+                item.get("form"),
+                detail_font,
+                label_font,
+            )
 
         next_card = snapshot.get("next_card") if snapshot is not None else None
         next_id = next_card.get("data_id") if isinstance(next_card, dict) else None
         next_label = CARD_NAMES.get(next_id, str(next_id) if next_id is not None else "--")
         screen.blit(detail_font.render(f"Next  {next_label}", True, (184, 190, 200)), (panel_x, 402))
+        next_form = next_card.get("form") if isinstance(next_card, dict) else None
+        next_form_label = _card_form_label(next_form)
+        if next_form_label is not None:
+            text, color = next_form_label
+            screen.blit(label_font.render(text, True, color), (panel_x, 425))
 
         screen.blit(
             detail_font.render("Opponent cards", True, (231, 105, 91)),
@@ -269,9 +311,13 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
             )
             pygame.draw.rect(screen, (43, 48, 58), card_rect, border_radius=3)
             pygame.draw.rect(screen, (112, 78, 78), card_rect, 1, border_radius=3)
-            screen.blit(
-                detail_font.render(label, True, (225, 229, 233)),
-                (card_rect.x + 7, card_rect.y + 7),
+            _draw_card_label(
+                screen,
+                card_rect,
+                label,
+                item.get("form"),
+                detail_font,
+                label_font,
             )
 
         pygame.draw.rect(
