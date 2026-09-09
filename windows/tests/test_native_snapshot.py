@@ -262,6 +262,149 @@ class NativeSnapshotTests(unittest.TestCase):
         self.assertEqual(snapshot["opponent_cards"][0]["evolution_charge"], 1)
         self.assertTrue(snapshot["opponent_cards"][0]["evolution_ready"])
 
+    def test_first_entity_reveal_charges_opponent_evolution(self) -> None:
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 0,
+                        "opponent_cards": [],
+                        "opponent_deck": [
+                            {
+                                "slot": 0,
+                                "data_id": 26_000_047,
+                                "form": "evolution",
+                                "evolution_cycles": 1,
+                                "evolution_charge": 0,
+                                "evolution_ready": False,
+                            }
+                        ],
+                    }
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+        coordinator.poll()
+
+        snapshot = coordinator.merge(
+            normalize_snapshot(
+                {
+                    "battle_active": True,
+                    "entities": [
+                        {
+                            "address": "0x1234",
+                            "side": 1,
+                            "card_id": 26_000_047,
+                        }
+                    ],
+                }
+            )
+        )
+
+        self.assertEqual(snapshot["opponent_cards"][0]["data_id"], 26_000_047)
+        self.assertEqual(snapshot["opponent_cards"][0]["evolution_charge"], 1)
+        self.assertTrue(snapshot["opponent_cards"][0]["evolution_ready"])
+
+    def test_entity_fallback_tracks_repeated_opponent_evolution_cycles(self) -> None:
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 0,
+                        "opponent_cards": [],
+                        "opponent_deck": [
+                            {
+                                "slot": 0,
+                                "data_id": 26_000_001,
+                                "form": "evolution",
+                                "evolution_cycles": 2,
+                                "evolution_charge": 0,
+                                "evolution_ready": False,
+                            }
+                        ],
+                    }
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+        coordinator.poll()
+
+        def merge_at(observed_ms: int, addresses: tuple[str, ...]) -> dict:
+            entities = [
+                {
+                    "address": address,
+                    "side": 1,
+                    "card_id": 26_000_001,
+                }
+                for address in addresses
+            ]
+            snapshot = normalize_snapshot(
+                {"battle_active": True, "entities": entities}
+            )
+            snapshot["t_ms"] = observed_ms
+            return coordinator.merge(snapshot)
+
+        first = merge_at(1_000, ("0x1000", "0x1001"))
+        merge_at(1_100, ())
+        second = merge_at(3_000, ("0x2000", "0x2001"))
+        merge_at(3_100, ())
+        evolved = merge_at(5_000, ("0x3000", "0x3001"))
+
+        self.assertEqual(first["opponent_cards"][0]["evolution_charge"], 1)
+        self.assertEqual(second["opponent_cards"][0]["evolution_charge"], 2)
+        self.assertTrue(second["opponent_cards"][0]["evolution_ready"])
+        self.assertEqual(evolved["opponent_cards"][0]["evolution_charge"], 0)
+        self.assertFalse(evolved["opponent_cards"][0]["evolution_ready"])
+
+    def test_exact_and_entity_reports_count_as_one_opponent_deployment(self) -> None:
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 0,
+                        "opponent_cards": [
+                            {
+                                "slot": 0,
+                                "data_id": 26_000_047,
+                                "form": "evolution",
+                                "observed_ms": 1_000,
+                            }
+                        ],
+                        "opponent_deck": [
+                            {
+                                "slot": 0,
+                                "data_id": 26_000_047,
+                                "form": "evolution",
+                                "evolution_cycles": 1,
+                                "evolution_charge": 1,
+                                "evolution_ready": True,
+                            }
+                        ],
+                    }
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+        coordinator.poll()
+        snapshot = normalize_snapshot(
+            {
+                "battle_active": True,
+                "entities": [
+                    {
+                        "address": "0x1234",
+                        "side": 1,
+                        "card_id": 26_000_047,
+                    }
+                ],
+            }
+        )
+        snapshot["t_ms"] = 2_300
+
+        merged = coordinator.merge(snapshot)
+
+        self.assertEqual(merged["opponent_cards"][0]["evolution_charge"], 1)
+        self.assertTrue(merged["opponent_cards"][0]["evolution_ready"])
+
     def test_maps_hero_battle_entity_to_equipped_opponent_card(self) -> None:
         for card_suffix in (17, 27):
             with self.subTest(card_suffix=card_suffix):

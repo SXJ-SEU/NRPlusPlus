@@ -30,6 +30,7 @@ CARD_ID_ALIASES = {
 HERO_ENTITY_CARD_BASE = 203_000_000
 HERO_ENTITY_CARD_LIMIT = 204_000_000
 HERO_DECK_CARD_BASE = 26_000_000
+DEPLOYMENT_EVENT_MERGE_WINDOW_MS = 1_500
 
 
 def _hero_deck_card_id(entity_card_id: int) -> int | None:
@@ -48,7 +49,7 @@ def advance_evolution_charge(current: int, cycles: int) -> int:
 def evolution_state(
     data_id: int | None,
     form: str | None,
-    charge: int,
+    charge: object,
 ) -> dict[str, int | bool | None]:
     cycles = EVOLUTION_CYCLES.get(data_id) if form == "evolution" else None
     if cycles is None:
@@ -57,12 +58,43 @@ def evolution_state(
             "evolution_charge": None,
             "evolution_ready": False,
         }
-    normalized_charge = max(0, min(charge, cycles))
+    normalized_charge = (
+        max(0, min(charge, cycles)) if isinstance(charge, int) else 0
+    )
     return {
         "evolution_cycles": cycles,
         "evolution_charge": normalized_charge,
         "evolution_ready": normalized_charge == cycles,
     }
+
+
+def merge_card_deployment_events(
+    exact_events: list[tuple[int, int, str | None]],
+    entity_events: list[tuple[int, int, str | None]],
+) -> list[tuple[int, int, str | None]]:
+    """Merge hand transitions with entity fallbacks without double-counting."""
+    exact_times_by_card: dict[int, list[int]] = {}
+    for observed_ms, card_id, _ in exact_events:
+        exact_times_by_card.setdefault(card_id, []).append(observed_ms)
+
+    fallback_events: list[tuple[int, int, str | None]] = []
+    last_fallback_by_card: dict[int, int] = {}
+    for event in sorted(entity_events, key=lambda item: item[:2]):
+        observed_ms, card_id, _ = event
+        if any(
+            abs(observed_ms - exact_ms) <= DEPLOYMENT_EVENT_MERGE_WINDOW_MS
+            for exact_ms in exact_times_by_card.get(card_id, ())
+        ):
+            continue
+        previous_ms = last_fallback_by_card.get(card_id)
+        last_fallback_by_card[card_id] = observed_ms
+        if (
+            previous_ms is not None
+            and observed_ms - previous_ms <= DEPLOYMENT_EVENT_MERGE_WINDOW_MS
+        ):
+            continue
+        fallback_events.append(event)
+    return sorted([*exact_events, *fallback_events], key=lambda item: item[:2])
 
 
 def _load_card_names() -> dict[int, str]:
@@ -161,6 +193,7 @@ class BattleStateCoordinator:
                         set(),
                         set(),
                     )
+                    new_card_ids_by_side: tuple[set[int], set[int]] = (set(), set())
                     for entity in entities:
                         if not isinstance(entity, dict):
                             continue
@@ -177,16 +210,14 @@ class BattleStateCoordinator:
                                 else ("card", card_id)
                             )
                             current_entity_keys_by_side[side].add(entity_key)
-                            if entity_key not in self._active_entity_keys_by_side[side]:
-                                previous_event = (
-                                    self._observed_card_ids_by_side[side][-1]
-                                    if self._observed_card_ids_by_side[side]
-                                    else None
+                            if (
+                                entity_key not in self._active_entity_keys_by_side[side]
+                                and card_id not in new_card_ids_by_side[side]
+                            ):
+                                new_card_ids_by_side[side].add(card_id)
+                                self._observed_card_ids_by_side[side].append(
+                                    (observed_ms, card_id)
                                 )
-                                if previous_event != (observed_ms, card_id):
-                                    self._observed_card_ids_by_side[side].append(
-                                        (observed_ms, card_id)
-                                    )
                     self._active_entity_keys_by_side = current_entity_keys_by_side
             state = (
                 dict(self._state)
@@ -231,28 +262,23 @@ class BattleStateCoordinator:
                 and isinstance(item.get("data_id"), int)
                 and item.get("form") in ("evolution", "hero")
             }
-            opponent_evolution_states = {
-                item["data_id"]: {
-                    "evolution_cycles": item.get("evolution_cycles"),
-                    "evolution_charge": item.get("evolution_charge"),
-                    "evolution_ready": bool(item.get("evolution_ready")),
-                }
-                for item in opponent_deck or []
-                if isinstance(item, dict)
-                and isinstance(item.get("data_id"), int)
-            }
-            revealed_events: list[tuple[int, int, int, str | None]] = []
+            exact_deployment_events: list[tuple[int, int, str | None]] = []
+            legacy_revealed_events: list[tuple[int, int, str | None]] = []
             for slot, item in enumerate(opponent_cards):
                 if not isinstance(item, dict) or not isinstance(item.get("data_id"), int):
                     continue
                 observed_ms = item.get("observed_ms")
-                if not isinstance(observed_ms, int):
-                    observed_ms = slot
                 form = item.get("form")
                 if form not in ("evolution", "hero"):
                     form = opponent_forms.get(item["data_id"])
-                revealed_events.append((observed_ms, 0, item["data_id"], form))
+                if isinstance(observed_ms, int):
+                    exact_deployment_events.append(
+                        (observed_ms, item["data_id"], form)
+                    )
+                else:
+                    legacy_revealed_events.append((slot, item["data_id"], form))
 
+            entity_deployment_events: list[tuple[int, int, str | None]] = []
             for observed_ms, observed_id in observed_opponent_card_ids:
                 deck_id = observed_id if observed_id in opponent_deck_ids else None
                 observed_form = None
@@ -272,19 +298,42 @@ class BattleStateCoordinator:
                     if len(same_name) == 1:
                         deck_id = same_name[0]
                 if deck_id is not None:
-                    revealed_events.append(
+                    entity_deployment_events.append(
                         (
                             observed_ms,
-                            1,
                             deck_id,
                             observed_form or opponent_forms.get(deck_id),
                         )
                     )
 
+            deployment_events = merge_card_deployment_events(
+                exact_deployment_events, entity_deployment_events
+            )
+            opponent_charges: dict[int, int] = {}
+            for _, card_id, form in deployment_events:
+                cycles = EVOLUTION_CYCLES.get(card_id)
+                if form == "evolution" and cycles is not None:
+                    opponent_charges[card_id] = advance_evolution_charge(
+                        opponent_charges.get(card_id, 0), cycles
+                    )
+            opponent_evolution_states = {
+                item["data_id"]: evolution_state(
+                    item["data_id"],
+                    item.get("form"),
+                    opponent_charges.get(
+                        item["data_id"], item.get("evolution_charge", 0)
+                    ),
+                )
+                for item in opponent_deck or []
+                if isinstance(item, dict)
+                and isinstance(item.get("data_id"), int)
+            }
+
             revealed_cards: list[tuple[int, str | None]] = []
             revealed_ids: set[int] = set()
-            for _, _, card_id, form in sorted(
-                revealed_events, key=lambda item: item[:3]
+            for _, card_id, form in sorted(
+                [*legacy_revealed_events, *deployment_events],
+                key=lambda item: item[:2],
             ):
                 if card_id not in revealed_ids:
                     revealed_ids.add(card_id)
