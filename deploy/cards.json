@@ -1,4 +1,77 @@
 {
+  "formMetadata": {
+    "source": {
+      "package": "nullsroyale.rel.free",
+      "versionName": "15.535.13",
+      "versionCode": 150535013,
+      "files": [
+        "assets/csv_logic/card_forms.toml",
+        "assets/csv_logic/spells_characters.csv",
+        "assets/csv_logic/spells_buildings.csv",
+        "assets/csv_logic/spells_other.csv",
+        "assets/csv_logic/spells_evolved.csv",
+        "assets/csv_logic/spells_hero_form.csv"
+      ]
+    },
+    "cardIdSemantics": "Evolution and Hero forms reuse the base card id; formLevel selects the equipped form.",
+    "formLevels": {
+      "evolution": 1,
+      "hero": 2
+    },
+    "runtimeEntityIdSemantics": "runtimeEntityId identifies a battle entity data row and is not a card id; one card deployment may create multiple entities.",
+    "heroRuntimeEntityIdBase": 203000000,
+    "overlapSummary": {
+      "evolutionCards": 42,
+      "heroCards": 113,
+      "cardsWithBothForms": 42,
+      "cardsWhoseEvolutionIdEqualsBaseId": 42,
+      "cardsWhoseHeroIdEqualsBaseId": 113,
+      "evolutionHeroSharedCardIds": [
+        26000000,
+        26000001,
+        26000004,
+        26000007,
+        26000008,
+        26000010,
+        26000011,
+        26000012,
+        26000013,
+        26000014,
+        26000015,
+        26000017,
+        26000022,
+        26000024,
+        26000026,
+        26000030,
+        26000035,
+        26000036,
+        26000037,
+        26000040,
+        26000043,
+        26000044,
+        26000045,
+        26000047,
+        26000049,
+        26000050,
+        26000055,
+        26000056,
+        26000058,
+        26000059,
+        26000060,
+        26000063,
+        26000064,
+        27000000,
+        27000002,
+        27000006,
+        27000010,
+        27000012,
+        27000013,
+        28000004,
+        28000008,
+        28000017
+      ]
+    }
+  },
   "items": [
     {
       "name": "Knight",
@@ -11,7 +84,21 @@
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/jAj1Q5rclXxU9kVImGqSJxa4wEMfEhvwNQ_4jiGUuqg.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/jAj1Q5rclXxU9kVImGqSJxa4wEMfEhvwNQ_4jiGUuqg.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000000,
+          "formLevel": 1,
+          "clientName": "Knight_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000000,
+          "formLevel": 2,
+          "clientName": "Knight_hero",
+          "runtimeEntityId": 203000000
+        }
+      }
     },
     {
       "name": "Archers",
@@ -23,7 +110,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/W4Hmp8MTSdXANN8KdblbtHwtsbt0o749BbxNqmJYfA8.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/W4Hmp8MTSdXANN8KdblbtHwtsbt0o749BbxNqmJYfA8.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000001,
+          "formLevel": 1,
+          "clientName": "Archer_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000001,
+          "formLevel": 2,
+          "clientName": "Archer_hero",
+          "runtimeEntityId": 203000001
+        }
+      }
     },
     {
       "name": "Goblins",
@@ -35,7 +136,15 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/X_DQUye_OaS3QN6VC9CPw05Fit7wvSm3XegXIXKP--0.png",
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/X_DQUye_OaS3QN6VC9CPw05Fit7wvSm3XegXIXKP--0.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "hero": {
+          "id": 26000002,
+          "formLevel": 2,
+          "clientName": "Goblins_hero",
+          "runtimeEntityId": 203000002
+        }
+      }
     },
     {
       "name": "Giant",
@@ -47,7 +156,15 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/Axr4ox5_b7edmLsoHxBX3vmgijAIibuF6RImTbqLlXE.png",
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/Axr4ox5_b7edmLsoHxBX3vmgijAIibuF6RImTbqLlXE.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 26000003,
+          "formLevel": 2,
+          "clientName": "Giant_hero",
+          "runtimeEntityId": 203000003
+        }
+      }
     },
     {
       "name": "P.E.K.K.A",
@@ -59,7 +176,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/MlArURKhn_zWAZY-Xj1qIRKLVKquarG25BXDjUQajNs.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/MlArURKhn_zWAZY-Xj1qIRKLVKquarG25BXDjUQajNs.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "evolution": {
+          "id": 26000004,
+          "formLevel": 1,
+          "clientName": "Pekka_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 26000004,
+          "formLevel": 2,
+          "clientName": "Pekka_hero",
+          "runtimeEntityId": 203000004
+        }
+      }
     },
     {
       "name": "Minions",
@@ -69,7 +200,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/yHGpoEnmUWPGV_hBbhn-Kk-Bs838OjGzWzJJlQpQKQA.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "hero": {
+          "id": 26000005,
+          "formLevel": 2,
+          "clientName": "Minions_hero",
+          "runtimeEntityId": 203000005
+        }
+      }
     },
     {
       "name": "Balloon",
@@ -81,7 +220,15 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/qBipxLo-3hhCnPrApp2Nn3b2NgrSrvwzWytvREev0CY.png",
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/qBipxLo-3hhCnPrApp2Nn3b2NgrSrvwzWytvREev0CY.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 26000006,
+          "formLevel": 2,
+          "clientName": "Balloon_hero",
+          "runtimeEntityId": 203000006
+        }
+      }
     },
     {
       "name": "Witch",
@@ -93,7 +240,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/cfwk1vzehVyHC-uloEIH6NOI0hOdofCutR5PyhIgO6w.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/cfwk1vzehVyHC-uloEIH6NOI0hOdofCutR5PyhIgO6w.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "evolution": {
+          "id": 26000007,
+          "formLevel": 1,
+          "clientName": "Witch_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 26000007,
+          "formLevel": 2,
+          "clientName": "Witch_hero",
+          "runtimeEntityId": 203000007
+        }
+      }
     },
     {
       "name": "Barbarians",
@@ -105,7 +266,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/TvJsuu2S4yhyk1jVYUAQwdKOnW4U77KuWWOTPOWnwfI.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/TvJsuu2S4yhyk1jVYUAQwdKOnW4U77KuWWOTPOWnwfI.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000008,
+          "formLevel": 1,
+          "clientName": "Barbarians_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 26000008,
+          "formLevel": 2,
+          "clientName": "Barbarians_hero",
+          "runtimeEntityId": 203000008
+        }
+      }
     },
     {
       "name": "Golem",
@@ -115,7 +290,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/npdmCnET7jmVjJvjJQkFnNSNnDxYHDBigbvIAloFMds.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 26000009,
+          "formLevel": 2,
+          "clientName": "Golem_hero",
+          "runtimeEntityId": 203000009
+        }
+      }
     },
     {
       "name": "Skeletons",
@@ -127,7 +310,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/oO7iKMU5m0cdxhYPZA3nWQiAUh2yoGgdThLWB1rVSec.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/oO7iKMU5m0cdxhYPZA3nWQiAUh2yoGgdThLWB1rVSec.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000010,
+          "formLevel": 1,
+          "clientName": "Skeletons_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000010,
+          "formLevel": 2,
+          "clientName": "Skeletons_hero",
+          "runtimeEntityId": 203000010
+        }
+      }
     },
     {
       "name": "Valkyrie",
@@ -139,7 +336,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/0lIoYf3Y_plFTzo95zZL93JVxpfb3MMgFDDhgSDGU9A.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/0lIoYf3Y_plFTzo95zZL93JVxpfb3MMgFDDhgSDGU9A.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "evolution": {
+          "id": 26000011,
+          "formLevel": 1,
+          "clientName": "Valkyrie_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000011,
+          "formLevel": 2,
+          "clientName": "Valkyrie_hero",
+          "runtimeEntityId": 203000011
+        }
+      }
     },
     {
       "name": "Skeleton Army",
@@ -151,7 +362,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/fAOToOi1pRy7svN2xQS6mDkhQw2pj9m_17FauaNqyl4.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/fAOToOi1pRy7svN2xQS6mDkhQw2pj9m_17FauaNqyl4.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "evolution": {
+          "id": 26000012,
+          "formLevel": 1,
+          "clientName": "SkeletonArmy_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000012,
+          "formLevel": 2,
+          "clientName": "SkeletonArmy_hero",
+          "runtimeEntityId": 203000012
+        }
+      }
     },
     {
       "name": "Bomber",
@@ -163,7 +388,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/12n1CesxKIcqVYntjxcF36EFA-ONw7Z-DoL0_rQrbdo.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/12n1CesxKIcqVYntjxcF36EFA-ONw7Z-DoL0_rQrbdo.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000013,
+          "formLevel": 1,
+          "clientName": "Bomber_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000013,
+          "formLevel": 2,
+          "clientName": "Bomber_hero",
+          "runtimeEntityId": 203000013
+        }
+      }
     },
     {
       "name": "Musketeer",
@@ -176,7 +415,21 @@
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/Tex1C48UTq9FKtAX-3tzG0FJmc9jzncUZG3bb5Vf-Ds.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/Tex1C48UTq9FKtAX-3tzG0FJmc9jzncUZG3bb5Vf-Ds.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "evolution": {
+          "id": 26000014,
+          "formLevel": 1,
+          "clientName": "Musketeer_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000014,
+          "formLevel": 2,
+          "clientName": "Musketeer_hero",
+          "runtimeEntityId": 203000014
+        }
+      }
     },
     {
       "name": "Baby Dragon",
@@ -188,7 +441,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/cjC9n4AvEZJ3urkVh-rwBkJ-aRSsydIMqSAV48hAih0.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/cjC9n4AvEZJ3urkVh-rwBkJ-aRSsydIMqSAV48hAih0.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "evolution": {
+          "id": 26000015,
+          "formLevel": 1,
+          "clientName": "BabyDragon_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000015,
+          "formLevel": 2,
+          "clientName": "BabyDragon_hero",
+          "runtimeEntityId": 203000015
+        }
+      }
     },
     {
       "name": "Prince",
@@ -198,7 +465,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/3JntJV62aY0G1Qh6LIs-ek-0ayeYFY3VItpG7cb9I60.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 26000016,
+          "formLevel": 2,
+          "clientName": "Prince_hero",
+          "runtimeEntityId": 203000016
+        }
+      }
     },
     {
       "name": "Wizard",
@@ -211,7 +486,21 @@
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/Mej7vnv4H_3p_8qPs_N6_GKahy6HDr7pU7i9eTHS84U.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/Mej7vnv4H_3p_8qPs_N6_GKahy6HDr7pU7i9eTHS84U.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "evolution": {
+          "id": 26000017,
+          "formLevel": 1,
+          "clientName": "Wizard_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 26000017,
+          "formLevel": 2,
+          "clientName": "Wizard_hero",
+          "runtimeEntityId": 203000017
+        }
+      }
     },
     {
       "name": "Mini P.E.K.K.A",
@@ -223,7 +512,15 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/Fmltc4j3Ve9vO_xhHHPEO3PRP3SmU2oKp2zkZQHRZT4.png",
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/Fmltc4j3Ve9vO_xhHHPEO3PRP3SmU2oKp2zkZQHRZT4.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 26000018,
+          "formLevel": 2,
+          "clientName": "MiniPekka_hero",
+          "runtimeEntityId": 203000018
+        }
+      }
     },
     {
       "name": "Spear Goblins",
@@ -233,7 +530,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/FSDFotjaXidI4ku_WFpVCTWS1hKGnFh1sxX0lxM43_E.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "hero": {
+          "id": 26000019,
+          "formLevel": 2,
+          "clientName": "SpearGoblins_hero",
+          "runtimeEntityId": 203000019
+        }
+      }
     },
     {
       "name": "Giant Skeleton",
@@ -243,7 +548,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/0p0gd0XaVRu1Hb1iSG1hTYbz2AN6aEiZnhaAib5O8Z8.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 26000020,
+          "formLevel": 2,
+          "clientName": "GiantSkeleton_hero",
+          "runtimeEntityId": 203000020
+        }
+      }
     },
     {
       "name": "Hog Rider",
@@ -253,7 +566,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/Ubu0oUl8tZkusnkZf8Xv9Vno5IO29Y-jbZ4fhoNJ5oc.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 26000021,
+          "formLevel": 2,
+          "clientName": "HogRider_hero",
+          "runtimeEntityId": 203000021
+        }
+      }
     },
     {
       "name": "Minion Horde",
@@ -265,7 +586,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/Wyjq5l0IXHTkX9Rmpap6HaH08MvjbxFp1xBO9a47YSI.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/Wyjq5l0IXHTkX9Rmpap6HaH08MvjbxFp1xBO9a47YSI.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000022,
+          "formLevel": 1,
+          "clientName": "MinionHorde_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 26000022,
+          "formLevel": 2,
+          "clientName": "MinionHorde_hero",
+          "runtimeEntityId": 203000022
+        }
+      }
     },
     {
       "name": "Ice Wizard",
@@ -275,7 +610,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/W3dkw0HTw9n1jB-zbknY2w3wHuyuLxSRIAV5fUT1SEY.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000023,
+          "formLevel": 2,
+          "clientName": "IceWizard_hero",
+          "runtimeEntityId": 203000023
+        }
+      }
     },
     {
       "name": "Royal Giant",
@@ -287,7 +630,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/mnlRaNtmfpQx2e6mp70sLd0ND-pKPF70Cf87_agEKg4.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/mnlRaNtmfpQx2e6mp70sLd0ND-pKPF70Cf87_agEKg4.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000024,
+          "formLevel": 1,
+          "clientName": "RoyalGiant_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 26000024,
+          "formLevel": 2,
+          "clientName": "RoyalGiant_hero",
+          "runtimeEntityId": 203000024
+        }
+      }
     },
     {
       "name": "Guards",
@@ -297,7 +654,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/1ArKfLJxYo6_NU_S9cAeIrfbXqWH0oULVJXedxBXQlU.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 26000025,
+          "formLevel": 2,
+          "clientName": "SkeletonWarriors_hero",
+          "runtimeEntityId": 203000025
+        }
+      }
     },
     {
       "name": "Princess",
@@ -309,7 +674,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/bAwMcqp9EKVIKH3ZLm_m0MqZFSG72zG-vKxpx8aKoVs.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/bAwMcqp9EKVIKH3ZLm_m0MqZFSG72zG-vKxpx8aKoVs.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "evolution": {
+          "id": 26000026,
+          "formLevel": 1,
+          "clientName": "Princess_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000026,
+          "formLevel": 2,
+          "clientName": "Princess_hero",
+          "runtimeEntityId": 203000026
+        }
+      }
     },
     {
       "name": "Dark Prince",
@@ -321,7 +700,15 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/M7fXlrKXHu2IvpSGpk36kXVstslbR08Bbxcy0jQcln8.png",
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/M7fXlrKXHu2IvpSGpk36kXVstslbR08Bbxcy0jQcln8.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 26000027,
+          "formLevel": 2,
+          "clientName": "DarkPrince_hero",
+          "runtimeEntityId": 203000027
+        }
+      }
     },
     {
       "name": "Three Musketeers",
@@ -331,7 +718,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/_J2GhbkX3vswaFk1wG-dopwiHyNc_YiPhwroiKF3Mek.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 26000028,
+          "formLevel": 2,
+          "clientName": "ThreeMusketeers_hero",
+          "runtimeEntityId": 203000028
+        }
+      }
     },
     {
       "name": "Lava Hound",
@@ -341,7 +736,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/unicRQ975sBY2oLtfgZbAI56ZvaWz7azj-vXTLxc0r8.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000029,
+          "formLevel": 2,
+          "clientName": "LavaHound_hero",
+          "runtimeEntityId": 203000029
+        }
+      }
     },
     {
       "name": "Ice Spirit",
@@ -353,7 +756,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/lv1budiafU9XmSdrDkk0NYyqASAFYyZ06CPysXKZXlA.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/lv1budiafU9XmSdrDkk0NYyqASAFYyZ06CPysXKZXlA.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000030,
+          "formLevel": 1,
+          "clientName": "IceSpirits_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000030,
+          "formLevel": 2,
+          "clientName": "IceSpirits_hero",
+          "runtimeEntityId": 203000030
+        }
+      }
     },
     {
       "name": "Fire Spirit",
@@ -363,7 +780,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/16-BqusVvynIgYI8_Jci3LDC-r8AI_xaIYLgXqtlmS8.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "hero": {
+          "id": 26000031,
+          "formLevel": 2,
+          "clientName": "FireSpirits_hero",
+          "runtimeEntityId": 203000031
+        }
+      }
     },
     {
       "name": "Miner",
@@ -373,7 +798,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/Y4yWvdwBCg2FpAZgs8T09Gy34WOwpLZW-ttL52Ae8NE.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000032,
+          "formLevel": 2,
+          "clientName": "Miner_hero",
+          "runtimeEntityId": 203000032
+        }
+      }
     },
     {
       "name": "Sparky",
@@ -383,7 +816,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/2GKMkBrArZXgQxf2ygFjDs4VvGYPbx8F6Lj_68iVhIM.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000033,
+          "formLevel": 2,
+          "clientName": "ZapMachine_hero",
+          "runtimeEntityId": 203000033
+        }
+      }
     },
     {
       "name": "Bowler",
@@ -395,7 +836,15 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/SU4qFXmbQXWjvASxVI6z9IJuTYolx4A0MKK90sTIE88.png",
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/SU4qFXmbQXWjvASxVI6z9IJuTYolx4A0MKK90sTIE88.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 26000034,
+          "formLevel": 2,
+          "clientName": "Bowler_hero",
+          "runtimeEntityId": 203000034
+        }
+      }
     },
     {
       "name": "Lumberjack",
@@ -407,7 +856,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/E6RWrnCuk13xMX5OE1EQtLEKTZQV6B78d00y8PlXt6Q.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/E6RWrnCuk13xMX5OE1EQtLEKTZQV6B78d00y8PlXt6Q.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "evolution": {
+          "id": 26000035,
+          "formLevel": 1,
+          "clientName": "RageBarbarian_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000035,
+          "formLevel": 2,
+          "clientName": "RageBarbarian_hero",
+          "runtimeEntityId": 203000035
+        }
+      }
     },
     {
       "name": "Battle Ram",
@@ -419,7 +882,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/dyc50V2cplKi4H7pq1B3I36pl_sEH5DQrNHboS_dbbM.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/dyc50V2cplKi4H7pq1B3I36pl_sEH5DQrNHboS_dbbM.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "evolution": {
+          "id": 26000036,
+          "formLevel": 1,
+          "clientName": "BattleRam_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000036,
+          "formLevel": 2,
+          "clientName": "BattleRam_hero",
+          "runtimeEntityId": 203000036
+        }
+      }
     },
     {
       "name": "Inferno Dragon",
@@ -431,7 +908,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/y5HDbKtTbWG6En6TGWU0xoVIGs1-iQpIP4HC-VM7u8A.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/y5HDbKtTbWG6En6TGWU0xoVIGs1-iQpIP4HC-VM7u8A.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "evolution": {
+          "id": 26000037,
+          "formLevel": 1,
+          "clientName": "InfernoDragon_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000037,
+          "formLevel": 2,
+          "clientName": "InfernoDragon_hero",
+          "runtimeEntityId": 203000037
+        }
+      }
     },
     {
       "name": "Ice Golem",
@@ -443,7 +934,15 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/r05cmpwV1o7i7FHodtZwW3fmjbXCW34IJCsDEV5cZC4.png",
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/r05cmpwV1o7i7FHodtZwW3fmjbXCW34IJCsDEV5cZC4.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 26000038,
+          "formLevel": 2,
+          "clientName": "IceGolemite_hero",
+          "runtimeEntityId": 203000038
+        }
+      }
     },
     {
       "name": "Mega Minion",
@@ -455,7 +954,15 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/-T_e4YLbuhPBKbYnBwQfXgynNpp5eOIN_0RracYwL9c.png",
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/-T_e4YLbuhPBKbYnBwQfXgynNpp5eOIN_0RracYwL9c.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 26000039,
+          "formLevel": 2,
+          "clientName": "MegaMinion_hero",
+          "runtimeEntityId": 203000039
+        }
+      }
     },
     {
       "name": "Dart Goblin",
@@ -467,7 +974,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/BmpK3bqEAviflqHCdxxnfm-_l3pRPJw3qxHkwS55nCY.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/BmpK3bqEAviflqHCdxxnfm-_l3pRPJw3qxHkwS55nCY.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "evolution": {
+          "id": 26000040,
+          "formLevel": 1,
+          "clientName": "BlowdartGoblin_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000040,
+          "formLevel": 2,
+          "clientName": "BlowdartGoblin_hero",
+          "runtimeEntityId": 203000040
+        }
+      }
     },
     {
       "name": "Goblin Gang",
@@ -477,7 +998,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/NHflxzVAQT4oAz7eDfdueqpictb5vrWezn1nuqFhE4w.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "hero": {
+          "id": 26000041,
+          "formLevel": 2,
+          "clientName": "GoblinGang_hero",
+          "runtimeEntityId": 203000041
+        }
+      }
     },
     {
       "name": "Electro Wizard",
@@ -487,7 +1016,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/RsFaHgB3w6vXsTjXdPr3x8l_GbV9TbOUCvIx07prbrQ.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000042,
+          "formLevel": 2,
+          "clientName": "ElectroWizard_hero",
+          "runtimeEntityId": 203000042
+        }
+      }
     },
     {
       "name": "Elite Barbarians",
@@ -497,7 +1034,21 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/C88C5JH_F3lLZj6K-tLcMo5DPjrFmvzIb1R2M6xCfTE.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000043,
+          "formLevel": 1,
+          "clientName": "AngryBarbarians_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 26000043,
+          "formLevel": 2,
+          "clientName": "AngryBarbarians_hero",
+          "runtimeEntityId": 203000043
+        }
+      }
     },
     {
       "name": "Hunter",
@@ -509,7 +1060,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/VNabB1WKnYtYRSG7X_FZfnZjQDHTBs9A96OGMFmecrA.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/VNabB1WKnYtYRSG7X_FZfnZjQDHTBs9A96OGMFmecrA.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "evolution": {
+          "id": 26000044,
+          "formLevel": 1,
+          "clientName": "Hunter_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000044,
+          "formLevel": 2,
+          "clientName": "Hunter_hero",
+          "runtimeEntityId": 203000044
+        }
+      }
     },
     {
       "name": "Executioner",
@@ -521,7 +1086,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/9XL5BP2mqzV8kza6KF8rOxrpCZTyuGLp2l413DTjEoM.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/9XL5BP2mqzV8kza6KF8rOxrpCZTyuGLp2l413DTjEoM.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "evolution": {
+          "id": 26000045,
+          "formLevel": 1,
+          "clientName": "AxeMan_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 26000045,
+          "formLevel": 2,
+          "clientName": "AxeMan_hero",
+          "runtimeEntityId": 203000045
+        }
+      }
     },
     {
       "name": "Bandit",
@@ -531,7 +1110,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/QWDdXMKJNpv0go-HYaWQWP6p8uIOHjqn-zX7G0p3DyM.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000046,
+          "formLevel": 2,
+          "clientName": "Assassin_hero",
+          "runtimeEntityId": 203000046
+        }
+      }
     },
     {
       "name": "Royal Recruits",
@@ -543,7 +1130,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/jcNyYGUiXXNz3kuz8NBkHNKNREQKraXlb_Ts7rhCIdM.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/jcNyYGUiXXNz3kuz8NBkHNKNREQKraXlb_Ts7rhCIdM.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000047,
+          "formLevel": 1,
+          "clientName": "RoyalRecruits_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 26000047,
+          "formLevel": 2,
+          "clientName": "RoyalRecruits_hero",
+          "runtimeEntityId": 203000047
+        }
+      }
     },
     {
       "name": "Night Witch",
@@ -553,7 +1154,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/NpCrXDEDBBJgNv9QrBAcJmmMFbS7pe3KCY8xJ5VB18A.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000048,
+          "formLevel": 2,
+          "clientName": "DarkWitch_hero",
+          "runtimeEntityId": 203000048
+        }
+      }
     },
     {
       "name": "Bats",
@@ -565,7 +1174,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/EnIcvO21hxiNpoI-zO6MDjLmzwPbq8Z4JPo2OKoVUjU.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/EnIcvO21hxiNpoI-zO6MDjLmzwPbq8Z4JPo2OKoVUjU.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000049,
+          "formLevel": 1,
+          "clientName": "Bats_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000049,
+          "formLevel": 2,
+          "clientName": "Bats_hero",
+          "runtimeEntityId": 203000049
+        }
+      }
     },
     {
       "name": "Royal Ghost",
@@ -577,7 +1200,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/3En2cz0ISQAaMTHY3hj3rTveFN2kJYq-H4VxvdJNvCM.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/3En2cz0ISQAaMTHY3hj3rTveFN2kJYq-H4VxvdJNvCM.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "evolution": {
+          "id": 26000050,
+          "formLevel": 1,
+          "clientName": "Ghost_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000050,
+          "formLevel": 2,
+          "clientName": "Ghost_hero",
+          "runtimeEntityId": 203000050
+        }
+      }
     },
     {
       "name": "Ram Rider",
@@ -587,7 +1224,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/QaJyerT7f7oMyZ3Fv1glKymtLSvx7YUXisAulxl7zRI.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000051,
+          "formLevel": 2,
+          "clientName": "RamRider_hero",
+          "runtimeEntityId": 203000051
+        }
+      }
     },
     {
       "name": "Zappies",
@@ -597,7 +1242,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/QZfHRpLRmutZbCr5fpLnTpIp89vLI6NrAwzGZ8tHEc4.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 26000052,
+          "formLevel": 2,
+          "clientName": "MiniSparkys_hero",
+          "runtimeEntityId": 203000052
+        }
+      }
     },
     {
       "name": "Rascals",
@@ -607,7 +1260,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/KV48DfwVHKx9XCjzBdk3daT_Eb52Me4VgjVO7WctRc4.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "hero": {
+          "id": 26000053,
+          "formLevel": 2,
+          "clientName": "Rascals_hero",
+          "runtimeEntityId": 203000053
+        }
+      }
     },
     {
       "name": "Cannon Cart",
@@ -617,7 +1278,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/aqwxRz8HXzqlMCO4WMXNA1txynjXTsLinknqsgZLbok.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 26000054,
+          "formLevel": 2,
+          "clientName": "MovingCannon_hero",
+          "runtimeEntityId": 203000054
+        }
+      }
     },
     {
       "name": "Mega Knight",
@@ -629,7 +1298,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/O2NycChSNhn_UK9nqBXUhhC_lILkiANzPuJjtjoz0CE.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/O2NycChSNhn_UK9nqBXUhhC_lILkiANzPuJjtjoz0CE.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "evolution": {
+          "id": 26000055,
+          "formLevel": 1,
+          "clientName": "MegaKnight_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 26000055,
+          "formLevel": 2,
+          "clientName": "MegaKnight_hero",
+          "runtimeEntityId": 203000055
+        }
+      }
     },
     {
       "name": "Skeleton Barrel",
@@ -641,7 +1324,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/vCB4DWCcrGbTkarjcOiVz4aNDx6GWLm0yUepg9E1MGo.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/vCB4DWCcrGbTkarjcOiVz4aNDx6GWLm0yUepg9E1MGo.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000056,
+          "formLevel": 1,
+          "clientName": "SkeletonBalloon_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000056,
+          "formLevel": 2,
+          "clientName": "SkeletonBalloon_hero",
+          "runtimeEntityId": 203000056
+        }
+      }
     },
     {
       "name": "Flying Machine",
@@ -651,7 +1348,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/hzKNE3QwFcrSrDDRuVW3QY_OnrDPijSiIp-PsWgFevE.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 26000057,
+          "formLevel": 2,
+          "clientName": "DartBarrell_hero",
+          "runtimeEntityId": 203000057
+        }
+      }
     },
     {
       "name": "Wall Breakers",
@@ -663,7 +1368,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/_xPphEfC8eEwFNrfU3cMQG9-f5JaLQ31ARCA7l3XtW4.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/_xPphEfC8eEwFNrfU3cMQG9-f5JaLQ31ARCA7l3XtW4.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "evolution": {
+          "id": 26000058,
+          "formLevel": 1,
+          "clientName": "Wallbreakers_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000058,
+          "formLevel": 2,
+          "clientName": "Wallbreakers_hero",
+          "runtimeEntityId": 203000058
+        }
+      }
     },
     {
       "name": "Royal Hogs",
@@ -675,7 +1394,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/ASSQJG_MoVq9e81HZzo4bynMnyLNpNJMfSLb3hqydOw.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/ASSQJG_MoVq9e81HZzo4bynMnyLNpNJMfSLb3hqydOw.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "evolution": {
+          "id": 26000059,
+          "formLevel": 1,
+          "clientName": "RoyalHogs_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000059,
+          "formLevel": 2,
+          "clientName": "RoyalHogs_hero",
+          "runtimeEntityId": 203000059
+        }
+      }
     },
     {
       "name": "Goblin Giant",
@@ -687,7 +1420,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/SoW16cY3jXBwaTDvb39DkqiVsoFVaDWbzf5QBYphJrY.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/SoW16cY3jXBwaTDvb39DkqiVsoFVaDWbzf5QBYphJrY.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "evolution": {
+          "id": 26000060,
+          "formLevel": 1,
+          "clientName": "GoblinGiant_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 26000060,
+          "formLevel": 2,
+          "clientName": "GoblinGiant_hero",
+          "runtimeEntityId": 203000060
+        }
+      }
     },
     {
       "name": "Fisherman",
@@ -697,7 +1444,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/U2KZ3g0wyufcuA5P2Xrn3Z3lr1WiJmc5S0IWOZHgizQ.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000061,
+          "formLevel": 2,
+          "clientName": "Fisherman_hero",
+          "runtimeEntityId": 203000061
+        }
+      }
     },
     {
       "name": "Magic Archer",
@@ -709,7 +1464,15 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/Avli3W7BxU9HQ2SoLiXnBgGx25FoNXUSFm7OcAk68ek.png",
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/Avli3W7BxU9HQ2SoLiXnBgGx25FoNXUSFm7OcAk68ek.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000062,
+          "formLevel": 2,
+          "clientName": "EliteArcher_hero",
+          "runtimeEntityId": 203000062
+        }
+      }
     },
     {
       "name": "Electro Dragon",
@@ -721,7 +1484,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/tN9h6lnMNPCNsx0LMFmvpHgznbDZ1fBRkx-C7UfNmfY.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/tN9h6lnMNPCNsx0LMFmvpHgznbDZ1fBRkx-C7UfNmfY.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "evolution": {
+          "id": 26000063,
+          "formLevel": 1,
+          "clientName": "ElectroDragon_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 26000063,
+          "formLevel": 2,
+          "clientName": "ElectroDragon_hero",
+          "runtimeEntityId": 203000063
+        }
+      }
     },
     {
       "name": "Firecracker",
@@ -733,7 +1510,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/c1rL3LO1U2D9-TkeFfAC18gP3AO8ztSwrcHMZplwL2Q.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/c1rL3LO1U2D9-TkeFfAC18gP3AO8ztSwrcHMZplwL2Q.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 26000064,
+          "formLevel": 1,
+          "clientName": "Firecracker_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 26000064,
+          "formLevel": 2,
+          "clientName": "Firecracker_hero",
+          "runtimeEntityId": 203000064
+        }
+      }
     },
     {
       "name": "Mighty Miner",
@@ -753,7 +1544,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/puhMsZjCIqy21HW3hYxjrk_xt8NIPyFqjRy-BeLKZwo.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 26000067,
+          "formLevel": 2,
+          "clientName": "ElixirGolem_hero",
+          "runtimeEntityId": 203000065
+        }
+      }
     },
     {
       "name": "Battle Healer",
@@ -763,7 +1562,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/KdwXcoigS2Kg-cgA7BJJIANbUJG6SNgjetRQ-MegZ08.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 26000068,
+          "formLevel": 2,
+          "clientName": "BattleHealer_hero",
+          "runtimeEntityId": 203000066
+        }
+      }
     },
     {
       "name": "Skeleton King",
@@ -813,7 +1620,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/qPOtg9uONh47_NLxGhhFc_ww9PlZ6z3Ry507q1NZUXs.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "hero": {
+          "id": 26000080,
+          "formLevel": 2,
+          "clientName": "SkeletonDragons_hero",
+          "runtimeEntityId": 203000067
+        }
+      }
     },
     {
       "name": "Mother Witch",
@@ -823,7 +1638,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/fO-Xah8XZkYKaSK9SCp3wnzwxtvIhun9NVY-zzte1Ng.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000083,
+          "formLevel": 2,
+          "clientName": "WitchMother_hero",
+          "runtimeEntityId": 203000068
+        }
+      }
     },
     {
       "name": "Electro Spirit",
@@ -833,7 +1656,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/WKd4-IAFsgPpMo7dDi9sujmYjRhOMEWiE07OUJpvD9g.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "hero": {
+          "id": 26000084,
+          "formLevel": 2,
+          "clientName": "ElectroSpirit_hero",
+          "runtimeEntityId": 203000069
+        }
+      }
     },
     {
       "name": "Electro Giant",
@@ -843,7 +1674,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/_uChZkNHAMq6tPb3v6A49xinOe3CnhjstOhG6OZbPYc.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 26000085,
+          "formLevel": 2,
+          "clientName": "ElectroGiant_hero",
+          "runtimeEntityId": 203000070
+        }
+      }
     },
     {
       "name": "Phoenix",
@@ -853,7 +1692,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/i0RoY1fs6ay7VAxyFEfZGIPnD002nAKcne9FtJsWBHM.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000087,
+          "formLevel": 2,
+          "clientName": "Phoenix_hero",
+          "runtimeEntityId": 203000071
+        }
+      }
     },
     {
       "name": "Little Prince",
@@ -873,7 +1720,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/KVVOgdn40xasFLYuQv8Go_U_LCV7wSG9q9eE1H7f3Qk.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 26000095,
+          "formLevel": 2,
+          "clientName": "GoblinDemolisher_hero",
+          "runtimeEntityId": 203000072
+        }
+      }
     },
     {
       "name": "Goblin Machine",
@@ -883,7 +1738,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/-iLlotr6GCFndL_1BSBqWBb6DnsHBhLerd5EblZDNfU.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 26000096,
+          "formLevel": 2,
+          "clientName": "GoblinMachine_hero",
+          "runtimeEntityId": 203000073
+        }
+      }
     },
     {
       "name": "Suspicious Bush",
@@ -893,7 +1756,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/vqTzGAjseQv9F5rf4tsFWeocvg0dyPw1j_nB1cmDZfI.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 26000097,
+          "formLevel": 2,
+          "clientName": "SuspiciousBush_hero",
+          "runtimeEntityId": 203000074
+        }
+      }
     },
     {
       "name": "Goblinstein",
@@ -913,7 +1784,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/UogMnGHQXT-TOVXRxslKdAKXUPhqUvrD_hV9x8lbzdE.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 26000101,
+          "formLevel": 2,
+          "clientName": "GiantBuffer_hero",
+          "runtimeEntityId": 203000075
+        }
+      }
     },
     {
       "name": "Berserker",
@@ -923,7 +1802,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/NA6W8S1JBYBlOPwD3dNvJLFvVDKq-UuBs_J3i3ewLFI.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "hero": {
+          "id": 26000102,
+          "formLevel": 2,
+          "clientName": "Berserker_hero",
+          "runtimeEntityId": 203000076
+        }
+      }
     },
     {
       "name": "Boss Bandit",
@@ -955,7 +1842,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/nZK1y-beLxO5vnlyUhK6-2zH2NzXJwqykcosqQ1cmZ8.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/nZK1y-beLxO5vnlyUhK6-2zH2NzXJwqykcosqQ1cmZ8.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 27000000,
+          "formLevel": 1,
+          "clientName": "Cannon_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 27000000,
+          "formLevel": 2,
+          "clientName": "Cannon_hero",
+          "runtimeEntityId": 203000079
+        }
+      }
     },
     {
       "name": "Goblin Hut",
@@ -965,7 +1866,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/l8ZdzzNLcwB4u7ihGgxNFQOjCT_njFuAhZr7D6PRF7E.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 27000001,
+          "formLevel": 2,
+          "clientName": "GoblinHut_hero",
+          "runtimeEntityId": 203000080
+        }
+      }
     },
     {
       "name": "Mortar",
@@ -977,7 +1886,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/lPOSw6H7YOHq2miSCrf7ZDL3ANjhJdPPDYOTujdNrVE.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/lPOSw6H7YOHq2miSCrf7ZDL3ANjhJdPPDYOTujdNrVE.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 27000002,
+          "formLevel": 1,
+          "clientName": "Mortar_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 27000002,
+          "formLevel": 2,
+          "clientName": "Mortar_hero",
+          "runtimeEntityId": 203000081
+        }
+      }
     },
     {
       "name": "Inferno Tower",
@@ -987,7 +1910,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/GSHY_wrooMMLET6bG_WJB8redtwx66c4i80ipi4gYOM.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 27000003,
+          "formLevel": 2,
+          "clientName": "InfernoTower_hero",
+          "runtimeEntityId": 203000082
+        }
+      }
     },
     {
       "name": "Bomb Tower",
@@ -997,7 +1928,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/rirYRyHPc97emRjoH-c1O8uZCBzPVnToaGuNGusF3TQ.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 27000004,
+          "formLevel": 2,
+          "clientName": "BombTower_hero",
+          "runtimeEntityId": 203000083
+        }
+      }
     },
     {
       "name": "Barbarian Hut",
@@ -1007,7 +1946,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/ho0nOG2y3Ch86elHHcocQs8Fv_QNe0cFJ2CijsxABZA.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 27000005,
+          "formLevel": 2,
+          "clientName": "BarbarianHut_hero",
+          "runtimeEntityId": 203000084
+        }
+      }
     },
     {
       "name": "Tesla",
@@ -1019,7 +1966,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/OiwnGrxFMNiHetYEerE-UZt0L_uYNzFY7qV_CA_OxR4.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/OiwnGrxFMNiHetYEerE-UZt0L_uYNzFY7qV_CA_OxR4.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 27000006,
+          "formLevel": 1,
+          "clientName": "Tesla_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 27000006,
+          "formLevel": 2,
+          "clientName": "Tesla_hero",
+          "runtimeEntityId": 203000085
+        }
+      }
     },
     {
       "name": "Elixir Collector",
@@ -1029,7 +1990,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/BGLo3Grsp81c72EpxLLk-Sofk3VY56zahnUNOv3JcT0.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 27000007,
+          "formLevel": 2,
+          "clientName": "Elixir Collector_hero",
+          "runtimeEntityId": 203000086
+        }
+      }
     },
     {
       "name": "X-Bow",
@@ -1039,7 +2008,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/zVQ9Hme1hlj9Dc6e1ORl9xWwglcSrP7ejow5mAhLUJc.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 27000008,
+          "formLevel": 2,
+          "clientName": "Xbow_hero",
+          "runtimeEntityId": 203000087
+        }
+      }
     },
     {
       "name": "Tombstone",
@@ -1051,7 +2028,15 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/LjSfSbwQfkZuRJY4pVxKspZ-a0iM5KAhU8w-a_N5Z7Y.png",
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/LjSfSbwQfkZuRJY4pVxKspZ-a0iM5KAhU8w-a_N5Z7Y.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 27000009,
+          "formLevel": 2,
+          "clientName": "Tombstone_hero",
+          "runtimeEntityId": 203000088
+        }
+      }
     },
     {
       "name": "Furnace",
@@ -1063,7 +2048,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/iqbDiG7yYRIzvCPXdt9zPb3IvMt7F7Gi4wIPnh2x4aI.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/iqbDiG7yYRIzvCPXdt9zPb3IvMt7F7Gi4wIPnh2x4aI.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "evolution": {
+          "id": 27000010,
+          "formLevel": 1,
+          "clientName": "FirespiritHut_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 27000010,
+          "formLevel": 2,
+          "clientName": "FirespiritHut_hero",
+          "runtimeEntityId": 203000089
+        }
+      }
     },
     {
       "name": "Goblin Cage",
@@ -1075,7 +2074,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/vD24bBgK4rSq7wx5QEbuqChtPMRFviL_ep76GwQw1yA.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/vD24bBgK4rSq7wx5QEbuqChtPMRFviL_ep76GwQw1yA.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "evolution": {
+          "id": 27000012,
+          "formLevel": 1,
+          "clientName": "GoblinCage_EV1",
+          "cycles": 1
+        },
+        "hero": {
+          "id": 27000012,
+          "formLevel": 2,
+          "clientName": "GoblinCage_hero",
+          "runtimeEntityId": 203000090
+        }
+      }
     },
     {
       "name": "Goblin Drill",
@@ -1087,7 +2100,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/eN2TKUYbih-26yBi0xy5LVFOA0zDftgDqxxnVfdIg1o.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/eN2TKUYbih-26yBi0xy5LVFOA0zDftgDqxxnVfdIg1o.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "evolution": {
+          "id": 27000013,
+          "formLevel": 1,
+          "clientName": "GoblinDrill_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 27000013,
+          "formLevel": 2,
+          "clientName": "GoblinDrill_hero",
+          "runtimeEntityId": 203000091
+        }
+      }
     },
     {
       "name": "Fireball",
@@ -1097,7 +2124,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/lZD9MILQv7O-P3XBr_xOLS5idwuz3_7Ws9G60U36yhc.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 28000000,
+          "formLevel": 2,
+          "clientName": "Fireball_hero",
+          "runtimeEntityId": 203000092
+        }
+      }
     },
     {
       "name": "Arrows",
@@ -1107,7 +2142,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/Flsoci-Y6y8ZFVi5uRFTmgkPnCmMyMVrU7YmmuPvSBo.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "hero": {
+          "id": 28000001,
+          "formLevel": 2,
+          "clientName": "Arrows_hero",
+          "runtimeEntityId": 203000093
+        }
+      }
     },
     {
       "name": "Rage",
@@ -1117,7 +2160,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/bGP21OOmcpHMJ5ZA79bHVV2D-NzPtDkvBskCNJb7pg0.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 28000002,
+          "formLevel": 2,
+          "clientName": "Rage_hero",
+          "runtimeEntityId": 203000094
+        }
+      }
     },
     {
       "name": "Rocket",
@@ -1127,7 +2178,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/Ie07nQNK9CjhKOa4-arFAewi4EroqaA-86Xo7r5tx94.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 28000003,
+          "formLevel": 2,
+          "clientName": "Rocket_hero",
+          "runtimeEntityId": 203000095
+        }
+      }
     },
     {
       "name": "Goblin Barrel",
@@ -1139,7 +2198,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/CoZdp5PpsTH858l212lAMeJxVJ0zxv9V-f5xC8Bvj5g.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/CoZdp5PpsTH858l212lAMeJxVJ0zxv9V-f5xC8Bvj5g.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "evolution": {
+          "id": 28000004,
+          "formLevel": 1,
+          "clientName": "GoblinBarrel_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 28000004,
+          "formLevel": 2,
+          "clientName": "GoblinBarrel_hero",
+          "runtimeEntityId": 203000096
+        }
+      }
     },
     {
       "name": "Freeze",
@@ -1149,7 +2222,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/I1M20_Zs_p_BS1NaNIVQjuMJkYI_1-ePtwYZahn0JXQ.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 28000005,
+          "formLevel": 2,
+          "clientName": "Freeze_hero",
+          "runtimeEntityId": 203000097
+        }
+      }
     },
     {
       "name": "Mirror",
@@ -1158,7 +2239,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/wC6Cm9rKLEOk72zTsukVwxewKIoO4ZcMJun54zCPWvA.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 28000006,
+          "formLevel": 2,
+          "clientName": "Mirror_hero",
+          "runtimeEntityId": 203000098
+        }
+      }
     },
     {
       "name": "Lightning",
@@ -1168,7 +2257,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/fpnESbYqe5GyZmaVVYe-SEu7tE0Kxh_HZyVigzvLjks.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 28000007,
+          "formLevel": 2,
+          "clientName": "Lightning_hero",
+          "runtimeEntityId": 203000099
+        }
+      }
     },
     {
       "name": "Zap",
@@ -1180,7 +2277,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/7dxh2-yCBy1x44GrBaL29vjqnEEeJXHEAlsi5g6D1eY.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/7dxh2-yCBy1x44GrBaL29vjqnEEeJXHEAlsi5g6D1eY.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 28000008,
+          "formLevel": 1,
+          "clientName": "Zap_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 28000008,
+          "formLevel": 2,
+          "clientName": "Zap_hero",
+          "runtimeEntityId": 203000100
+        }
+      }
     },
     {
       "name": "Poison",
@@ -1190,7 +2301,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/98HDkG2189yOULcVG9jz2QbJKtfuhH21DIrIjkOjxI8.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 28000009,
+          "formLevel": 2,
+          "clientName": "Poison_hero",
+          "runtimeEntityId": 203000101
+        }
+      }
     },
     {
       "name": "Graveyard",
@@ -1200,7 +2319,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/Icp8BIyyfBTj1ncCJS7mb82SY7TPV-MAE-J2L2R48DI.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 28000010,
+          "formLevel": 2,
+          "clientName": "Graveyard_hero",
+          "runtimeEntityId": 203000102
+        }
+      }
     },
     {
       "name": "The Log",
@@ -1210,7 +2337,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/_iDwuDLexHPFZ_x4_a0eP-rxCS6vwWgTs6DLauwwoaY.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 28000011,
+          "formLevel": 2,
+          "clientName": "Log_hero",
+          "runtimeEntityId": 203000103
+        }
+      }
     },
     {
       "name": "Tornado",
@@ -1220,7 +2355,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/QJB-QK1QJHdw4hjpAwVSyZBozc2ZWAR9pQ-SMUyKaT0.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 28000012,
+          "formLevel": 2,
+          "clientName": "Tornado_hero",
+          "runtimeEntityId": 203000104
+        }
+      }
     },
     {
       "name": "Clone",
@@ -1230,7 +2373,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/mHVCet-1TkwWq-pxVIU2ZWY9_2z7Z7wtP25ArEUsP_g.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 28000013,
+          "formLevel": 2,
+          "clientName": "Clone_hero",
+          "runtimeEntityId": 203000105
+        }
+      }
     },
     {
       "name": "Earthquake",
@@ -1240,7 +2391,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/XeQXcrUu59C52DslyZVwCnbi4yamID-WxfVZLShgZmE.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 28000014,
+          "formLevel": 2,
+          "clientName": "Earthquake_hero",
+          "runtimeEntityId": 203000106
+        }
+      }
     },
     {
       "name": "Barbarian Barrel",
@@ -1252,7 +2411,15 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/Gb0G1yNy0i5cIGUHin8uoFWxqntNtRPhY_jeMXg7HnA.png",
         "heroMedium": "https://api-assets.clashroyale.com/cardheroes/300/Gb0G1yNy0i5cIGUHin8uoFWxqntNtRPhY_jeMXg7HnA.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 28000015,
+          "formLevel": 2,
+          "clientName": "BarbLog_hero",
+          "runtimeEntityId": 203000107
+        }
+      }
     },
     {
       "name": "Heal Spirit",
@@ -1262,7 +2429,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/GITl06sa2nGRLPvboyXbGEv5E3I-wAwn1Eqa5esggbc.png"
       },
-      "rarity": "rare"
+      "rarity": "rare",
+      "forms": {
+        "hero": {
+          "id": 28000016,
+          "formLevel": 2,
+          "clientName": "Heal_hero",
+          "runtimeEntityId": 203000077
+        }
+      }
     },
     {
       "name": "Giant Snowball",
@@ -1274,7 +2449,21 @@
         "medium": "https://api-assets.clashroyale.com/cards/300/7MaJLa6hK9WN2_VIshuh5DIDfGwm0wEv98gXtAxLDPs.png",
         "evolutionMedium": "https://api-assets.clashroyale.com/cardevolutions/300/7MaJLa6hK9WN2_VIshuh5DIDfGwm0wEv98gXtAxLDPs.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "evolution": {
+          "id": 28000017,
+          "formLevel": 1,
+          "clientName": "Snowball_EV1",
+          "cycles": 2
+        },
+        "hero": {
+          "id": 28000017,
+          "formLevel": 2,
+          "clientName": "Snowball_hero",
+          "runtimeEntityId": 203000108
+        }
+      }
     },
     {
       "name": "Royal Delivery",
@@ -1284,7 +2473,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/LPg7AGjGI3_xmi7gLLgGC50yKM1jJ2teWkZfoHJcIZo.png"
       },
-      "rarity": "common"
+      "rarity": "common",
+      "forms": {
+        "hero": {
+          "id": 28000018,
+          "formLevel": 2,
+          "clientName": "RoyalDelivery_hero",
+          "runtimeEntityId": 203000109
+        }
+      }
     },
     {
       "name": "Void",
@@ -1294,7 +2491,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/BykyeWDqzn4PlHSszu3NbrXT1mHxW2EA8vHbQGR5LDE.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 28000023,
+          "formLevel": 2,
+          "clientName": "DarkMagic_hero",
+          "runtimeEntityId": 203000110
+        }
+      }
     },
     {
       "name": "Goblin Curse",
@@ -1304,7 +2509,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/OQPfGgT5mHEUvPuKKt0plZT0PNtIjCqUgQ3Rm86dQ2k.png"
       },
-      "rarity": "epic"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 28000024,
+          "formLevel": 2,
+          "clientName": "GoblinCurse_hero",
+          "runtimeEntityId": 203000111
+        }
+      }
     },
     {
       "name": "Spirit Empress",
@@ -1314,7 +2527,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/MWWBZqiQeRBXSqEITVMj46nO_uCIUsqBidvUw9K2twY.png"
       },
-      "rarity": "legendary"
+      "rarity": "legendary",
+      "forms": {
+        "hero": {
+          "id": 28000025,
+          "formLevel": 2,
+          "clientName": "MergeMaiden_hero",
+          "runtimeEntityId": 203000078
+        }
+      }
     },
     {
       "name": "Spirit Empress",
@@ -1334,45 +2555,15 @@
       "iconUrls": {
         "medium": "https://api-assets.clashroyale.com/cards/300/V5sJlPuo2WBRtirJ1lGEPJA4NvQ0KPwFeMrpxLX5z_8.png"
       },
-      "rarity": "epic"
-    }
-  ],
-  "supportItems": [
-    {
-      "name": "Tower Princess",
-      "id": 159000000,
-      "maxLevel": 16,
-      "iconUrls": {
-        "medium": "https://api-assets.clashroyale.com/cards/300/Nzo5Gjbh7NG6O3Hyu7ev54Pu5zK7vDMR2fbpGdVsS64.png"
-      },
-      "rarity": "common"
-    },
-    {
-      "name": "Cannoneer",
-      "id": 159000001,
-      "maxLevel": 11,
-      "iconUrls": {
-        "medium": "https://api-assets.clashroyale.com/cards/300/cUfU4UowRdbIiRvxv0ns4ezQUNndJTy7D2q4I_K_fzg.png"
-      },
-      "rarity": "epic"
-    },
-    {
-      "name": "Dagger Duchess",
-      "id": 159000002,
-      "maxLevel": 8,
-      "iconUrls": {
-        "medium": "https://api-assets.clashroyale.com/cards/300/MVj028nMLCmBuP3HlV503uxVAxFg7jyliJVZ5JYJ1h8.png"
-      },
-      "rarity": "legendary"
-    },
-    {
-      "name": "Royal Chef",
-      "id": 159000004,
-      "maxLevel": 8,
-      "iconUrls": {
-        "medium": "https://api-assets.clashroyale.com/cards/300/CLxP2o0iX7q9peMkekI8Ki4DgWixra8L5aUbiAeBU9U.png"
-      },
-      "rarity": "legendary"
+      "rarity": "epic",
+      "forms": {
+        "hero": {
+          "id": 28000026,
+          "formLevel": 2,
+          "clientName": "Vines_hero",
+          "runtimeEntityId": 203000112
+        }
+      }
     }
   ]
 }
