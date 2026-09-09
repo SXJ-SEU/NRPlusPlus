@@ -215,6 +215,46 @@ class NativeSnapshotTests(unittest.TestCase):
         self.assertEqual(snapshot["opponent_cards"][0]["data_id"], 26_000_047)
         self.assertEqual(snapshot["opponent_cards"][0]["form"], "evolution")
 
+    def test_maps_hero_battle_entity_to_equipped_opponent_card(self) -> None:
+        for card_suffix in (17, 27):
+            with self.subTest(card_suffix=card_suffix):
+                deck_card_id = 26_000_000 + card_suffix
+                hero_entity_id = 203_000_000 + card_suffix
+                coordinator = BattleStateCoordinator(
+                    lambda: iter(
+                        [
+                            {
+                                "local_player_index": 0,
+                                "opponent_deck": [
+                                    {
+                                        "slot": 0,
+                                        "data_id": deck_card_id,
+                                        "form": "hero",
+                                    }
+                                ],
+                            }
+                        ]
+                    ).__next__
+                )
+                coordinator.set_active(True)
+                coordinator.poll()
+
+                snapshot = coordinator.merge(
+                    normalize_snapshot(
+                        {
+                            "battle_active": True,
+                            "entities": [
+                                {"side": 1, "card_id": hero_entity_id}
+                            ],
+                        }
+                    )
+                )
+
+                self.assertEqual(
+                    snapshot["opponent_cards"][0]["data_id"], deck_card_id
+                )
+                self.assertEqual(snapshot["opponent_cards"][0]["form"], "hero")
+
     def test_uses_exact_opponent_hand_transition_for_same_cost_spell(self) -> None:
         coordinator = BattleStateCoordinator(
             lambda: iter(

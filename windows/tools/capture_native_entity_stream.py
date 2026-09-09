@@ -26,6 +26,15 @@ CARD_ID_ALIASES = {
     26_000_104: 28_000_025,
     26_000_105: 28_000_025,
 }
+HERO_ENTITY_CARD_BASE = 203_000_000
+HERO_ENTITY_CARD_LIMIT = 204_000_000
+HERO_DECK_CARD_BASE = 26_000_000
+
+
+def _hero_deck_card_id(entity_card_id: int) -> int | None:
+    if not HERO_ENTITY_CARD_BASE <= entity_card_id < HERO_ENTITY_CARD_LIMIT:
+        return None
+    return HERO_DECK_CARD_BASE + entity_card_id - HERO_ENTITY_CARD_BASE
 
 
 def _load_card_names() -> dict[int, str]:
@@ -208,9 +217,14 @@ class BattleStateCoordinator:
 
             for observed_ms, observed_id in observed_opponent_card_ids:
                 deck_id = observed_id if observed_id in opponent_deck_ids else None
+                observed_form = None
                 alias = CARD_ID_ALIASES.get(observed_id)
                 if deck_id is None and alias in opponent_deck_ids:
                     deck_id = alias
+                hero_deck_id = _hero_deck_card_id(observed_id)
+                if deck_id is None and hero_deck_id in opponent_deck_ids:
+                    deck_id = hero_deck_id
+                    observed_form = "hero"
                 if deck_id is None and observed_id in CARD_NAMES:
                     same_name = [
                         candidate
@@ -221,7 +235,12 @@ class BattleStateCoordinator:
                         deck_id = same_name[0]
                 if deck_id is not None:
                     revealed_events.append(
-                        (observed_ms, 1, deck_id, opponent_forms.get(deck_id))
+                        (
+                            observed_ms,
+                            1,
+                            deck_id,
+                            observed_form or opponent_forms.get(deck_id),
+                        )
                     )
 
             revealed_cards: list[tuple[int, str | None]] = []
