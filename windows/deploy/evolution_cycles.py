@@ -24,6 +24,7 @@ EVOLUTION_CYCLES: dict[int, int] = {
     26_000_036: 2,  # Battle Ram
     26_000_037: 2,  # Inferno Dragon
     26_000_040: 2,  # Dart Goblin
+    26_000_043: 1,  # Elite Barbarians
     26_000_044: 2,  # Hunter
     26_000_045: 1,  # Executioner
     26_000_047: 1,  # Royal Recruits

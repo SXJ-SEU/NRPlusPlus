@@ -73,17 +73,22 @@ def merge_card_deployment_events(
     entity_events: list[tuple[int, int, str | None]],
 ) -> list[tuple[int, int, str | None]]:
     """Merge hand transitions with entity fallbacks without double-counting."""
-    exact_times_by_card: dict[int, list[int]] = {}
+    first_exact_ms_by_card: dict[int, int] = {}
     for observed_ms, card_id, _ in exact_events:
-        exact_times_by_card.setdefault(card_id, []).append(observed_ms)
+        first_exact_ms_by_card[card_id] = min(
+            observed_ms, first_exact_ms_by_card.get(card_id, observed_ms)
+        )
 
     fallback_events: list[tuple[int, int, str | None]] = []
     last_fallback_by_card: dict[int, int] = {}
     for event in sorted(entity_events, key=lambda item: item[:2]):
         observed_ms, card_id, _ = event
-        if any(
-            abs(observed_ms - exact_ms) <= DEPLOYMENT_EVENT_MERGE_WINDOW_MS
-            for exact_ms in exact_times_by_card.get(card_id, ())
+        first_exact_ms = first_exact_ms_by_card.get(card_id)
+        # Once the hand reader has produced an exact event for this card, it is
+        # authoritative. Entity addresses can appear much later for spawned or
+        # transformed units and are not additional card deployments.
+        if first_exact_ms is not None and (
+            observed_ms >= first_exact_ms - DEPLOYMENT_EVENT_MERGE_WINDOW_MS
         ):
             continue
         previous_ms = last_fallback_by_card.get(card_id)
@@ -155,6 +160,9 @@ class BattleStateCoordinator:
             set(),
             set(),
         )
+        self._deployment_entity_kinds_by_side: tuple[
+            dict[int, set[object]], dict[int, set[object]]
+        ] = ({}, {})
 
     def set_active(self, active: bool) -> None:
         with self._lock:
@@ -166,6 +174,8 @@ class BattleStateCoordinator:
                 card_ids.clear()
             for entity_keys in self._active_entity_keys_by_side:
                 entity_keys.clear()
+            for deployment_kinds in self._deployment_entity_kinds_by_side:
+                deployment_kinds.clear()
             self._reader = self._reader_factory() if active else None
 
     def poll(self) -> None:
@@ -194,6 +204,9 @@ class BattleStateCoordinator:
                         set(),
                     )
                     new_card_ids_by_side: tuple[set[int], set[int]] = (set(), set())
+                    new_entity_kinds_by_card_by_side: tuple[
+                        dict[int, set[object]], dict[int, set[object]]
+                    ] = ({}, {})
                     for entity in entities:
                         if not isinstance(entity, dict):
                             continue
@@ -212,8 +225,27 @@ class BattleStateCoordinator:
                             current_entity_keys_by_side[side].add(entity_key)
                             if (
                                 entity_key not in self._active_entity_keys_by_side[side]
-                                and card_id not in new_card_ids_by_side[side]
                             ):
+                                new_entity_kinds_by_card_by_side[side].setdefault(
+                                    card_id, set()
+                                ).add(entity.get("kind"))
+                    for side, new_kinds_by_card in enumerate(
+                        new_entity_kinds_by_card_by_side
+                    ):
+                        for card_id, new_kinds in new_kinds_by_card.items():
+                            deployment_kinds = (
+                                self._deployment_entity_kinds_by_side[side].get(card_id)
+                            )
+                            if deployment_kinds is None:
+                                # One deployment may create several units/kinds in
+                                # the same native frame. Preserve that whole initial
+                                # signature for future entity-only detections.
+                                self._deployment_entity_kinds_by_side[side][card_id] = (
+                                    set(new_kinds)
+                                )
+                            elif new_kinds.isdisjoint(deployment_kinds):
+                                continue
+                            if card_id not in new_card_ids_by_side[side]:
                                 new_card_ids_by_side[side].add(card_id)
                                 self._observed_card_ids_by_side[side].append(
                                     (observed_ms, card_id)

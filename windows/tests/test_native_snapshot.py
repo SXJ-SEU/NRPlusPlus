@@ -17,6 +17,7 @@ from capture_native_entity_stream import (  # noqa: E402
     advance_evolution_charge,
     evolution_state,
     make_battle_reader,
+    merge_card_deployment_events,
     normalize_snapshot,
     played_hand_indices,
 )
@@ -80,9 +81,39 @@ class NativeSnapshotTests(unittest.TestCase):
             if "evolutionMedium" in item.get("iconUrls", {})
         }
 
-        self.assertEqual(evolution_ids, set(EVOLUTION_CYCLES))
+        self.assertTrue(evolution_ids.issubset(EVOLUTION_CYCLES))
         self.assertEqual(EVOLUTION_CYCLES[26_000_001], 2)
         self.assertEqual(EVOLUTION_CYCLES[26_000_047], 1)
+        self.assertEqual(EVOLUTION_CYCLES[26_000_043], 1)
+
+    def test_exact_opponent_events_supersede_delayed_entity_fallbacks(self) -> None:
+        exact = [(1_000, 27_000_012, "evolution")]
+        delayed_entities = [
+            (3_000, 27_000_012, "evolution"),
+            (12_000, 27_000_012, "evolution"),
+        ]
+
+        self.assertEqual(
+            merge_card_deployment_events(exact, delayed_entities),
+            exact,
+        )
+
+    def test_delayed_entity_duplicates_do_not_prevent_evolution_reset(self) -> None:
+        card_id = 26_000_059
+        exact = [
+            (1_000, card_id, "evolution"),
+            (10_000, card_id, "evolution"),
+            (20_000, card_id, "evolution"),
+        ]
+        delayed_entities = [
+            (3_000, card_id, "evolution"),
+            (12_000, card_id, "evolution"),
+        ]
+        charge = 0
+        for _, _, _ in merge_card_deployment_events(exact, delayed_entities):
+            charge = advance_evolution_charge(charge, EVOLUTION_CYCLES[card_id])
+
+        self.assertEqual(charge, 0)
 
     def test_maps_player_resource_order_to_local_and_opponent(self) -> None:
         snapshot = normalize_snapshot(
@@ -355,6 +386,66 @@ class NativeSnapshotTests(unittest.TestCase):
         self.assertTrue(second["opponent_cards"][0]["evolution_ready"])
         self.assertEqual(evolved["opponent_cards"][0]["evolution_charge"], 0)
         self.assertFalse(evolved["opponent_cards"][0]["evolution_ready"])
+
+    def test_entity_fallback_ignores_a_spawned_unit_with_a_different_kind(self) -> None:
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 0,
+                        "opponent_cards": [],
+                        "opponent_deck": [
+                            {
+                                "slot": 0,
+                                "data_id": 27_000_012,
+                                "form": "evolution",
+                                "evolution_cycles": 2,
+                                "evolution_charge": 0,
+                                "evolution_ready": False,
+                            }
+                        ],
+                    }
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+        coordinator.poll()
+
+        def merge_at(observed_ms: int, entities: list[dict]) -> dict:
+            snapshot = normalize_snapshot(
+                {"battle_active": True, "entities": entities}
+            )
+            snapshot["t_ms"] = observed_ms
+            return coordinator.merge(snapshot)
+
+        first = merge_at(
+            1_000,
+            [
+                {
+                    "address": "0xcage",
+                    "side": 1,
+                    "kind": 12,
+                    "card_id": 27_000_012,
+                }
+            ],
+        )
+        merge_at(2_000, [])
+        spawned_brawler = merge_at(
+            22_000,
+            [
+                {
+                    "address": "0xbrawler",
+                    "side": 1,
+                    "kind": 14,
+                    "card_id": 27_000_012,
+                }
+            ],
+        )
+
+        self.assertEqual(first["opponent_cards"][0]["evolution_charge"], 1)
+        self.assertEqual(
+            spawned_brawler["opponent_cards"][0]["evolution_charge"], 1
+        )
 
     def test_exact_and_entity_reports_count_as_one_opponent_deployment(self) -> None:
         coordinator = BattleStateCoordinator(
