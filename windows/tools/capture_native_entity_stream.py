@@ -571,7 +571,7 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                     opponent_hand_pointers = locator.locate_player_hand_pointers(
                         1 - local_player_index
                     )
-                    previous_opponent_hand = None
+                    diagnostics.pop("error", None)
                 except Exception as exc:
                     diagnostics.update(
                         {"status": "opponent_hand_bind_failed", "error": str(exc)}
@@ -651,12 +651,12 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                                 )
                             )
                     previous_opponent_hand = current_opponent_hand
+                    diagnostics.pop("error", None)
                 except Exception as exc:
                     diagnostics.update(
                         {"status": "opponent_hand_read_failed", "error": str(exc)}
                     )
                     opponent_hand_pointers = None
-                    previous_opponent_hand = None
             next_index = -1
             try:
                 next_index = locator.poll_next_deck_index(pointers)

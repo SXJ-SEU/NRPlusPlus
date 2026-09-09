@@ -505,7 +505,15 @@ class BattleStateLocator:
         for candidate in self._player_hand_candidates:
             try:
                 if self._poll_model_account_id(candidate.model) == account_id:
-                    return candidate
+                    model_raw = self.memory.read(
+                        candidate.model + 0x220, 0x18, timeout=20
+                    )
+                    hand_array = struct.unpack_from("<Q", model_raw, 0)[0]
+                    queue_array = struct.unpack_from("<Q", model_raw, 0x10)[0]
+                    if hand_array != 0 and queue_array != 0:
+                        return PlayerHandPointers(
+                            candidate.model, hand_array, queue_array
+                        )
             except AdbError:
                 continue
         raise AdbError("player hand model is absent from scanned candidates")

@@ -115,6 +115,78 @@ class NativeSnapshotTests(unittest.TestCase):
 
         self.assertEqual(charge, 0)
 
+    def test_opponent_evolution_sequence_survives_late_exact_hand_events(self) -> None:
+        card_id = 26_000_063
+        deck = [
+            {
+                "slot": 0,
+                "data_id": card_id,
+                "form": "evolution",
+                "evolution_cycles": 1,
+                "evolution_charge": 0,
+                "evolution_ready": False,
+            }
+        ]
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 0,
+                        "opponent_cards": [],
+                        "opponent_deck": deck,
+                    },
+                    {
+                        "opponent_cards": [
+                            {
+                                "slot": 0,
+                                "data_id": card_id,
+                                "form": "evolution",
+                                "observed_ms": 20_000,
+                            }
+                        ]
+                    },
+                    {
+                        "opponent_cards": [
+                            {
+                                "slot": 0,
+                                "data_id": card_id,
+                                "form": "evolution",
+                                "observed_ms": 20_000,
+                            },
+                            {
+                                "slot": 0,
+                                "data_id": card_id,
+                                "form": "evolution",
+                                "observed_ms": 30_000,
+                            },
+                        ]
+                    },
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+
+        def merge_at(observed_ms: int, entities: list[dict]) -> dict:
+            snapshot = normalize_snapshot(
+                {"battle_active": True, "entities": entities}
+            )
+            snapshot["t_ms"] = observed_ms
+            return coordinator.merge(snapshot)
+
+        coordinator.poll()
+        first_normal = merge_at(
+            1_000,
+            [{"address": "0xnormal-1", "side": 1, "card_id": card_id}],
+        )
+        coordinator.poll()
+        evolved = merge_at(20_000, [])
+        coordinator.poll()
+        third_normal = merge_at(30_000, [])
+
+        self.assertEqual(first_normal["opponent_cards"][0]["evolution_charge"], 1)
+        self.assertEqual(evolved["opponent_cards"][0]["evolution_charge"], 0)
+        self.assertEqual(third_normal["opponent_cards"][0]["evolution_charge"], 1)
+
     def test_maps_player_resource_order_to_local_and_opponent(self) -> None:
         snapshot = normalize_snapshot(
             {
@@ -618,6 +690,35 @@ class NativeSnapshotTests(unittest.TestCase):
         self.assertIsNone(cards[2].form)
         self.assertIsNone(cards[3].form)
 
+    def test_rebinding_player_hand_refreshes_moved_array_pointers(self) -> None:
+        model = 0x1000
+        old_hand = 0x2000
+        old_queue = 0x3000
+        new_hand = 0x4000
+        new_queue = 0x5000
+        model_raw = bytearray(0x18)
+        struct.pack_into("<Q", model_raw, 0, new_hand)
+        struct.pack_into("<Q", model_raw, 0x10, new_queue)
+        locator = BattleStateLocator(
+            FakeMemory({(model + 0x220, 0x18): bytes(model_raw)})
+        )
+        locator._player_hand_candidates = (
+            PlayerHandPointers(model, old_hand, old_queue),
+        )
+
+        with (
+            patch.object(
+                locator, "_poll_battle_player_account_id", return_value=b"PLAYER00"
+            ),
+            patch.object(locator, "_poll_model_account_id", return_value=b"PLAYER00"),
+        ):
+            rebound = locator.locate_player_hand_pointers(1)
+
+        self.assertEqual(
+            rebound,
+            PlayerHandPointers(model, new_hand, new_queue),
+        )
+
     def test_battle_reader_maps_opponent_hand_transition_to_exact_card(self) -> None:
         class FakeLocator:
             def __init__(self, _memory: object) -> None:
@@ -689,6 +790,77 @@ class NativeSnapshotTests(unittest.TestCase):
         self.assertEqual(baseline["opponent_cards"], [])
         self.assertEqual(played["opponent_cards"][0]["data_id"], 28_000_015)
         self.assertEqual(played["opponent_cards"][0]["form"], "hero")
+
+    def test_battle_reader_keeps_baseline_when_opponent_hand_storage_moves(self) -> None:
+        class FakeLocator:
+            def __init__(self, _memory: object) -> None:
+                self.last_timing = {}
+                self.bindings = iter(
+                    [
+                        PlayerHandPointers(10, 11, 12),
+                        PlayerHandPointers(10, 21, 22),
+                    ]
+                )
+                self.old_pointer_reads = 0
+
+            def locate(self) -> BattlePointers:
+                return BattlePointers(1, 2, 3, 4, 5)
+
+            def poll_local_player_index(self, _pointers: BattlePointers) -> int:
+                return 0
+
+            def locate_player_hand_pointers(
+                self, _player_index: int
+            ) -> PlayerHandPointers:
+                return next(self.bindings)
+
+            def poll_elixir(self, _pointers: BattlePointers) -> tuple[int, float]:
+                return 10, 1.0
+
+            def poll_hand_indices(
+                self, _pointers: BattlePointers
+            ) -> tuple[int, int, int, int]:
+                return (0, 1, 2, 3)
+
+            def poll_card_object_deck_details(
+                self, _pointers: BattlePointers
+            ) -> tuple[CardDeckEntry, ...]:
+                return tuple(CardDeckEntry(None, None) for _ in range(8))
+
+            def poll_opponent_card_deck_details(
+                self, _pointers: BattlePointers, _local_index: int
+            ) -> tuple[CardDeckEntry, ...]:
+                return (
+                    CardDeckEntry(26_000_063, "evolution"),
+                    *(CardDeckEntry(None, None) for _ in range(7)),
+                )
+
+            def poll_player_hand_indices(
+                self, pointers: PlayerHandPointers
+            ) -> tuple[int, int, int, int]:
+                if pointers.hand_array == 11:
+                    self.old_pointer_reads += 1
+                    if self.old_pointer_reads == 1:
+                        return (0, 1, 2, 3)
+                    raise RuntimeError("player hand pointers are no longer valid")
+                return (4, 1, 2, 3)
+
+            def poll_next_deck_index(self, _pointers: BattlePointers) -> int:
+                return 4
+
+        with patch(
+            "capture_native_entity_stream.BattleStateLocator", FakeLocator
+        ):
+            reader = make_battle_reader(Path("adb"), "test-device", 123)
+            reader()  # Resolve player identity.
+            baseline = reader()
+            invalidated = reader()
+            rebound = reader()
+
+        self.assertEqual(baseline["opponent_cards"], [])
+        self.assertEqual(invalidated["opponent_cards"], [])
+        self.assertEqual(rebound["opponent_cards"][0]["data_id"], 26_000_063)
+        self.assertEqual(rebound["opponent_cards"][0]["form"], "evolution")
 
     def test_battle_reader_tracks_both_players_evolution_charge(self) -> None:
         class FakeLocator:
@@ -940,6 +1112,11 @@ class NativeSnapshotTests(unittest.TestCase):
             PlayerHandPointers(models[1], 0x700000, 0x710000),
         )
         locator._player_hand_candidates = candidates
+        for candidate in candidates:
+            current_pointers = bytearray(0x18)
+            struct.pack_into("<Q", current_pointers, 0, candidate.hand_array)
+            struct.pack_into("<Q", current_pointers, 0x10, candidate.queue_array)
+            reads[(candidate.model + 0x220, 0x18)] = bytes(current_pointers)
 
         self.assertEqual(locator.locate_player_hand_pointers(0), candidates[0])
         self.assertEqual(locator.locate_player_hand_pointers(1), candidates[1])
