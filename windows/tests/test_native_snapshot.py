@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import struct
 import sys
 import unittest
@@ -13,6 +14,8 @@ sys.path.insert(0, str(WINDOWS_ROOT / "tools"))
 from capture_native_entity_stream import (  # noqa: E402
     BattleStateCoordinator,
     DEFAULT_STREAM_INTERVAL_MS,
+    advance_evolution_charge,
+    evolution_state,
     make_battle_reader,
     normalize_snapshot,
     played_hand_indices,
@@ -24,6 +27,7 @@ from proc_memory import (  # noqa: E402
     CardDeckEntry,
     PlayerHandPointers,
 )
+from evolution_cycles import EVOLUTION_CYCLES  # noqa: E402
 
 
 class FakeMemory:
@@ -42,6 +46,43 @@ class FakeMemory:
 class NativeSnapshotTests(unittest.TestCase):
     def test_default_stream_interval_is_low_latency(self) -> None:
         self.assertLessEqual(DEFAULT_STREAM_INTERVAL_MS, 20)
+
+    def test_evolution_charge_fills_then_resets_after_evolved_deployment(self) -> None:
+        charge = 0
+        observed = []
+        for _ in range(3):
+            charge = advance_evolution_charge(charge, 2)
+            observed.append(charge)
+
+        self.assertEqual(observed, [1, 2, 0])
+        self.assertEqual(
+            evolution_state(26_000_001, "evolution", 2),
+            {
+                "evolution_cycles": 2,
+                "evolution_charge": 2,
+                "evolution_ready": True,
+            },
+        )
+        self.assertEqual(
+            evolution_state(26_000_047, "evolution", 1)["evolution_ready"],
+            True,
+        )
+
+    def test_cycle_metadata_covers_every_catalog_evolution(self) -> None:
+        catalog = json.loads(
+            (WINDOWS_ROOT.parent / "deploy" / "cards.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        evolution_ids = {
+            item["id"]
+            for item in catalog["items"]
+            if "evolutionMedium" in item.get("iconUrls", {})
+        }
+
+        self.assertEqual(evolution_ids, set(EVOLUTION_CYCLES))
+        self.assertEqual(EVOLUTION_CYCLES[26_000_001], 2)
+        self.assertEqual(EVOLUTION_CYCLES[26_000_047], 1)
 
     def test_maps_player_resource_order_to_local_and_opponent(self) -> None:
         snapshot = normalize_snapshot(
@@ -194,6 +235,9 @@ class NativeSnapshotTests(unittest.TestCase):
                                 "slot": 0,
                                 "data_id": 26_000_047,
                                 "form": "evolution",
+                                "evolution_cycles": 1,
+                                "evolution_charge": 1,
+                                "evolution_ready": True,
                             }
                         ],
                     }
@@ -214,6 +258,9 @@ class NativeSnapshotTests(unittest.TestCase):
 
         self.assertEqual(snapshot["opponent_cards"][0]["data_id"], 26_000_047)
         self.assertEqual(snapshot["opponent_cards"][0]["form"], "evolution")
+        self.assertEqual(snapshot["opponent_cards"][0]["evolution_cycles"], 1)
+        self.assertEqual(snapshot["opponent_cards"][0]["evolution_charge"], 1)
+        self.assertTrue(snapshot["opponent_cards"][0]["evolution_ready"])
 
     def test_maps_hero_battle_entity_to_equipped_opponent_card(self) -> None:
         for card_suffix in (17, 27):
@@ -408,6 +455,71 @@ class NativeSnapshotTests(unittest.TestCase):
         self.assertEqual(baseline["opponent_cards"], [])
         self.assertEqual(played["opponent_cards"][0]["data_id"], 28_000_015)
         self.assertEqual(played["opponent_cards"][0]["form"], "hero")
+
+    def test_battle_reader_tracks_both_players_evolution_charge(self) -> None:
+        class FakeLocator:
+            def __init__(self, _memory: object) -> None:
+                self.last_timing = {}
+                self.local_hands = iter([(0, 1, 2, 3), (4, 1, 2, 3)])
+                self.opponent_hands = iter([(0, 1, 2, 3), (4, 1, 2, 3)])
+
+            def locate(self) -> BattlePointers:
+                return BattlePointers(1, 2, 3, 4, 5)
+
+            def poll_local_player_index(self, _pointers: BattlePointers) -> int:
+                return 0
+
+            def locate_player_hand_pointers(
+                self, _player_index: int
+            ) -> PlayerHandPointers:
+                return PlayerHandPointers(10, 11, 12)
+
+            def poll_elixir(self, _pointers: BattlePointers) -> tuple[int, float]:
+                return 10, 1.0
+
+            def poll_hand_indices(
+                self, _pointers: BattlePointers
+            ) -> tuple[int, int, int, int]:
+                return next(self.local_hands)
+
+            def poll_card_object_deck_details(
+                self, _pointers: BattlePointers
+            ) -> tuple[CardDeckEntry, ...]:
+                return (
+                    CardDeckEntry(26_000_001, "evolution"),
+                    *(CardDeckEntry(None, None) for _ in range(7)),
+                )
+
+            def poll_opponent_card_deck_details(
+                self, _pointers: BattlePointers, _local_index: int
+            ) -> tuple[CardDeckEntry, ...]:
+                return (
+                    CardDeckEntry(26_000_047, "evolution"),
+                    *(CardDeckEntry(None, None) for _ in range(7)),
+                )
+
+            def poll_player_hand_indices(
+                self, _pointers: PlayerHandPointers
+            ) -> tuple[int, int, int, int]:
+                return next(self.opponent_hands)
+
+            def poll_next_deck_index(self, _pointers: BattlePointers) -> int:
+                return 0
+
+        with patch(
+            "capture_native_entity_stream.BattleStateLocator", FakeLocator
+        ):
+            reader = make_battle_reader(Path("adb"), "test-device", 123)
+            reader()
+            reader()
+            played = reader()
+
+        self.assertEqual(played["next_card"]["evolution_cycles"], 2)
+        self.assertEqual(played["next_card"]["evolution_charge"], 1)
+        self.assertFalse(played["next_card"]["evolution_ready"])
+        self.assertEqual(played["opponent_cards"][0]["evolution_cycles"], 1)
+        self.assertEqual(played["opponent_cards"][0]["evolution_charge"], 1)
+        self.assertTrue(played["opponent_cards"][0]["evolution_ready"])
 
     def test_uses_player_resource_when_ui_elixir_is_unavailable(self) -> None:
         snapshot = normalize_snapshot(

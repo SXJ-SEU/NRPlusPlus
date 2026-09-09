@@ -16,6 +16,7 @@ ARENA_WIDTH = 18_000
 ARENA_HEIGHT = 32_000
 DEFAULT_LOCAL_SIDE = 1
 EMOTE_BLACKLIST_BUTTON = pygame.Rect(402, 642, 210, 32)
+EVOLUTION_COLOR = (177, 126, 255)
 _blacklist_editor_process: subprocess.Popen[bytes] | None = None
 
 
@@ -69,20 +70,66 @@ def _average_card_cost(cards: list[dict[str, Any]]) -> float | None:
 
 def _card_form_label(form: object) -> tuple[str, tuple[int, int, int]] | None:
     if form == "evolution":
-        return "Evolution", (177, 126, 255)
+        return "Evolution", EVOLUTION_COLOR
     if form == "hero":
         return "Hero", (255, 205, 92)
     return None
+
+
+def _evolution_progress(card: dict[str, Any]) -> tuple[int, int] | None:
+    if card.get("form") != "evolution":
+        return None
+    cycles = card.get("evolution_cycles")
+    charge = card.get("evolution_charge")
+    if not isinstance(cycles, int) or not 1 <= cycles <= 8:
+        return None
+    if not isinstance(charge, int):
+        charge = 0
+    return cycles, max(0, min(charge, cycles))
+
+
+def _card_border_color(
+    card: dict[str, Any], default: tuple[int, int, int]
+) -> tuple[int, int, int]:
+    if card.get("form") == "evolution" and card.get("evolution_ready") is True:
+        return EVOLUTION_COLOR
+    return default
+
+
+def _draw_evolution_diamonds(
+    screen: pygame.Surface,
+    x: int,
+    center_y: int,
+    progress: tuple[int, int] | None,
+) -> None:
+    if progress is None:
+        return
+    cycles, charge = progress
+    for index in range(cycles):
+        center_x = x + index * 11
+        points = (
+            (center_x, center_y - 4),
+            (center_x + 4, center_y),
+            (center_x, center_y + 4),
+            (center_x - 4, center_y),
+        )
+        pygame.draw.polygon(
+            screen,
+            EVOLUTION_COLOR,
+            points,
+            0 if index < charge else 1,
+        )
 
 
 def _draw_card_label(
     screen: pygame.Surface,
     card_rect: pygame.Rect,
     label: str,
-    form: object,
+    card: dict[str, Any],
     detail_font: pygame.font.Font,
     label_font: pygame.font.Font,
 ) -> None:
+    form = card.get("form")
     form_label = _card_form_label(form)
     name_y = card_rect.y + (2 if form_label else 7)
     screen.blit(
@@ -91,9 +138,13 @@ def _draw_card_label(
     )
     if form_label is not None:
         text, color = form_label
-        screen.blit(
-            label_font.render(text, True, color),
-            (card_rect.x + 7, card_rect.y + 19),
+        rendered = label_font.render(text, True, color)
+        screen.blit(rendered, (card_rect.x + 7, card_rect.y + 19))
+        _draw_evolution_diamonds(
+            screen,
+            card_rect.x + 12 + rendered.get_width(),
+            card_rect.y + 25,
+            _evolution_progress(card),
         )
 
 
@@ -257,12 +308,19 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
                 label = label[:12] + "."
             card_rect = pygame.Rect(panel_x + (slot % 2) * 132, 312 + (slot // 2) * 42, 122, 34)
             pygame.draw.rect(screen, (43, 48, 58), card_rect, border_radius=3)
-            pygame.draw.rect(screen, (91, 101, 119), card_rect, 1, border_radius=3)
+            border_color = _card_border_color(item, (91, 101, 119))
+            pygame.draw.rect(
+                screen,
+                border_color,
+                card_rect,
+                2 if border_color == EVOLUTION_COLOR else 1,
+                border_radius=3,
+            )
             _draw_card_label(
                 screen,
                 card_rect,
                 label,
-                item.get("form"),
+                item,
                 detail_font,
                 label_font,
             )
@@ -275,7 +333,14 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
         next_form_label = _card_form_label(next_form)
         if next_form_label is not None:
             text, color = next_form_label
-            screen.blit(label_font.render(text, True, color), (panel_x, 425))
+            rendered = label_font.render(text, True, color)
+            screen.blit(rendered, (panel_x, 425))
+            _draw_evolution_diamonds(
+                screen,
+                panel_x + 5 + rendered.get_width(),
+                431,
+                _evolution_progress(next_card),
+            )
 
         screen.blit(
             detail_font.render("Opponent cards", True, (231, 105, 91)),
@@ -310,12 +375,19 @@ def run(snapshot_provider: Callable[[], dict | None]) -> None:
                 34,
             )
             pygame.draw.rect(screen, (43, 48, 58), card_rect, border_radius=3)
-            pygame.draw.rect(screen, (112, 78, 78), card_rect, 1, border_radius=3)
+            border_color = _card_border_color(item, (112, 78, 78))
+            pygame.draw.rect(
+                screen,
+                border_color,
+                card_rect,
+                2 if border_color == EVOLUTION_COLOR else 1,
+                border_radius=3,
+            )
             _draw_card_label(
                 screen,
                 card_rect,
                 label,
-                item.get("form"),
+                item,
                 detail_font,
                 label_font,
             )

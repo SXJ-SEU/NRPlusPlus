@@ -68,6 +68,29 @@ class ArenaPerspectiveTests(unittest.TestCase):
         self.assertIsNone(visualizer._card_form_label(None))
         self.assertIsNone(visualizer._card_form_label("unknown"))
 
+    def test_evolution_progress_controls_diamonds_and_ready_border(self) -> None:
+        charging = {
+            "form": "evolution",
+            "evolution_cycles": 2,
+            "evolution_charge": 1,
+            "evolution_ready": False,
+        }
+        ready = {**charging, "evolution_charge": 2, "evolution_ready": True}
+
+        self.assertEqual(visualizer._evolution_progress(charging), (2, 1))
+        self.assertEqual(
+            visualizer._card_border_color(charging, (1, 2, 3)), (1, 2, 3)
+        )
+        self.assertEqual(
+            visualizer._card_border_color(ready, (1, 2, 3)),
+            visualizer.EVOLUTION_COLOR,
+        )
+        self.assertIsNone(
+            visualizer._evolution_progress(
+                {**ready, "form": "hero"}
+            )
+        )
+
     @mock.patch("minimal_visualizer.subprocess.Popen")
     def test_blacklist_editor_is_not_launched_twice(self, popen: mock.Mock) -> None:
         process = mock.Mock()

@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT / "deploy"))
 
 from subprocess_utils import hidden_process_kwargs  # noqa: E402
 from adb_runtime import AdbConfig, AdbRuntime  # noqa: E402
+from evolution_cycles import EVOLUTION_CYCLES  # noqa: E402
 from proc_memory import BattleStateLocator, RootProcessMemory  # noqa: E402
 
 
@@ -35,6 +36,33 @@ def _hero_deck_card_id(entity_card_id: int) -> int | None:
     if not HERO_ENTITY_CARD_BASE <= entity_card_id < HERO_ENTITY_CARD_LIMIT:
         return None
     return HERO_DECK_CARD_BASE + entity_card_id - HERO_ENTITY_CARD_BASE
+
+
+def advance_evolution_charge(current: int, cycles: int) -> int:
+    """Advance one deployment, resetting after the ready Evolution is used."""
+    if cycles <= 0:
+        return 0
+    return 0 if current >= cycles else current + 1
+
+
+def evolution_state(
+    data_id: int | None,
+    form: str | None,
+    charge: int,
+) -> dict[str, int | bool | None]:
+    cycles = EVOLUTION_CYCLES.get(data_id) if form == "evolution" else None
+    if cycles is None:
+        return {
+            "evolution_cycles": None,
+            "evolution_charge": None,
+            "evolution_ready": False,
+        }
+    normalized_charge = max(0, min(charge, cycles))
+    return {
+        "evolution_cycles": cycles,
+        "evolution_charge": normalized_charge,
+        "evolution_ready": normalized_charge == cycles,
+    }
 
 
 def _load_card_names() -> dict[int, str]:
@@ -203,6 +231,16 @@ class BattleStateCoordinator:
                 and isinstance(item.get("data_id"), int)
                 and item.get("form") in ("evolution", "hero")
             }
+            opponent_evolution_states = {
+                item["data_id"]: {
+                    "evolution_cycles": item.get("evolution_cycles"),
+                    "evolution_charge": item.get("evolution_charge"),
+                    "evolution_ready": bool(item.get("evolution_ready")),
+                }
+                for item in opponent_deck or []
+                if isinstance(item, dict)
+                and isinstance(item.get("data_id"), int)
+            }
             revealed_events: list[tuple[int, int, int, str | None]] = []
             for slot, item in enumerate(opponent_cards):
                 if not isinstance(item, dict) or not isinstance(item.get("data_id"), int):
@@ -263,6 +301,13 @@ class BattleStateCoordinator:
                         revealed_cards[slot][1]
                         if slot < len(revealed_cards)
                         else None
+                    ),
+                    **(
+                        opponent_evolution_states.get(
+                            revealed_cards[slot][0], {}
+                        )
+                        if slot < len(revealed_cards)
+                        else {}
                     ),
                 }
                 for slot in range(8)
@@ -398,17 +443,20 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
     diagnostics: dict[str, Any] = {"status": "starting"}
     deck_ids: list[int | None] = [None] * 8
     deck_forms: list[str | None] = [None] * 8
+    deck_evolution_charges = [0] * 8
     conflicted_indices: set[int] = set()
     opponent_deck_ids: list[int | None] = [None] * 8
     opponent_deck_forms: list[str | None] = [None] * 8
+    opponent_evolution_charges = [0] * 8
     local_player_index: int | None = None
+    previous_local_hand: tuple[int, ...] | None = None
     opponent_hand_pointers = None
     previous_opponent_hand: tuple[int, ...] | None = None
     opponent_play_events: list[tuple[int, int]] = []
-    played_opponent_indices: set[int] = set()
 
     def read() -> dict[str, Any] | None:
         nonlocal pointers, retry_at, local_player_index
+        nonlocal previous_local_hand
         nonlocal opponent_hand_pointers, previous_opponent_hand
         try:
             if pointers is None:
@@ -419,7 +467,9 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                 diagnostics.update({"status": "locating"})
                 pointers = locator.locate()
                 local_player_index = None
+                previous_local_hand = None
                 opponent_hand_pointers = None
+                previous_opponent_hand = None
                 diagnostics.update({"status": "located" if pointers else "no_candidate",
                                     "timing": dict(locator.last_timing)})
             if pointers is None:
@@ -440,6 +490,7 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                     opponent_hand_pointers = locator.locate_player_hand_pointers(
                         1 - local_player_index
                     )
+                    previous_opponent_hand = None
                 except Exception as exc:
                     diagnostics.update(
                         {"status": "opponent_hand_bind_failed", "error": str(exc)}
@@ -484,6 +535,17 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                         if data_id is not None:
                             opponent_deck_ids[index] = data_id
                             opponent_deck_forms[index] = card.form
+            observed_ms = int(time.time() * 1000)
+            if len(indices) == 4:
+                for deck_index in played_hand_indices(previous_local_hand, indices):
+                    if not 0 <= deck_index < 8:
+                        continue
+                    cycles = EVOLUTION_CYCLES.get(deck_ids[deck_index])
+                    if deck_forms[deck_index] == "evolution" and cycles is not None:
+                        deck_evolution_charges[deck_index] = advance_evolution_charge(
+                            deck_evolution_charges[deck_index], cycles
+                        )
+                previous_local_hand = indices
             if opponent_hand_pointers is not None:
                 try:
                     current_opponent_hand = locator.poll_player_hand_indices(
@@ -492,10 +554,20 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                     for deck_index in played_hand_indices(
                         previous_opponent_hand, current_opponent_hand
                     ):
-                        if deck_index not in played_opponent_indices:
-                            played_opponent_indices.add(deck_index)
-                            opponent_play_events.append(
-                                (int(time.time() * 1000), deck_index)
+                        if not 0 <= deck_index < 8:
+                            continue
+                        opponent_play_events.append((observed_ms, deck_index))
+                        cycles = EVOLUTION_CYCLES.get(
+                            opponent_deck_ids[deck_index]
+                        )
+                        if (
+                            opponent_deck_forms[deck_index] == "evolution"
+                            and cycles is not None
+                        ):
+                            opponent_evolution_charges[deck_index] = (
+                                advance_evolution_charge(
+                                    opponent_evolution_charges[deck_index], cycles
+                                )
                             )
                     previous_opponent_hand = current_opponent_hand
                 except Exception as exc:
@@ -503,27 +575,52 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                         {"status": "opponent_hand_read_failed", "error": str(exc)}
                     )
                     opponent_hand_pointers = None
+                    previous_opponent_hand = None
             next_index = -1
             try:
                 next_index = locator.poll_next_deck_index(pointers)
             except Exception:
                 pass
-            hand = [{"slot": slot, "deck_index": index,
-                     "data_id": deck_ids[index] if 0 <= index < 8 else None,
-                     "form": deck_forms[index] if 0 <= index < 8 else None}
-                     for slot, index in enumerate(indices)]
+            hand = [
+                {
+                    "slot": slot,
+                    "deck_index": index,
+                    "data_id": deck_ids[index] if 0 <= index < 8 else None,
+                    "form": deck_forms[index] if 0 <= index < 8 else None,
+                    **evolution_state(
+                        deck_ids[index] if 0 <= index < 8 else None,
+                        deck_forms[index] if 0 <= index < 8 else None,
+                        deck_evolution_charges[index] if 0 <= index < 8 else 0,
+                    ),
+                }
+                for slot, index in enumerate(indices)
+            ]
             diagnostics.update({"status": "ready", "resolved_card_ids":
                                 sum(value is not None for value in deck_ids)})
             result = {"battle_clock": clock, "hand": hand,
-                    "next_card": {"deck_index": next_index,
-                                  "data_id": deck_ids[next_index] if 0 <= next_index < 8 else None,
-                                  "form": deck_forms[next_index] if 0 <= next_index < 8 else None},
+                    "next_card": {
+                        "deck_index": next_index,
+                        "data_id": deck_ids[next_index] if 0 <= next_index < 8 else None,
+                        "form": deck_forms[next_index] if 0 <= next_index < 8 else None,
+                        **evolution_state(
+                            deck_ids[next_index] if 0 <= next_index < 8 else None,
+                            deck_forms[next_index] if 0 <= next_index < 8 else None,
+                            deck_evolution_charges[next_index]
+                            if 0 <= next_index < 8
+                            else 0,
+                        ),
+                    },
                     "opponent_cards": [
                         {
                             "slot": slot,
                             "data_id": opponent_deck_ids[deck_index],
                             "form": opponent_deck_forms[deck_index],
                             "observed_ms": observed_ms,
+                            **evolution_state(
+                                opponent_deck_ids[deck_index],
+                                opponent_deck_forms[deck_index],
+                                opponent_evolution_charges[deck_index],
+                            ),
                         }
                         for slot, (observed_ms, deck_index) in enumerate(
                             opponent_play_events
@@ -531,8 +628,16 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                         if opponent_deck_ids[deck_index] is not None
                     ],
                     "opponent_deck": [
-                        {"slot": slot, "data_id": data_id,
-                         "form": opponent_deck_forms[slot]}
+                        {
+                            "slot": slot,
+                            "data_id": data_id,
+                            "form": opponent_deck_forms[slot],
+                            **evolution_state(
+                                data_id,
+                                opponent_deck_forms[slot],
+                                opponent_evolution_charges[slot],
+                            ),
+                        }
                         for slot, data_id in enumerate(opponent_deck_ids)
                     ],
                     "state_diagnostics": dict(diagnostics)}
