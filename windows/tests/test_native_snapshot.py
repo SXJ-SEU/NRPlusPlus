@@ -661,6 +661,77 @@ class NativeSnapshotTests(unittest.TestCase):
             spawned_brawler["opponent_cards"][0]["evolution_charge"], 1
         )
 
+    def test_entity_fallback_ignores_furnace_spirits_with_the_same_kind(self) -> None:
+        card_id = 27_000_010
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 0,
+                        "opponent_cards": [],
+                        "opponent_deck": [
+                            {
+                                "slot": 0,
+                                "data_id": card_id,
+                                "form": "evolution",
+                                "evolution_cycles": 2,
+                                "evolution_charge": 0,
+                                "evolution_ready": False,
+                            }
+                        ],
+                    }
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+        coordinator.poll()
+
+        def merge_at(observed_ms: int, entities: list[dict]) -> dict:
+            snapshot = normalize_snapshot(
+                {"battle_active": True, "entities": entities}
+            )
+            snapshot["t_ms"] = observed_ms
+            return coordinator.merge(snapshot)
+
+        furnace = {
+            "address": "0xfurnace",
+            "side": 1,
+            "kind": 14,
+            "card_id": card_id,
+            "max_hp": 727,
+        }
+        first = merge_at(1_000, [furnace])
+        merge_at(1_100, [{**furnace, "kind": 15}])
+        spirit = None
+        for index, observed_ms in enumerate((5_000, 10_000, 15_000), start=1):
+            spirit = merge_at(
+                observed_ms,
+                [
+                    {**furnace, "kind": 15},
+                    {
+                        "address": f"0xspirit-{index}",
+                        "side": 1,
+                        "kind": 14,
+                        "card_id": card_id,
+                        "max_hp": 215,
+                    },
+                ],
+            )
+            merge_at(observed_ms + 1_000, [{**furnace, "kind": 15}])
+
+        merge_at(20_000, [])
+        second_furnace = merge_at(
+            30_000,
+            [{**furnace, "address": "0xfurnace-2"}],
+        )
+
+        self.assertEqual(first["opponent_cards"][0]["evolution_charge"], 1)
+        assert spirit is not None
+        self.assertEqual(spirit["opponent_cards"][0]["evolution_charge"], 1)
+        self.assertEqual(
+            second_furnace["opponent_cards"][0]["evolution_charge"], 2
+        )
+
     def test_exact_and_entity_reports_count_as_one_opponent_deployment(self) -> None:
         coordinator = BattleStateCoordinator(
             lambda: iter(

@@ -191,8 +191,9 @@ class BattleStateCoordinator:
             set(),
             set(),
         )
-        self._deployment_entity_kinds_by_side: tuple[
-            dict[int, set[object]], dict[int, set[object]]
+        self._deployment_entity_signatures_by_side: tuple[
+            dict[int, set[tuple[object, object]]],
+            dict[int, set[tuple[object, object]]],
         ] = ({}, {})
 
     def set_active(self, active: bool) -> None:
@@ -205,8 +206,8 @@ class BattleStateCoordinator:
                 card_ids.clear()
             for entity_keys in self._active_entity_keys_by_side:
                 entity_keys.clear()
-            for deployment_kinds in self._deployment_entity_kinds_by_side:
-                deployment_kinds.clear()
+            for signatures in self._deployment_entity_signatures_by_side:
+                signatures.clear()
             self._reader = self._reader_factory() if active else None
 
     def poll(self) -> None:
@@ -235,8 +236,9 @@ class BattleStateCoordinator:
                         set(),
                     )
                     new_card_ids_by_side: tuple[set[int], set[int]] = (set(), set())
-                    new_entity_kinds_by_card_by_side: tuple[
-                        dict[int, set[object]], dict[int, set[object]]
+                    new_entity_signatures_by_card_by_side: tuple[
+                        dict[int, set[tuple[object, object]]],
+                        dict[int, set[tuple[object, object]]],
                     ] = ({}, {})
                     for entity in entities:
                         if not isinstance(entity, dict):
@@ -257,24 +259,32 @@ class BattleStateCoordinator:
                             if (
                                 entity_key not in self._active_entity_keys_by_side[side]
                             ):
-                                new_entity_kinds_by_card_by_side[side].setdefault(
+                                new_entity_signatures_by_card_by_side[side].setdefault(
                                     card_id, set()
-                                ).add(entity.get("kind"))
-                    for side, new_kinds_by_card in enumerate(
-                        new_entity_kinds_by_card_by_side
-                    ):
-                        for card_id, new_kinds in new_kinds_by_card.items():
-                            deployment_kinds = (
-                                self._deployment_entity_kinds_by_side[side].get(card_id)
-                            )
-                            if deployment_kinds is None:
-                                # One deployment may create several units/kinds in
-                                # the same native frame. Preserve that whole initial
-                                # signature for future entity-only detections.
-                                self._deployment_entity_kinds_by_side[side][card_id] = (
-                                    set(new_kinds)
+                                ).add(
+                                    (entity.get("kind"), entity.get("max_hp"))
                                 )
-                            elif new_kinds.isdisjoint(deployment_kinds):
+                    for side, new_signatures_by_card in enumerate(
+                        new_entity_signatures_by_card_by_side
+                    ):
+                        for card_id, new_signatures in new_signatures_by_card.items():
+                            deployment_signatures = (
+                                self._deployment_entity_signatures_by_side[side].get(
+                                    card_id
+                                )
+                            )
+                            if deployment_signatures is None:
+                                # One deployment may create several units in the
+                                # same native frame. Preserve all initial entity
+                                # signatures for future entity-only detections.
+                                self._deployment_entity_signatures_by_side[side][
+                                    card_id
+                                ] = set(new_signatures)
+                            elif new_signatures.isdisjoint(deployment_signatures):
+                                # Spawned units inherit the source card_id. Their
+                                # character data has a different max HP even when
+                                # the runtime kind is identical to the deployed
+                                # troop or building, so they are not new card plays.
                                 continue
                             if card_id not in new_card_ids_by_side[side]:
                                 new_card_ids_by_side[side].add(card_id)
