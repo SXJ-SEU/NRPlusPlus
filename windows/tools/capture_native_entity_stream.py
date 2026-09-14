@@ -815,6 +815,12 @@ def main() -> int:
     parser.add_argument("--interval-ms", type=int, default=DEFAULT_STREAM_INTERVAL_MS)
     parser.add_argument("--headless", action="store_true")
     parser.add_argument(
+        "--ui",
+        choices=("card-bar", "debug"),
+        default="card-bar",
+        help="desktop UI to show when not running headless",
+    )
+    parser.add_argument(
         "--log", type=Path, default=ROOT / "captures" / "native_entity_stream.jsonl"
     )
     args = parser.parse_args()
@@ -924,7 +930,10 @@ def main() -> int:
     if args.headless:
         worker.join()
     else:
-        from minimal_visualizer import run
+        if args.ui == "debug":
+            from minimal_visualizer import run
+        else:
+            from opponent_card_bar import run
 
         try:
             run(store.current)
