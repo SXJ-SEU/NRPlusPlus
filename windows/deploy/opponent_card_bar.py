@@ -26,6 +26,15 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ICON_ROOT = PROJECT_ROOT / "resources" / "icons"
 ASSET_ROOT = PROJECT_ROOT / "resources" / "ui" / "opponent_card_bar"
 CARD_CATALOG = PROJECT_ROOT / "deploy" / "cards.json"
+ICON_VARIANTS = (
+    "normal",
+    "hero",
+    "evolution_0_of_1",
+    "evolution_1_of_1",
+    "evolution_0_of_2",
+    "evolution_1_of_2",
+    "evolution_2_of_2",
+)
 
 
 def _load_card_costs(path: Path = CARD_CATALOG) -> dict[int, float]:
@@ -129,7 +138,7 @@ class OpponentCardBarRenderer:
     ) -> None:
         self.icon_paths = self._index_icons(icon_root)
         self.asset_root = asset_root
-        self.card_images: dict[int, pygame.Surface] = {}
+        self.card_images: dict[tuple[int, str], pygame.Surface] = {}
         self.badges = {
             value: self._load_scaled(asset_root / f"cost_{value}.png", (44, 44))
             for value in [*range(11), "unknown"]
@@ -147,8 +156,8 @@ class OpponentCardBarRenderer:
         self.fallback_number_font = _windows_font(20, bold=True)
 
     @staticmethod
-    def _index_icons(icon_root: Path) -> dict[int, Path]:
-        result: dict[int, Path] = {}
+    def _index_icons(icon_root: Path) -> dict[int, dict[str, Path]]:
+        result: dict[int, dict[str, Path]] = {}
         if not icon_root.is_dir():
             return result
         for directory in icon_root.iterdir():
@@ -159,9 +168,13 @@ class OpponentCardBarRenderer:
                 data_id = int(prefix)
             except ValueError:
                 continue
-            path = directory / "normal.png"
-            if path.is_file():
-                result[data_id] = path
+            variants = {
+                variant: path
+                for variant in ICON_VARIANTS
+                if (path := directory / f"{variant}.png").is_file()
+            }
+            if "normal" in variants:
+                result[data_id] = variants
         return result
 
     @staticmethod
@@ -175,14 +188,60 @@ class OpponentCardBarRenderer:
         width = max(1, round(image.get_width() * height / image.get_height()))
         return pygame.transform.smoothscale(image, (width, height))
 
-    def _card_image(self, data_id: int) -> pygame.Surface | None:
-        if data_id in self.card_images:
-            return self.card_images[data_id]
-        path = self.icon_paths.get(data_id)
+    @classmethod
+    def _load_hero_fitted_to_normal(
+        cls,
+        hero_path: Path,
+        normal_path: Path,
+    ) -> pygame.Surface:
+        hero = pygame.image.load(str(hero_path)).convert_alpha()
+        hero_bounds = hero.get_bounding_rect()
+        normal = cls._load_scaled(normal_path, CARD_SIZE)
+        target_bounds = normal.get_bounding_rect()
+        if hero_bounds.width <= 0 or hero_bounds.height <= 0:
+            return cls._load_scaled(hero_path, CARD_SIZE)
+        visible_hero = hero.subsurface(hero_bounds)
+        fitted = pygame.transform.smoothscale(visible_hero, target_bounds.size)
+        result = pygame.Surface(CARD_SIZE, pygame.SRCALPHA)
+        result.blit(fitted, target_bounds)
+        return result
+
+    def _card_icon_path(self, card: dict[str, Any]) -> Path | None:
+        data_id = card.get("data_id")
+        if not isinstance(data_id, int):
+            return None
+        variants = self.icon_paths.get(data_id)
+        if variants is None:
+            return None
+
+        variant = "normal"
+        if card.get("form") == "hero":
+            variant = "hero"
+        elif card.get("form") == "evolution":
+            cycles = card.get("evolution_cycles")
+            charge = card.get("evolution_charge")
+            if cycles in (1, 2) and type(charge) is int:
+                normalized_charge = max(0, min(charge, cycles))
+                variant = f"evolution_{normalized_charge}_of_{cycles}"
+        return variants.get(variant) or variants.get("normal")
+
+    def _card_image(self, card: dict[str, Any]) -> pygame.Surface | None:
+        data_id = card.get("data_id")
+        if not isinstance(data_id, int):
+            return None
+        path = self._card_icon_path(card)
         if path is None:
             return None
-        image = self._load_scaled(path, CARD_SIZE)
-        self.card_images[data_id] = image
+        cache_key = (data_id, path.stem)
+        if cache_key in self.card_images:
+            return self.card_images[cache_key]
+        normal_path = self.icon_paths[data_id]["normal"]
+        image = (
+            self._load_hero_fitted_to_normal(path, normal_path)
+            if path.stem == "hero"
+            else self._load_scaled(path, CARD_SIZE)
+        )
+        self.card_images[cache_key] = image
         return image
 
     def _draw_background(self, surface: pygame.Surface) -> None:
@@ -231,8 +290,7 @@ class OpponentCardBarRenderer:
     def _draw_cards(self, surface: pygame.Surface, cards: list[dict[str, Any]]) -> None:
         for slot in range(8):
             item = cards[slot] if slot < len(cards) and isinstance(cards[slot], dict) else {}
-            data_id = item.get("data_id")
-            image = self._card_image(data_id) if isinstance(data_id, int) else None
+            image = self._card_image(item)
             if image is None:
                 self._draw_unknown(surface, slot)
             else:

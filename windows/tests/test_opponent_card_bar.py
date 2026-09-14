@@ -123,9 +123,149 @@ class OpponentCardBarTests(unittest.TestCase):
         for top, bottom in zip(*contrasts):
             self.assertLessEqual(abs(top - bottom), 2)
 
-    def test_indexes_every_normal_card_icon(self) -> None:
+    def test_indexes_every_card_icon_variant(self) -> None:
         self.assertEqual(len(self.renderer.icon_paths), 122)
-        self.assertTrue(all(path.name == "normal.png" for path in self.renderer.icon_paths.values()))
+        self.assertTrue(
+            all("normal" in variants for variants in self.renderer.icon_paths.values())
+        )
+        self.assertEqual(
+            set(self.renderer.icon_paths[26_000_000]),
+            {
+                "normal",
+                "hero",
+                "evolution_0_of_2",
+                "evolution_1_of_2",
+                "evolution_2_of_2",
+            },
+        )
+
+    def test_selects_icons_for_hero_and_every_evolution_charge(self) -> None:
+        cases = (
+            ({"data_id": 26_000_000}, "normal.png"),
+            ({"data_id": 26_000_000, "form": "hero"}, "hero.png"),
+            (
+                {
+                    "data_id": 26_000_000,
+                    "form": "evolution",
+                    "evolution_cycles": 2,
+                    "evolution_charge": 0,
+                },
+                "evolution_0_of_2.png",
+            ),
+            (
+                {
+                    "data_id": 26_000_000,
+                    "form": "evolution",
+                    "evolution_cycles": 2,
+                    "evolution_charge": 1,
+                },
+                "evolution_1_of_2.png",
+            ),
+            (
+                {
+                    "data_id": 26_000_000,
+                    "form": "evolution",
+                    "evolution_cycles": 2,
+                    "evolution_charge": 2,
+                },
+                "evolution_2_of_2.png",
+            ),
+            (
+                {
+                    "data_id": 26_000_004,
+                    "form": "evolution",
+                    "evolution_cycles": 1,
+                    "evolution_charge": 0,
+                },
+                "evolution_0_of_1.png",
+            ),
+            (
+                {
+                    "data_id": 26_000_004,
+                    "form": "evolution",
+                    "evolution_cycles": 1,
+                    "evolution_charge": 1,
+                },
+                "evolution_1_of_1.png",
+            ),
+        )
+        for card, filename in cases:
+            with self.subTest(filename=filename):
+                path = self.renderer._card_icon_path(card)
+                self.assertIsNotNone(path)
+                self.assertEqual(path.name, filename)
+
+    def test_missing_or_invalid_form_icon_falls_back_to_normal(self) -> None:
+        for card in (
+            {"data_id": 26_000_002, "form": "evolution"},
+            {
+                "data_id": 26_000_000,
+                "form": "evolution",
+                "evolution_cycles": 3,
+                "evolution_charge": 2,
+            },
+        ):
+            with self.subTest(card=card):
+                path = self.renderer._card_icon_path(card)
+                self.assertIsNotNone(path)
+                self.assertEqual(path.name, "normal.png")
+
+    def test_card_image_cache_separates_forms_of_the_same_card(self) -> None:
+        normal = self.renderer._card_image({"data_id": 26_000_000})
+        hero = self.renderer._card_image(
+            {"data_id": 26_000_000, "form": "hero"}
+        )
+        evolution = self.renderer._card_image(
+            {
+                "data_id": 26_000_000,
+                "form": "evolution",
+                "evolution_cycles": 2,
+                "evolution_charge": 1,
+            }
+        )
+        self.assertIsNotNone(normal)
+        self.assertIsNotNone(hero)
+        self.assertIsNotNone(evolution)
+        self.assertIsNot(normal, hero)
+        self.assertIsNot(normal, evolution)
+
+    def test_every_hero_closely_matches_its_normal_card_visible_bounds(self) -> None:
+        hero_ids = [
+            data_id
+            for data_id, variants in self.renderer.icon_paths.items()
+            if "hero" in variants
+        ]
+        self.assertEqual(len(hero_ids), 16)
+        for data_id in hero_ids:
+            with self.subTest(data_id=data_id):
+                normal = self.renderer._card_image({"data_id": data_id})
+                hero = self.renderer._card_image(
+                    {"data_id": data_id, "form": "hero"}
+                )
+                self.assertIsNotNone(normal)
+                self.assertIsNotNone(hero)
+                normal_bounds = normal.get_bounding_rect()
+                hero_bounds = hero.get_bounding_rect()
+                for normal_edge, hero_edge in zip(
+                    (
+                        normal_bounds.left,
+                        normal_bounds.top,
+                        normal_bounds.right,
+                        normal_bounds.bottom,
+                    ),
+                    (
+                        hero_bounds.left,
+                        hero_bounds.top,
+                        hero_bounds.right,
+                        hero_bounds.bottom,
+                    ),
+                ):
+                    self.assertLessEqual(abs(normal_edge - hero_edge), 2)
+                self.assertGreaterEqual(
+                    hero_bounds.width * hero_bounds.height
+                    / (normal_bounds.width * normal_bounds.height),
+                    0.95,
+                )
 
     def test_runtime_assets_cover_all_elixir_states(self) -> None:
         self.assertEqual(set(self.renderer.badges), {*range(11), "unknown"})
