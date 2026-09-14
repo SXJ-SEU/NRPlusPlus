@@ -15,7 +15,7 @@ LEFT_RAIL_WIDTH = 82
 PANEL_TOP = (13, 133, 220)
 PANEL_BOTTOM = (7, 72, 143)
 CARD_SIZE = (88, 127)
-UNKNOWN_SIZE = (82, 110)
+UNKNOWN_SIZE = (82, 92)
 CARD_COLUMNS = (99, 194, 289, 384)
 CARD_ROWS = (10, 145)
 STATUS_RECT = pygame.Rect(99, 289, 389, 44)
@@ -66,9 +66,15 @@ def card_cell_rect(slot: int) -> pygame.Rect:
 
 def unknown_slot_rect(slot: int) -> pygame.Rect:
     cell = card_cell_rect(slot)
-    rect = pygame.Rect(0, 0, *UNKNOWN_SIZE)
-    rect.midbottom = cell.midbottom
-    return rect
+    return pygame.Rect(cell.left + 3, cell.top + 17, *UNKNOWN_SIZE)
+
+
+def _panel_color_at(y: int) -> tuple[int, int, int]:
+    ratio = max(0, min(WINDOW_SIZE[1] - 1, y)) / (WINDOW_SIZE[1] - 1)
+    return tuple(
+        round(start + (end - start) * ratio)
+        for start, end in zip(PANEL_TOP, PANEL_BOTTOM)
+    )
 
 
 def _vertical_gradient(
@@ -210,7 +216,12 @@ class OpponentCardBarRenderer:
         shadow = rect.move(0, 2)
         pygame.draw.rect(surface, (3, 50, 99), shadow, border_radius=8)
         _rounded_vertical_gradient(surface, rect, (9, 87, 149), (5, 60, 118), 8)
-        pygame.draw.rect(surface, (24, 121, 186), rect, 2, border_radius=8)
+        panel_color = _panel_color_at(rect.top)
+        edge_color = tuple(
+            min(255, channel + offset)
+            for channel, offset in zip(panel_color, (14, 17, 3))
+        )
+        pygame.draw.rect(surface, edge_color, rect, 2, border_radius=8)
         inner = rect.inflate(-4, -4)
         pygame.draw.rect(surface, (6, 66, 126), inner, 2, border_radius=6)
         question_rect = self.question.get_rect(center=rect.center)

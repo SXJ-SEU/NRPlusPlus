@@ -106,8 +106,22 @@ class OpponentCardBarTests(unittest.TestCase):
         for slot in range(8):
             cell = card_bar.card_cell_rect(slot)
             unknown = card_bar.unknown_slot_rect(slot)
-            self.assertEqual(unknown.size, (82, 110))
-            self.assertEqual(unknown.midbottom, cell.midbottom)
+            self.assertEqual(unknown.size, (82, 92))
+            self.assertEqual(unknown.topleft, (cell.left + 3, cell.top + 17))
+
+    def test_unknown_slot_edges_have_the_same_contrast_in_both_rows(self) -> None:
+        surface = pygame.Surface(card_bar.WINDOW_SIZE, pygame.SRCALPHA)
+        self.renderer.draw(surface, None)
+        contrasts = []
+        for slot in (0, 4):
+            rect = card_bar.unknown_slot_rect(slot)
+            edge = surface.get_at((rect.centerx, rect.top))[:3]
+            panel = surface.get_at((rect.centerx, rect.top - 1))[:3]
+            contrast = tuple(edge[channel] - panel[channel] for channel in range(3))
+            self.assertTrue(all(value > 0 for value in contrast))
+            contrasts.append(contrast)
+        for top, bottom in zip(*contrasts):
+            self.assertLessEqual(abs(top - bottom), 2)
 
     def test_indexes_every_normal_card_icon(self) -> None:
         self.assertEqual(len(self.renderer.icon_paths), 122)
