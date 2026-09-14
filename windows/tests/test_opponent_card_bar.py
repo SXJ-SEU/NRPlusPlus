@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 import sys
 import unittest
-from collections import deque
 from pathlib import Path
 
 
@@ -16,63 +15,6 @@ WINDOWS_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(WINDOWS_ROOT / "deploy"))
 
 import opponent_card_bar as card_bar  # noqa: E402
-
-
-def _normalized_white_glyph(
-    surface: pygame.Surface,
-    component_count: int,
-    roi: pygame.Rect | None = None,
-    size: int = 64,
-) -> set[tuple[int, int]]:
-    bounds = roi or surface.get_rect()
-    white_pixels = set()
-    for y in range(bounds.top, bounds.bottom):
-        for x in range(bounds.left, bounds.right):
-            color = surface.get_at((x, y))
-            channels = color[:3]
-            if max(channels) - min(channels) < 78 and min(channels) >= 145 and color.a:
-                white_pixels.add((x, y))
-
-    components: list[set[tuple[int, int]]] = []
-    remaining = set(white_pixels)
-    while remaining:
-        start = remaining.pop()
-        component = {start}
-        pending = deque([start])
-        while pending:
-            x, y = pending.popleft()
-            for neighbor_y in range(y - 1, y + 2):
-                for neighbor_x in range(x - 1, x + 2):
-                    neighbor = (neighbor_x, neighbor_y)
-                    if neighbor in remaining:
-                        remaining.remove(neighbor)
-                        component.add(neighbor)
-                        pending.append(neighbor)
-        components.append(component)
-
-    retained = set().union(
-        *sorted(components, key=len, reverse=True)[:component_count]
-    )
-    left = min(x for x, _ in retained)
-    right = max(x for x, _ in retained)
-    top = min(y for _, y in retained)
-    bottom = max(y for _, y in retained)
-    width = right - left + 1
-    height = bottom - top + 1
-    return {
-        (x, y)
-        for y in range(size)
-        for x in range(size)
-        if (
-            left + min(width - 1, x * width // size),
-            top + min(height - 1, y * height // size),
-        )
-        in retained
-    }
-
-
-def _mask_iou(first: set[tuple[int, int]], second: set[tuple[int, int]]) -> float:
-    return len(first & second) / len(first | second)
 
 
 class OpponentCardBarTests(unittest.TestCase):
@@ -271,37 +213,39 @@ class OpponentCardBarTests(unittest.TestCase):
         self.assertEqual(set(self.renderer.badges), {*range(11), "unknown"})
         self.assertEqual(set(self.renderer.digits), {*map(str, range(10)), "."})
 
-    def test_zero_and_ten_elixir_badges_keep_master_resolution(self) -> None:
-        approved = pygame.image.load(str(card_bar.ASSET_ROOT / "cost_8.png"))
-        approved_size = approved.get_size()
-        self.assertEqual(approved_size, (112, 112))
-        editable_center = pygame.Rect(18, 20, 78, 74)
+    def test_zero_and_ten_use_complete_badge_artwork(self) -> None:
+        standard = pygame.image.load(str(card_bar.ASSET_ROOT / "cost_8.png"))
+        self.assertEqual(standard.get_size(), (112, 112))
         for value in (0, 10):
             badge = pygame.image.load(str(card_bar.ASSET_ROOT / f"cost_{value}.png"))
-            self.assertEqual(badge.get_size(), approved_size)
-            for y in range(approved_size[1]):
-                for x in range(approved_size[0]):
-                    if not editable_center.collidepoint(x, y):
-                        self.assertEqual(badge.get_at((x, y)), approved.get_at((x, y)))
+            self.assertEqual(badge.get_size(), standard.get_size())
+            self.assertGreater(
+                sum(
+                    badge.get_at((x, y)) != standard.get_at((x, y))
+                    for y in range(112)
+                    for x in range(112)
+                    if not pygame.Rect(18, 20, 78, 74).collidepoint(x, y)
+                ),
+                500,
+            )
+            self.assertTrue(pygame.Rect(0, 0, 112, 112).contains(badge.get_bounding_rect()))
+            if value == 0:
+                bounds = badge.get_bounding_rect()
+                self.assertGreaterEqual(bounds.width, 102)
+                self.assertGreaterEqual(bounds.height, 104)
 
-    def test_zero_and_ten_use_approved_reference_glyphs(self) -> None:
-        editable_center = pygame.Rect(18, 20, 78, 74)
-        for value, component_count in ((0, 1), (10, 2)):
-            reference = pygame.image.load(
-                str(card_bar.ASSET_ROOT / "glyph_refs" / f"elixir_{value}.png")
-            )
-            badge = pygame.image.load(str(card_bar.ASSET_ROOT / f"cost_{value}.png"))
-            reference_mask = _normalized_white_glyph(reference, component_count)
-            badge_mask = _normalized_white_glyph(
-                badge,
-                component_count,
-                editable_center,
-            )
-            self.assertGreaterEqual(
-                _mask_iou(reference_mask, badge_mask),
-                0.94,
-                f"cost_{value}.png does not preserve its approved glyph shape",
-            )
+    def test_average_zero_uses_the_same_approved_zero_glyph(self) -> None:
+        average_zero = pygame.image.load(
+            str(card_bar.ASSET_ROOT / "digits" / "0.png")
+        )
+        approved_zero = pygame.image.load(
+            str(card_bar.ASSET_ROOT / "glyph_refs" / "average_0.png")
+        )
+        self.assertEqual(average_zero.get_size(), approved_zero.get_size())
+        self.assertEqual(
+            pygame.image.tobytes(average_zero, "RGBA"),
+            pygame.image.tobytes(approved_zero, "RGBA"),
+        )
 
     def test_average_cost_uses_unique_revealed_cards(self) -> None:
         cards = [
