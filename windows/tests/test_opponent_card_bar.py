@@ -59,6 +59,19 @@ class OpponentCardBarTests(unittest.TestCase):
         self.assertEqual(set(self.renderer.badges), {*range(11), "unknown"})
         self.assertEqual(set(self.renderer.digits), {*map(str, range(10)), "."})
 
+    def test_zero_and_ten_elixir_badges_keep_master_resolution(self) -> None:
+        approved = pygame.image.load(str(card_bar.ASSET_ROOT / "cost_8.png"))
+        approved_size = approved.get_size()
+        self.assertEqual(approved_size, (112, 112))
+        editable_center = pygame.Rect(18, 20, 78, 74)
+        for value in (0, 10):
+            badge = pygame.image.load(str(card_bar.ASSET_ROOT / f"cost_{value}.png"))
+            self.assertEqual(badge.get_size(), approved_size)
+            for y in range(approved_size[1]):
+                for x in range(approved_size[0]):
+                    if not editable_center.collidepoint(x, y):
+                        self.assertEqual(badge.get_at((x, y)), approved.get_at((x, y)))
+
     def test_average_cost_uses_unique_revealed_cards(self) -> None:
         cards = [
             {"data_id": 26_000_030},
@@ -108,6 +121,24 @@ class OpponentCardBarTests(unittest.TestCase):
         self.assertNotEqual(
             tuple(active.get_at(card_bar.card_cell_rect(0).center)[:3]),
             tuple(waiting.get_at(card_bar.card_cell_rect(0).center)[:3]),
+        )
+
+    def test_inset_top_edges_do_not_contain_detached_accent_lines(self) -> None:
+        surface = pygame.Surface(card_bar.WINDOW_SIZE, pygame.SRCALPHA)
+        self.renderer.draw(surface, None)
+
+        unknown_inner = card_bar.unknown_slot_rect(0).inflate(-4, -4)
+        self.assertNotEqual(
+            tuple(surface.get_at(unknown_inner.topleft)[:3]),
+            (2, 45, 88),
+        )
+        self.assertNotEqual(
+            tuple(
+                surface.get_at(
+                    (card_bar.AVERAGE_RECT.left + 4, card_bar.AVERAGE_RECT.top + 2)
+                )[:3]
+            ),
+            (52, 166, 233),
         )
 
 

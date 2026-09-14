@@ -213,7 +213,6 @@ class OpponentCardBarRenderer:
         pygame.draw.rect(surface, (24, 121, 186), rect, 2, border_radius=8)
         inner = rect.inflate(-4, -4)
         pygame.draw.rect(surface, (6, 66, 126), inner, 2, border_radius=6)
-        pygame.draw.line(surface, (2, 45, 88), inner.topleft, (inner.right - 1, inner.top), 2)
         question_rect = self.question.get_rect(center=rect.center)
         question_rect.y -= 1
         surface.blit(self.question, question_rect)
@@ -287,12 +286,6 @@ class OpponentCardBarRenderer:
             8,
         )
         pygame.draw.rect(surface, (4, 53, 108), AVERAGE_RECT, 2, border_radius=8)
-        pygame.draw.line(
-            surface,
-            (52, 166, 233),
-            (AVERAGE_RECT.left + 4, AVERAGE_RECT.top + 2),
-            (AVERAGE_RECT.right - 5, AVERAGE_RECT.top + 2),
-        )
         label = self.label_font.render("平均费用", True, (217, 237, 255))
         surface.blit(label, label.get_rect(midtop=(AVERAGE_RECT.centerx, AVERAGE_RECT.top + 4)))
         if average is None:
