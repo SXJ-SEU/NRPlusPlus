@@ -44,6 +44,55 @@ class OpponentCardBarTests(unittest.TestCase):
             ],
         )
 
+    def test_sidebar_layout_stays_inside_the_left_rail(self) -> None:
+        self.assertTrue(
+            pygame.Rect(0, 0, card_bar.LEFT_RAIL_WIDTH, card_bar.WINDOW_SIZE[1]).contains(
+                card_bar.SIDEBAR_TITLE_RECT
+            )
+        )
+        button_rects = list(card_bar.SIDEBAR_BUTTON_RECTS.values())
+        self.assertEqual(list(card_bar.SIDEBAR_BUTTON_RECTS), list(card_bar.SIDEBAR_ACTIONS))
+        self.assertEqual(len(button_rects), 4)
+        for index, rect in enumerate(button_rects):
+            self.assertLessEqual(rect.right, card_bar.LEFT_RAIL_WIDTH)
+            self.assertGreater(rect.top, card_bar.SIDEBAR_TITLE_RECT.bottom)
+            if index:
+                self.assertFalse(rect.colliderect(button_rects[index - 1]))
+
+    def test_sidebar_button_click_feedback_requires_release_on_same_button(self) -> None:
+        renderer = card_bar.OpponentCardBarRenderer()
+        first, second = list(card_bar.SIDEBAR_BUTTON_RECTS.values())[:2]
+
+        self.assertTrue(renderer.press_sidebar(first.center))
+        self.assertEqual(renderer.pressed_sidebar_action, "opponent_info")
+        self.assertIsNone(renderer.release_sidebar(second.center))
+
+        self.assertTrue(renderer.press_sidebar(first.center))
+        self.assertEqual(renderer.release_sidebar(first.center), "opponent_info")
+        self.assertFalse(renderer.press_sidebar((card_bar.LEFT_RAIL_WIDTH + 1, 10)))
+
+    def test_sidebar_feedback_only_exists_while_button_is_pressed(self) -> None:
+        renderer = card_bar.OpponentCardBarRenderer()
+        rect = card_bar.SIDEBAR_BUTTON_RECTS["settings"]
+        normal = pygame.Surface(card_bar.WINDOW_SIZE)
+        renderer.draw(normal, None)
+
+        renderer.press_sidebar(rect.center)
+        pressed = pygame.Surface(card_bar.WINDOW_SIZE)
+        renderer.draw(pressed, None)
+        self.assertNotEqual(
+            pygame.image.tobytes(normal.subsurface(rect), "RGB"),
+            pygame.image.tobytes(pressed.subsurface(rect), "RGB"),
+        )
+
+        renderer.release_sidebar(rect.center)
+        released = pygame.Surface(card_bar.WINDOW_SIZE)
+        renderer.draw(released, None)
+        self.assertEqual(
+            pygame.image.tobytes(normal.subsurface(rect), "RGB"),
+            pygame.image.tobytes(released.subsurface(rect), "RGB"),
+        )
+
     def test_unknown_slots_match_visible_normal_card_face(self) -> None:
         for slot in range(8):
             cell = card_bar.card_cell_rect(slot)
@@ -212,6 +261,18 @@ class OpponentCardBarTests(unittest.TestCase):
     def test_runtime_assets_cover_all_elixir_states(self) -> None:
         self.assertEqual(set(self.renderer.badges), {*range(11), "unknown"})
         self.assertEqual(set(self.renderer.digits), {*map(str, range(10)), "."})
+
+    def test_approved_background_fills_the_entire_window(self) -> None:
+        source = pygame.image.load(str(card_bar.BACKGROUND_ASSET)).convert()
+        expected = pygame.transform.smoothscale(source, card_bar.WINDOW_SIZE)
+        surface = pygame.Surface(card_bar.WINDOW_SIZE)
+
+        self.renderer._draw_background(surface)
+
+        self.assertEqual(self.renderer.background.get_size(), card_bar.WINDOW_SIZE)
+        for point in ((0, 0), (80, 170), (250, 100), (499, 339)):
+            with self.subTest(point=point):
+                self.assertEqual(surface.get_at(point), expected.get_at(point))
 
     def test_zero_and_ten_use_complete_badge_artwork(self) -> None:
         standard = pygame.image.load(str(card_bar.ASSET_ROOT / "cost_8.png"))

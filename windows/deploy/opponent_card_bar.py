@@ -22,9 +22,22 @@ STATUS_RECT = pygame.Rect(99, 289, 389, 44)
 ELIXIR_BADGE_RECT = pygame.Rect(96, 289, 44, 44)
 ELIXIR_METER_RECT = pygame.Rect(132, 299, 282, 25)
 AVERAGE_RECT = pygame.Rect(421, 288, 67, 45)
+SIDEBAR_TITLE_RECT = pygame.Rect(4, 7, 74, 30)
+SIDEBAR_ACTIONS = (
+    "opponent_info",
+    "battle_log",
+    "communication",
+    "settings",
+)
+SIDEBAR_BUTTON_RECTS = {
+    action: pygame.Rect(5, 43 + index * 73, 72, 67)
+    for index, action in enumerate(SIDEBAR_ACTIONS)
+}
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ICON_ROOT = PROJECT_ROOT / "resources" / "icons"
 ASSET_ROOT = PROJECT_ROOT / "resources" / "ui" / "opponent_card_bar"
+BACKGROUND_ASSET = ASSET_ROOT / "background.png"
+SIDEBAR_ASSET_ROOT = ASSET_ROOT / "sidebar"
 CARD_CATALOG = PROJECT_ROOT / "deploy" / "cards.json"
 ICON_VARIANTS = (
     "normal",
@@ -138,6 +151,17 @@ class OpponentCardBarRenderer:
     ) -> None:
         self.icon_paths = self._index_icons(icon_root)
         self.asset_root = asset_root
+        background = pygame.image.load(str(asset_root / "background.png")).convert()
+        self.background = pygame.transform.smoothscale(background, WINDOW_SIZE)
+        sidebar_root = asset_root / "sidebar"
+        self.sidebar_title = self._load_contained(
+            sidebar_root / "title.png", SIDEBAR_TITLE_RECT.size
+        )
+        self.sidebar_icons = {
+            action: self._load_contained(sidebar_root / f"{action}.png", (62, 62))
+            for action in SIDEBAR_ACTIONS
+        }
+        self.pressed_sidebar_action: str | None = None
         self.card_images: dict[tuple[int, str], pygame.Surface] = {}
         self.badges = {
             value: self._load_scaled(asset_root / f"cost_{value}.png", (44, 44))
@@ -181,6 +205,16 @@ class OpponentCardBarRenderer:
     def _load_scaled(path: Path, size: tuple[int, int]) -> pygame.Surface:
         image = pygame.image.load(str(path)).convert_alpha()
         return pygame.transform.smoothscale(image, size)
+
+    @staticmethod
+    def _load_contained(path: Path, size: tuple[int, int]) -> pygame.Surface:
+        image = pygame.image.load(str(path)).convert_alpha()
+        scale = min(size[0] / image.get_width(), size[1] / image.get_height())
+        fitted_size = (
+            max(1, round(image.get_width() * scale)),
+            max(1, round(image.get_height() * scale)),
+        )
+        return pygame.transform.smoothscale(image, fitted_size)
 
     @classmethod
     def _load_height(cls, path: Path, height: int) -> pygame.Surface:
@@ -245,37 +279,72 @@ class OpponentCardBarRenderer:
         return image
 
     def _draw_background(self, surface: pygame.Surface) -> None:
-        rail = pygame.Rect(0, 0, LEFT_RAIL_WIDTH, WINDOW_SIZE[1])
-        for x in range(rail.width):
-            if x <= 57:
-                ratio = x / 57
-                start, end = (7, 61, 118), (11, 85, 149)
-            else:
-                ratio = (x - 57) / 24
-                start, end = (11, 85, 149), (6, 53, 107)
-            color = tuple(round(a + (b - a) * ratio) for a, b in zip(start, end))
-            pygame.draw.line(surface, color, (x, 0), (x, WINDOW_SIZE[1] - 1))
-        pygame.draw.rect(surface, (20, 109, 173), (0, 0, LEFT_RAIL_WIDTH, 4))
-        pygame.draw.rect(surface, (3, 43, 89), (0, WINDOW_SIZE[1] - 4, LEFT_RAIL_WIDTH, 4))
-        pygame.draw.rect(surface, (6, 45, 91), (LEFT_RAIL_WIDTH - 4, 0, 4, WINDOW_SIZE[1]))
-        pygame.draw.line(
-            surface,
-            (37, 141, 209),
-            (LEFT_RAIL_WIDTH - 5, 0),
-            (LEFT_RAIL_WIDTH - 5, WINDOW_SIZE[1] - 1),
+        surface.blit(self.background, (0, 0))
+
+    @staticmethod
+    def sidebar_action_at(position: tuple[int, int]) -> str | None:
+        return next(
+            (
+                action
+                for action, rect in SIDEBAR_BUTTON_RECTS.items()
+                if rect.collidepoint(position)
+            ),
+            None,
         )
 
-        panel = pygame.Rect(LEFT_RAIL_WIDTH, 0, WINDOW_SIZE[0] - LEFT_RAIL_WIDTH, WINDOW_SIZE[1])
-        _vertical_gradient(surface, panel, PANEL_TOP, PANEL_BOTTOM)
-        pygame.draw.rect(surface, (53, 167, 237), (LEFT_RAIL_WIDTH, 0, panel.width, 4))
-        pygame.draw.rect(surface, (4, 60, 119), (LEFT_RAIL_WIDTH, WINDOW_SIZE[1] - 4, panel.width, 4))
+    def press_sidebar(self, position: tuple[int, int]) -> bool:
+        action = self.sidebar_action_at(position)
+        self.pressed_sidebar_action = action
+        return action is not None
+
+    def release_sidebar(self, position: tuple[int, int]) -> str | None:
+        released_action = self.sidebar_action_at(position)
+        clicked_action = (
+            released_action
+            if released_action is not None
+            and released_action == self.pressed_sidebar_action
+            else None
+        )
+        self.pressed_sidebar_action = None
+        return clicked_action
+
+    def _draw_sidebar(self, surface: pygame.Surface) -> None:
+        surface.blit(self.sidebar_title, self.sidebar_title.get_rect(center=SIDEBAR_TITLE_RECT.center))
+        for action, rect in SIDEBAR_BUTTON_RECTS.items():
+            is_pressed = action == self.pressed_sidebar_action
+            if is_pressed:
+                feedback = pygame.Surface(rect.size, pygame.SRCALPHA)
+                feedback_rect = feedback.get_rect().inflate(-4, -4)
+                pygame.draw.rect(
+                    feedback, (0, 25, 67, 115), feedback_rect, border_radius=10
+                )
+                pygame.draw.rect(
+                    feedback,
+                    (100, 197, 255, 210),
+                    feedback_rect,
+                    2,
+                    border_radius=10,
+                )
+                surface.blit(feedback, rect)
+
+            icon = self.sidebar_icons[action]
+            if is_pressed:
+                pressed_size = (
+                    max(1, round(icon.get_width() * 0.91)),
+                    max(1, round(icon.get_height() * 0.91)),
+                )
+                icon = pygame.transform.smoothscale(icon, pressed_size)
+            icon_rect = icon.get_rect(center=rect.center)
+            if is_pressed:
+                icon_rect.move_ip(0, 2)
+            surface.blit(icon, icon_rect)
 
     def _draw_unknown(self, surface: pygame.Surface, slot: int) -> None:
         rect = unknown_slot_rect(slot)
         shadow = rect.move(0, 2)
         pygame.draw.rect(surface, (3, 50, 99), shadow, border_radius=8)
         _rounded_vertical_gradient(surface, rect, (9, 87, 149), (5, 60, 118), 8)
-        panel_color = _panel_color_at(rect.top)
+        panel_color = surface.get_at((rect.centerx, max(0, rect.top - 1)))[:3]
         edge_color = tuple(
             min(255, channel + offset)
             for channel, offset in zip(panel_color, (14, 17, 3))
@@ -365,6 +434,7 @@ class OpponentCardBarRenderer:
 
     def draw(self, surface: pygame.Surface, snapshot: dict[str, Any] | None) -> None:
         self._draw_background(surface)
+        self._draw_sidebar(surface)
         cards = snapshot.get("opponent_cards", []) if snapshot is not None else []
         if not isinstance(cards, list):
             cards = []
@@ -452,8 +522,12 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
             elif event.type == pygame.KEYUP and event.key == pygame.K_ESCAPE:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                drag_origin = (_cursor_position(), window.position)
+                if renderer.press_sidebar(event.pos):
+                    drag_origin = None
+                else:
+                    drag_origin = (_cursor_position(), window.position)
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                renderer.release_sidebar(event.pos)
                 drag_origin = None
 
         if drag_origin is not None and pygame.mouse.get_pressed(num_buttons=3)[0]:
