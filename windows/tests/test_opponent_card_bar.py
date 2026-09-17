@@ -435,7 +435,7 @@ class OpponentCardBarTests(unittest.TestCase):
                 )
             )
 
-    def test_recent_deck_card_faces_share_the_requested_44_pixel_height(self) -> None:
+    def test_recent_deck_card_faces_share_the_requested_height(self) -> None:
         def write_art(path: Path, *, decorated: bool) -> None:
             image = pygame.Surface((320, 408), pygame.SRCALPHA)
             if decorated:
@@ -481,7 +481,10 @@ class OpponentCardBarTests(unittest.TestCase):
                 for card in cards
             ]
 
-            self.assertEqual(heights, [44, 44])
+            self.assertEqual(
+                heights,
+                [card_bar.DECK_CARD_FACE_HEIGHT] * len(cards),
+            )
 
     def test_inset_top_edges_do_not_contain_detached_accent_lines(self) -> None:
         surface = pygame.Surface(card_bar.WINDOW_SIZE, pygame.SRCALPHA)

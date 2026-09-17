@@ -27,7 +27,7 @@ AVERAGE_RECT = pygame.Rect(421, 288, 67, 45)
 CONTENT_RECT = pygame.Rect(82, 0, 418, 340)
 ONLINE_CARD_CANVAS_SIZE = (320, 408)
 ONLINE_CARD_FACE_RECT = pygame.Rect(51, 83, 219, 274)
-DECK_CARD_FACE_HEIGHT = 44
+DECK_CARD_FACE_HEIGHT = 40
 DECK_CARD_ART_SIZE = (56, 68)
 DECK_CARD_FACE_TOP = 12
 SIDEBAR_TITLE_RECT = pygame.Rect(4, 7, 74, 30)
@@ -476,7 +476,7 @@ class OpponentCardBarRenderer:
         source = pygame.image.load(str(path)).convert_alpha()
         source_face = self._online_card_face_rect(source, card.form)
         # Smooth scaling blends the last source row into transparency. One extra
-        # sample keeps the visibly opaque face at the requested 44 px.
+        # sample keeps the visibly opaque face at the requested face height.
         scale = (DECK_CARD_FACE_HEIGHT + 1) / source_face.height
         scaled_size = (
             max(1, round(source.get_width() * scale)),
