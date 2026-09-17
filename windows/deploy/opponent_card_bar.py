@@ -25,6 +25,11 @@ ELIXIR_BADGE_RECT = pygame.Rect(96, 289, 44, 44)
 ELIXIR_METER_RECT = pygame.Rect(132, 299, 282, 25)
 AVERAGE_RECT = pygame.Rect(421, 288, 67, 45)
 CONTENT_RECT = pygame.Rect(82, 0, 418, 340)
+ONLINE_CARD_CANVAS_SIZE = (320, 408)
+ONLINE_CARD_FACE_RECT = pygame.Rect(51, 83, 219, 274)
+DECK_CARD_FACE_HEIGHT = 44
+DECK_CARD_ART_SIZE = (56, 68)
+DECK_CARD_FACE_TOP = 12
 SIDEBAR_TITLE_RECT = pygame.Rect(4, 7, 74, 30)
 SIDEBAR_ACTIONS = (
     "opponent_info",
@@ -468,17 +473,53 @@ class OpponentCardBarRenderer:
             path = variants.get("normal")
         if path is None:
             return None
-        image = pygame.image.load(str(path)).convert_alpha()
-        bounds = image.get_bounding_rect()
-        if bounds.width and bounds.height:
-            image = image.subsurface(bounds)
-        target_height = 43
-        target_width = max(1, round(image.get_width() * target_height / image.get_height()))
-        if target_width > 31:
-            target_width = 31
-        fitted = pygame.transform.smoothscale(image, (target_width, target_height))
+        source = pygame.image.load(str(path)).convert_alpha()
+        source_face = self._online_card_face_rect(source, card.form)
+        # Smooth scaling blends the last source row into transparency. One extra
+        # sample keeps the visibly opaque face at the requested 44 px.
+        scale = (DECK_CARD_FACE_HEIGHT + 1) / source_face.height
+        scaled_size = (
+            max(1, round(source.get_width() * scale)),
+            max(1, round(source.get_height() * scale)),
+        )
+        scaled = pygame.transform.smoothscale(source, scaled_size)
+        scaled_face = pygame.Rect(
+            round(source_face.x * scaled_size[0] / source.get_width()),
+            round(source_face.y * scaled_size[1] / source.get_height()),
+            round(source_face.width * scaled_size[0] / source.get_width()),
+            DECK_CARD_FACE_HEIGHT,
+        )
+        fitted = pygame.Surface(DECK_CARD_ART_SIZE, pygame.SRCALPHA)
+        destination = (
+            DECK_CARD_ART_SIZE[0] // 2 - scaled_face.centerx,
+            DECK_CARD_FACE_TOP - scaled_face.top,
+        )
+        fitted.blit(scaled, destination)
         self.deck_card_images[cache_key] = fitted
         return fitted
+
+    @staticmethod
+    def _online_card_face_rect(
+        image: pygame.Surface,
+        form: str | None,
+    ) -> pygame.Rect:
+        width_scale = image.get_width() / ONLINE_CARD_CANVAS_SIZE[0]
+        height_scale = image.get_height() / ONLINE_CARD_CANVAS_SIZE[1]
+        canonical = pygame.Rect(
+            round(ONLINE_CARD_FACE_RECT.x * width_scale),
+            round(ONLINE_CARD_FACE_RECT.y * height_scale),
+            round(ONLINE_CARD_FACE_RECT.width * width_scale),
+            round(ONLINE_CARD_FACE_RECT.height * height_scale),
+        )
+        visible = image.get_bounding_rect()
+        if (
+            form is None
+            and canonical.width * 0.9 <= visible.width <= canonical.width * 1.1
+            and canonical.height * 0.9 <= visible.height <= canonical.height * 1.05
+            and visible.top >= canonical.top - round(8 * height_scale)
+        ):
+            return visible
+        return canonical
 
     def _draw_info_panel(self, surface: pygame.Surface) -> None:
         panel = pygame.Surface(CONTENT_RECT.size, pygame.SRCALPHA)
@@ -577,7 +618,11 @@ class OpponentCardBarRenderer:
                     pygame.draw.rect(surface, (49, 129, 184), placeholder, 1, border_radius=4)
                     x += 31
                     continue
-                image_rect = image.get_rect(midbottom=(x + 14, row.bottom - 2))
+                image_rect = image.get_rect()
+                image_rect.centerx = x + 14
+                image_rect.y = row.bottom - 2 - (
+                    DECK_CARD_FACE_TOP + DECK_CARD_FACE_HEIGHT
+                )
                 surface.blit(image, image_rect)
                 x += 31
             rate_text = self.info_body_font.render(

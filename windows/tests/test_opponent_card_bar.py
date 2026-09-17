@@ -426,7 +426,7 @@ class OpponentCardBarTests(unittest.TestCase):
             rendered = self.renderer._deck_card_image(card)
 
             self.assertIsNotNone(rendered)
-            self.assertEqual(rendered.get_height(), 43)
+            self.assertEqual(rendered.get_size(), card_bar.DECK_CARD_ART_SIZE)
             actual = tuple(rendered.get_at(rendered.get_rect().center)[:3])
             self.assertTrue(
                 all(
@@ -434,6 +434,54 @@ class OpponentCardBarTests(unittest.TestCase):
                     for channel, expected in zip(actual, (241, 72, 91))
                 )
             )
+
+    def test_recent_deck_card_faces_share_the_requested_44_pixel_height(self) -> None:
+        def write_art(path: Path, *, decorated: bool) -> None:
+            image = pygame.Surface((320, 408), pygame.SRCALPHA)
+            if decorated:
+                pygame.draw.rect(image, (170, 45, 220, 255), (33, 45, 255, 328))
+            pygame.draw.rect(image, (20, 220, 40, 255), (51, 83, 219, 274))
+            pygame.image.save(image, path)
+
+        def face_height(image: pygame.Surface) -> int:
+            mask = pygame.mask.from_threshold(
+                image,
+                (20, 220, 40, 255),
+                threshold=(35, 35, 35, 255),
+            )
+            rects = mask.get_bounding_rects()
+            self.assertTrue(rects)
+            return rects[0].unionall(rects[1:]).height
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            normal_path = root / "normal.png"
+            evolution_path = root / "evolution.png"
+            write_art(normal_path, decorated=False)
+            write_art(evolution_path, decorated=True)
+            cards = (
+                opponent_info.CardSummary(
+                    data_id=99_999_991,
+                    form=None,
+                    elixir_cost=3,
+                    icon_url="/cards/normal.png",
+                    cached_icon_path=str(normal_path),
+                ),
+                opponent_info.CardSummary(
+                    data_id=99_999_992,
+                    form="evolution",
+                    elixir_cost=3,
+                    icon_url="/card-forms/evolution.png",
+                    cached_icon_path=str(evolution_path),
+                ),
+            )
+
+            heights = [
+                face_height(self.renderer._deck_card_image(card))
+                for card in cards
+            ]
+
+            self.assertEqual(heights, [44, 44])
 
     def test_inset_top_edges_do_not_contain_detached_accent_lines(self) -> None:
         surface = pygame.Surface(card_bar.WINDOW_SIZE, pygame.SRCALPHA)
