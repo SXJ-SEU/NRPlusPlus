@@ -100,6 +100,22 @@ class OpponentCardBarTests(unittest.TestCase):
         self.assertEqual(info_controller.requests, 2)
         self.assertFalse(controller.handle_sidebar_action("battle_log"))
 
+    def test_existing_pages_start_when_communication_assets_are_unavailable(self) -> None:
+        info_controller = FakeOpponentInfoController()
+        controller = card_bar.OpponentCardBarController(
+            info_controller,
+            communication_factory=lambda: (_ for _ in ()).throw(
+                FileNotFoundError("communication atlas is missing")
+            ),
+        )
+
+        self.assertEqual(controller.page, "cards")
+        self.assertFalse(controller.handle_sidebar_action("communication"))
+        self.assertEqual(controller.page, "cards")
+        self.assertTrue(controller.handle_sidebar_action("opponent_info"))
+        self.assertEqual(controller.page, "opponent_info")
+        self.assertEqual(info_controller.requests, 1)
+
     def test_sidebar_feedback_only_exists_while_button_is_pressed(self) -> None:
         renderer = card_bar.OpponentCardBarRenderer()
         rect = card_bar.SIDEBAR_BUTTON_RECTS["settings"]

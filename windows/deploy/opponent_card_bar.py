@@ -5,11 +5,14 @@ import json
 import sys
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pygame
 
 from opponent_info import CardSummary, OpponentInfoController, OpponentInfoState
+
+if TYPE_CHECKING:
+    from communication_panel import CommunicationPanel
 
 
 WINDOW_SIZE = (500, 340)
@@ -667,12 +670,17 @@ class OpponentCardBarRenderer:
         *,
         page: str = "cards",
         opponent_info_state: OpponentInfoState | None = None,
+        communication_panel: CommunicationPanel | None = None,
     ) -> None:
         self._draw_background(surface)
         self._draw_sidebar(surface)
         if page == "opponent_info":
             state = opponent_info_state or OpponentInfoState(status="loading")
             self._draw_opponent_info(surface, state, snapshot)
+            return
+        if page == "communication":
+            if communication_panel is not None:
+                communication_panel.draw(surface)
             return
         cards = snapshot.get("opponent_cards", []) if snapshot is not None else []
         if not isinstance(cards, list):
@@ -685,18 +693,45 @@ class OpponentCardBarRenderer:
 
 
 class OpponentCardBarController:
-    def __init__(self, opponent_info: OpponentInfoController | None = None) -> None:
+    def __init__(
+        self,
+        opponent_info: OpponentInfoController | None = None,
+        communication: CommunicationPanel | None = None,
+        communication_factory: Callable[[], CommunicationPanel] | None = None,
+    ) -> None:
         self.page = "cards"
         self.opponent_info = opponent_info or OpponentInfoController()
+        self.communication = communication
+        self._communication_factory = communication_factory
+        self.communication_error: str | None = None
+
+    def _ensure_communication(self) -> bool:
+        if self.communication is not None:
+            return True
+        try:
+            if self._communication_factory is not None:
+                self.communication = self._communication_factory()
+            else:
+                from communication_panel import CommunicationPanel
+
+                self.communication = CommunicationPanel()
+        except (OSError, ValueError, pygame.error) as exc:
+            self.communication_error = str(exc)
+            return False
+        self.communication_error = None
+        return True
 
     def handle_sidebar_action(self, action: str | None) -> bool:
-        if action != "opponent_info":
+        if action not in {"opponent_info", "communication"}:
             return False
-        if self.page == "opponent_info":
+        if self.page == action:
             self.page = "cards"
         else:
-            self.page = "opponent_info"
-            self.opponent_info.request()
+            if action == "communication" and not self._ensure_communication():
+                return False
+            self.page = action
+            if action == "opponent_info":
+                self.opponent_info.request()
         return True
 
 
@@ -762,8 +797,8 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
     screen = pygame.display.set_mode(WINDOW_SIZE, pygame.NOFRAME)
     pygame.display.set_caption("NR++ opponent cards")
     _set_always_on_top()
-    renderer = OpponentCardBarRenderer()
     controller = OpponentCardBarController()
+    renderer = OpponentCardBarRenderer()
     clock = pygame.time.Clock()
     drag_origin: tuple[tuple[int, int], tuple[int, int]] | None = None
 
@@ -780,11 +815,31 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if renderer.press_sidebar(event.pos):
                     drag_origin = None
+                elif (
+                    controller.page == "communication"
+                    and controller.communication is not None
+                    and controller.communication.press(event.pos)
+                ):
+                    drag_origin = None
                 else:
                     drag_origin = (_cursor_position(), window.position)
+            elif event.type == pygame.MOUSEMOTION and controller.page == "communication":
+                if controller.communication is not None:
+                    controller.communication.drag(event.pos)
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                controller.handle_sidebar_action(renderer.release_sidebar(event.pos))
+                if controller.page == "communication" and controller.communication is not None:
+                    controller.communication.release(event.pos)
+                action = renderer.release_sidebar(event.pos)
+                if controller.handle_sidebar_action(action):
+                    if controller.communication is not None:
+                        controller.communication.cancel_pointer()
                 drag_origin = None
+            elif event.type == pygame.MOUSEWHEEL and controller.page == "communication":
+                if controller.communication is not None:
+                    horizontal = event.x if event.x else -event.y
+                    controller.communication.wheel(
+                        pygame.mouse.get_pos(), horizontal * 82
+                    )
 
         if drag_origin is not None and pygame.mouse.get_pressed(num_buttons=3)[0]:
             cursor_start, window_start = drag_origin
@@ -796,6 +851,7 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
             snapshot_provider(),
             page=controller.page,
             opponent_info_state=controller.opponent_info.current(),
+            communication_panel=controller.communication,
         )
         pygame.display.flip()
         clock.tick(60)

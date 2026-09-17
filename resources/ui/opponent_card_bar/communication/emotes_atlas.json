@@ -1,0 +1,8181 @@
+{
+  "schema_version": 1,
+  "cell_size": 64,
+  "columns": 32,
+  "entries": [
+    {
+      "id": "1-0",
+      "name": "King Thumbs Up (Starter Emote)",
+      "family": "King",
+      "available": true,
+      "rect": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "1-1",
+      "name": "Angry King (Starter Emote)",
+      "family": "King",
+      "available": true,
+      "rect": [
+        64,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "1-2",
+      "name": "Crying King (Starter Emote)",
+      "family": "King",
+      "available": true,
+      "rect": [
+        128,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "1-3",
+      "name": "Smiling King (Starter Emote)",
+      "family": "King",
+      "available": true,
+      "rect": [
+        192,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "2-0",
+      "name": "Sneezing Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        256,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "2-1",
+      "name": "Kissy Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        320,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "2-2",
+      "name": "Strong Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        384,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "2-3",
+      "name": "Psycho Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        448,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "3-0",
+      "name": "Nervous Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        512,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_02_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "3-1",
+      "name": "Scheming Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        576,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_02_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "3-2",
+      "name": "Room on Fire Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        640,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_02_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "3-3",
+      "name": "Peace Out Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        704,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_02_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "4-0",
+      "name": "Smiling Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        768,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_03_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "4-1",
+      "name": "Say Whaaaat? Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        832,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_03_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "4-2",
+      "name": "Risky Business Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        896,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_03_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "4-3",
+      "name": "White Flag Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        960,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_03_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "5-0",
+      "name": "Tongue Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1024,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_04_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "5-1",
+      "name": "Knife Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1088,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_04_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "5-2",
+      "name": "Embarrassed Goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1152,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_04_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "5-3",
+      "name": "Anime Eyes Gobin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1216,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_04_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "6-0",
+      "name": "Thumbs Up Princess",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        1280,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_princess_01_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "6-1",
+      "name": "Singing Princess",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        1344,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_princess_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "6-2",
+      "name": "Kissy Princess",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        1408,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_princess_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "6-3",
+      "name": "Angry Princess",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        1472,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_princess_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "7-0",
+      "name": "Eating Giant",
+      "family": "Giant",
+      "available": true,
+      "rect": [
+        1536,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_giant_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "7-1",
+      "name": "Thumbs Up Giant",
+      "family": "Giant",
+      "available": true,
+      "rect": [
+        1600,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_giant_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "7-2",
+      "name": "Angry Giant",
+      "family": "Giant",
+      "available": true,
+      "rect": [
+        1664,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_giant_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "7-3",
+      "name": "Strong Giant",
+      "family": "Giant",
+      "available": true,
+      "rect": [
+        1728,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_giant_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "8-0",
+      "name": "Peace Princess",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        1792,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_princess_02_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "8-1",
+      "name": "Oops Princess",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        1856,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_princess_02_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "8-2",
+      "name": "Board Princess",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        1920,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_princess_02_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "8-3",
+      "name": "Princess Arrows",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        1984,
+        0,
+        64,
+        64
+      ],
+      "sc_file": "emotes_princess_02_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "9-0",
+      "name": "Screaming Hog Rider",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        0,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogrider_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "9-1",
+      "name": "Questioning Hog Rider",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        64,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogrider_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "9-2",
+      "name": "Kissy Hog Rider",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        128,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogrider_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "9-3",
+      "name": "Hammer Hog Rider",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        192,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogrider_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "10-0",
+      "name": "Smiling Hog",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        256,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hog_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "10-1",
+      "name": "Screaming Hog",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        320,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hog_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "10-2",
+      "name": "Snoring Hog",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        384,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hog_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "10-3",
+      "name": "That's Right' Hog",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        448,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hog_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "11-0",
+      "name": "Screaming Barb",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        512,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "11-1",
+      "name": "Angry Barb",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        576,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "11-2",
+      "name": "Nose Picking Barb",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        640,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "11-3",
+      "name": "Barb Fist Pump",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        704,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "12-0",
+      "name": "Oh My' Skeleton",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        768,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeleton_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "12-1",
+      "name": "Hearts Skeleton",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        832,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeleton_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "12-2",
+      "name": "Idea Skeleton",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        896,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeleton_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "12-3",
+      "name": "Crying Skeleton",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        960,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeleton_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "13-0",
+      "name": "Charred Wizard",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        1024,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizard_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "13-1",
+      "name": "Fire Wizard",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        1088,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizard_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "13-2",
+      "name": "Who Knows?' Wizard",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        1152,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizard_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "13-3",
+      "name": "Dabbing Wizard",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        1216,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizard_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "14-0",
+      "name": "Smiling Ewiz",
+      "family": "eWizard",
+      "available": true,
+      "rect": [
+        1280,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_ewiz_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "14-1",
+      "name": "Idea Ewiz",
+      "family": "eWizard",
+      "available": true,
+      "rect": [
+        1344,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_ewiz_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "14-2",
+      "name": "Thumbs Up Ewiz",
+      "family": "eWizard",
+      "available": true,
+      "rect": [
+        1408,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_ewiz_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "14-3",
+      "name": "Shocked Ewiz",
+      "family": "eWizard",
+      "available": true,
+      "rect": [
+        1472,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_ewiz_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "15-0",
+      "name": "CRL #1",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        1536,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_crl_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "15-1",
+      "name": "Nervous Musketeer",
+      "family": "Musketeer",
+      "available": true,
+      "rect": [
+        1600,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_crl_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "15-2",
+      "name": "Happy Knight",
+      "family": "Knight",
+      "available": true,
+      "rect": [
+        1664,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_crl_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "15-3",
+      "name": "Screaming Bandit",
+      "family": "Bandit",
+      "available": true,
+      "rect": [
+        1728,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_crl_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "16-0",
+      "name": "Panting Baby Dragon",
+      "family": "Dragon",
+      "available": true,
+      "rect": [
+        1792,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_black_friday_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "16-1",
+      "name": "Exploding Bomber",
+      "family": "Bomber",
+      "available": true,
+      "rect": [
+        1856,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_black_friday_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "16-2",
+      "name": "Happy Minion",
+      "family": "Minion",
+      "available": true,
+      "rect": [
+        1920,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_black_friday_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "16-3",
+      "name": "Blinking Inferno",
+      "family": "Inferno",
+      "available": true,
+      "rect": [
+        1984,
+        64,
+        64,
+        64
+      ],
+      "sc_file": "emotes_black_friday_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "17-0",
+      "name": "Pancakes Mini P.E.K.K.A",
+      "family": "MiniPekka",
+      "available": true,
+      "rect": [
+        0,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_black_friday_02_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "17-1",
+      "name": "Charming Prince",
+      "family": "Prince",
+      "available": true,
+      "rect": [
+        64,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_black_friday_02_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "17-2",
+      "name": "Really?' Dark Prince",
+      "family": "DarkPrince",
+      "available": true,
+      "rect": [
+        128,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_black_friday_02_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "17-3",
+      "name": "Board Valkyrie",
+      "family": "Valkyrie",
+      "available": true,
+      "rect": [
+        192,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_black_friday_02_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "18-0",
+      "name": "Royal Ghost",
+      "family": "Royal Ghost",
+      "available": true,
+      "rect": [
+        256,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royal_ghost_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "18-1",
+      "name": "Boo",
+      "family": "Royal Ghost",
+      "available": false,
+      "rect": [
+        320,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royal_ghost_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "18-2",
+      "name": "Cry",
+      "family": "Royal Ghost",
+      "available": true,
+      "rect": [
+        384,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royal_ghost_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "18-3",
+      "name": "Clap",
+      "family": "Royal Ghost",
+      "available": true,
+      "rect": [
+        448,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royal_ghost_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "20-0",
+      "name": "Goblin Trophy",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        512,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_crl_03_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "21-0",
+      "name": "Santa Ice Wizard",
+      "family": "IceWizard",
+      "available": true,
+      "rect": [
+        576,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_xmas_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "21-1",
+      "name": "Santa Ice Spirit",
+      "family": "Spirit",
+      "available": true,
+      "rect": [
+        640,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_xmas_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "23-0",
+      "name": "Hog/LNY",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        704,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hog_02_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "23-1",
+      "name": "Hog/Noodles",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        768,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hog_02_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "23-2",
+      "name": "Hog/Coins",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        832,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hog_02_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "23-3",
+      "name": "Hog/Fireworks",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        896,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hog_02_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "24-0",
+      "name": "Pancake sword",
+      "family": "MiniPekka",
+      "available": true,
+      "rect": [
+        960,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_minipekka_02_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "24-1",
+      "name": "Pancake face",
+      "family": "MiniPekka",
+      "available": true,
+      "rect": [
+        1024,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_minipekka_02_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "24-2",
+      "name": "The robot (dance)",
+      "family": "MiniPekka",
+      "available": true,
+      "rect": [
+        1088,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_minipekka_02_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "24-3",
+      "name": "Selecting emotes ATM",
+      "family": "MiniPekka",
+      "available": true,
+      "rect": [
+        1152,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_minipekka_02_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "25-0",
+      "name": "Party Pooper",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1216,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bday_03_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "25-1",
+      "name": "Cake Devour (Amended from cake burp)",
+      "family": "Giant",
+      "available": true,
+      "rect": [
+        1280,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bday_03_dl.sc",
+      "export": "emote2"
+    },
+    {
+      "id": "25-2",
+      "name": "Rascal Twins Cake (Amended from Hog Rider Cake)",
+      "family": "Rascal",
+      "available": true,
+      "rect": [
+        1344,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bday_03_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "26-0",
+      "name": "Princess / Rosie the Riveter",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        1408,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_womens_month_01_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "26-1",
+      "name": "Musketeer/ Smoking Musket",
+      "family": "Musketeer",
+      "available": true,
+      "rect": [
+        1472,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_womens_month_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "26-2",
+      "name": "Ram Rider/ Game Face",
+      "family": "RamRider",
+      "available": true,
+      "rect": [
+        1536,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_womens_month_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "28-0",
+      "name": "Log in Love",
+      "family": "Log",
+      "available": true,
+      "rect": [
+        1600,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_april_fools_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "28-1",
+      "name": "Sad Log",
+      "family": "Log",
+      "available": true,
+      "rect": [
+        1664,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_april_fools_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "29-0",
+      "name": "bunny hog",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        1728,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_spring_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "29-1",
+      "name": "pekka/butterfly v2",
+      "family": "PEKKA",
+      "available": true,
+      "rect": [
+        1792,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_spring_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "29-2",
+      "name": "dragon egg",
+      "family": "Dragon",
+      "available": true,
+      "rect": [
+        1856,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_spring_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "29-3",
+      "name": "miner peekaboo",
+      "family": "Miner",
+      "available": true,
+      "rect": [
+        1920,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_spring_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "30-0",
+      "name": "jailbreak",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1984,
+        128,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_brawler_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "30-1",
+      "name": "tattoo bicep flex",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        0,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_brawler_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "31-0",
+      "name": "Surrender",
+      "family": "Prince",
+      "available": true,
+      "rect": [
+        64,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_prince_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "31-1",
+      "name": "Sipping Tea",
+      "family": "Prince",
+      "available": true,
+      "rect": [
+        128,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_prince_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "31-2",
+      "name": "Hey Good Looking",
+      "family": "Prince",
+      "available": true,
+      "rect": [
+        192,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_prince_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "31-3",
+      "name": "Surrender",
+      "family": "Prince",
+      "available": true,
+      "rect": [
+        256,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_prince_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "32-0",
+      "name": "baby dragon lick",
+      "family": "Dragon",
+      "available": true,
+      "rect": [
+        320,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_dragon_boat_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "32-1",
+      "name": "baby dragon kissy face smoke",
+      "family": "Dragon",
+      "available": true,
+      "rect": [
+        384,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_dragon_boat_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "32-2",
+      "name": "electro dragon sneeze",
+      "family": "eDragon",
+      "available": true,
+      "rect": [
+        448,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_dragon_boat_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "32-3",
+      "name": "electro dragon shocking",
+      "family": "eDragon",
+      "available": true,
+      "rect": [
+        512,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_dragon_boat_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "33-0",
+      "name": "Princess Trumpet",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        576,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_clashnights_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "33-1",
+      "name": "Fist Bump",
+      "family": "Generic",
+      "available": false,
+      "rect": [
+        640,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_clashnights_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "34-0",
+      "name": "boxing fish",
+      "family": "Fisherman",
+      "available": true,
+      "rect": [
+        704,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_fish_slap_01_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "36-0",
+      "name": "fisherman mighty fish",
+      "family": "Fisherman",
+      "available": true,
+      "rect": [
+        768,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_fisherman_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "36-1",
+      "name": "fisherman dismal peek",
+      "family": "Fisherman",
+      "available": true,
+      "rect": [
+        832,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_fisherman_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "36-2",
+      "name": "fisherman soaked",
+      "family": "Fisherman",
+      "available": true,
+      "rect": [
+        896,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_fisherman_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "36-3",
+      "name": "fisherman's anchor vs Goblin",
+      "family": "Fisherman",
+      "available": true,
+      "rect": [
+        960,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_fisherman_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "39-0",
+      "name": "goblin barrel",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1024,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_shipwreck_02_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "41-0",
+      "name": "dizzy",
+      "family": "Miner",
+      "available": true,
+      "rect": [
+        1088,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_miner_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "41-1",
+      "name": "lighting candle",
+      "family": "Miner",
+      "available": true,
+      "rect": [
+        1152,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_miner_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "42-0",
+      "name": "princess with shades",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        1216,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_princess_glasses_01_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "44-0",
+      "name": "night witch kiss",
+      "family": "NightWitch",
+      "available": true,
+      "rect": [
+        1280,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_night_witch_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "45-0",
+      "name": "slow-clap night witch",
+      "family": "NightWitch",
+      "available": true,
+      "rect": [
+        1344,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_night_witch_clap_01_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "46-0",
+      "name": "chicken taunt",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        1408,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_scid_chicken_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "47-0",
+      "name": "Bandit coin flip",
+      "family": "Bandit",
+      "available": true,
+      "rect": [
+        1472,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_golden_week_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "49-0",
+      "name": "elixir golem_forms head",
+      "family": "eGolem",
+      "available": true,
+      "rect": [
+        1536,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_elixir_golem_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "49-1",
+      "name": "elixir golem_rage",
+      "family": "eGolem",
+      "available": true,
+      "rect": [
+        1600,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_elixir_golem_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "50-0",
+      "name": "skeleton DDLM--with hat and guitar",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        1664,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_halloween_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "50-1",
+      "name": "witch DDLM",
+      "family": "Witch",
+      "available": true,
+      "rect": [
+        1728,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_halloween_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "50-2",
+      "name": "night with DDLM alebrije paint",
+      "family": "NightWitch",
+      "available": true,
+      "rect": [
+        1792,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_halloween_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "50-3",
+      "name": "Goblin frankenstein",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1856,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_halloween_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "51-0",
+      "name": "Prison Goblin bride of frankenstein",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1920,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_halloween_02_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "52-0",
+      "name": "confetti blowing dart goblin",
+      "family": "DartGoblin",
+      "available": true,
+      "rect": [
+        1984,
+        192,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_feast_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "52-1",
+      "name": "goblin giant electric slide dance",
+      "family": "GiantGoblin",
+      "available": true,
+      "rect": [
+        0,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_feast_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "52-2",
+      "name": "dart goblin dance",
+      "family": "DartGoblin",
+      "available": true,
+      "rect": [
+        64,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_feast_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "54-0",
+      "name": "hog christmas lights",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        128,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_xmass_hog_lights_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "55-0",
+      "name": "giant santa eating cookie",
+      "family": "Giant",
+      "available": true,
+      "rect": [
+        192,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_xmass_santa_giant_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "56-0",
+      "name": "Nutcracker Barb",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        256,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_xmass_barb_nutcracker_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "60-0",
+      "name": "king with headset",
+      "family": "King",
+      "available": true,
+      "rect": [
+        320,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_crl_king_headset_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "62-0",
+      "name": "firecracker",
+      "family": "Firecracker",
+      "available": true,
+      "rect": [
+        384,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lny_01_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "63-0",
+      "name": "Balloon",
+      "family": "Balloon",
+      "available": true,
+      "rect": [
+        448,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lny_02_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "63-1",
+      "name": "Miner w/ red envelope",
+      "family": "Miner",
+      "available": true,
+      "rect": [
+        512,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lny_02_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "63-2",
+      "name": "Bomber with 2020 glasses",
+      "family": "Bomber",
+      "available": true,
+      "rect": [
+        576,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lny_02_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "64-0",
+      "name": "king polishing trophy",
+      "family": "King",
+      "available": true,
+      "rect": [
+        640,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_02_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "65-0",
+      "name": "Angry Log",
+      "family": "Log",
+      "available": true,
+      "rect": [
+        704,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_log_02_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "65-1",
+      "name": "Glorious Log",
+      "family": "Log",
+      "available": true,
+      "rect": [
+        768,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_log_02_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "66-0",
+      "name": "Ram Rider/ Game Face",
+      "family": "RamRider",
+      "available": true,
+      "rect": [
+        832,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_ramRiderFeb2020_01_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "69-0",
+      "name": "PEKKA popping balloons",
+      "family": "PEKKA",
+      "available": true,
+      "rect": [
+        896,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_4th_bday_pekka_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "70-0",
+      "name": "Birthday/Sparky",
+      "family": "Sparky",
+      "available": true,
+      "rect": [
+        960,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_4th_bday_sparky_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "71-0",
+      "name": "Battle Healer cutting cake",
+      "family": "BattleHealer",
+      "available": true,
+      "rect": [
+        1024,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_4th_bday_battleHealer_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "72-0",
+      "name": "Fish Cake",
+      "family": "Fisherman",
+      "available": true,
+      "rect": [
+        1088,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_4th_bday_fish_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "73-0",
+      "name": "Birthday/Royal Giant",
+      "family": "RoyalGiant",
+      "available": true,
+      "rect": [
+        1152,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_4th_bday_royalGiant_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "74-0",
+      "name": "emotes_heist_magicArcher",
+      "family": "MagicArcher",
+      "available": true,
+      "rect": [
+        1216,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_heist_magicArcher_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "75-0",
+      "name": "Hunter / hat",
+      "family": "Hunter",
+      "available": true,
+      "rect": [
+        1280,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_heist_hunter_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "77-0",
+      "name": "emotes_heist_bandit",
+      "family": "Bandit",
+      "available": true,
+      "rect": [
+        1344,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_heist_bandit_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "78-0",
+      "name": "Bling Hog",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        1408,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_feb2020_01_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "80-0",
+      "name": "Supercell 10th Anniversary emote",
+      "family": "King",
+      "available": true,
+      "rect": [
+        1472,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_10yr_king_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "81-0",
+      "name": "Knight wipe",
+      "family": "Knight",
+      "available": true,
+      "rect": [
+        1536,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_10yr_knight_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "82-0",
+      "name": "Inferno Dragon/shock",
+      "family": "Dragon",
+      "available": true,
+      "rect": [
+        1600,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_10yr_infernoDragon_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "83-0",
+      "name": "Lava Hound & pups",
+      "family": "LavaHound",
+      "available": true,
+      "rect": [
+        1664,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_10yr_lavaHound_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "85-0",
+      "name": "Prince rainbow",
+      "family": "Prince",
+      "available": true,
+      "rect": [
+        1728,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_s12_prince_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "86-0",
+      "name": "Prince Pony dance",
+      "family": "Prince",
+      "available": true,
+      "rect": [
+        1792,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_s12_pony_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "87-0",
+      "name": "Sad face dark prince",
+      "family": "DarkPrince",
+      "available": true,
+      "rect": [
+        1856,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_s12_darkPrince_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "89-0",
+      "name": "PEKKA Boombox",
+      "family": "PEKKA",
+      "available": true,
+      "rect": [
+        1920,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_PEKKA_boombox_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "90-0",
+      "name": "PEKKA Coconut",
+      "family": "PEKKA",
+      "available": true,
+      "rect": [
+        1984,
+        256,
+        64,
+        64
+      ],
+      "sc_file": "emotes_PEKKA_coconut_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "91-0",
+      "name": "Skeleton Snorkel",
+      "family": "Bomber",
+      "available": true,
+      "rect": [
+        0,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeleton_snorkel_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "93-0",
+      "name": "Archer Slo Mo",
+      "family": "Archer",
+      "available": true,
+      "rect": [
+        64,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_archers_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "93-1",
+      "name": "Archer/Hood",
+      "family": "Archer",
+      "available": true,
+      "rect": [
+        128,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_archers_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "93-2",
+      "name": "Archer/polish arrow",
+      "family": "Archer",
+      "available": true,
+      "rect": [
+        192,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_archers_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "96-0",
+      "name": "Guard polishing crown",
+      "family": "Guard",
+      "available": true,
+      "rect": [
+        256,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royalGuards_01_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "97-0",
+      "name": "Golem boat smash",
+      "family": "Golem",
+      "available": true,
+      "rect": [
+        320,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_cw_golem_boat_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "98-0",
+      "name": "Dancing karaoke goblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        384,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_cw_goblinDance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "99-0",
+      "name": "Sinking Goblin Thumbs Up",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        448,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_cw_goblinThumb_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "100-0",
+      "name": "Disco Electro Giant",
+      "family": "eGiant",
+      "available": true,
+      "rect": [
+        512,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_electroGiant_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "100-1",
+      "name": "Electro Giant",
+      "family": "eGiant",
+      "available": true,
+      "rect": [
+        576,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_electroGiant_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "100-2",
+      "name": "Electro Giant",
+      "family": "eGiant",
+      "available": true,
+      "rect": [
+        640,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_electroGiant_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "100-3",
+      "name": "Shooter Electo Griant",
+      "family": "eGiant",
+      "available": true,
+      "rect": [
+        704,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_electroGiant_01_dl.sc",
+      "export": "icon4"
+    },
+    {
+      "id": "101-0",
+      "name": "Skeleton Dragon / Single's Day",
+      "family": "SkeletonDragon",
+      "available": true,
+      "rect": [
+        768,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeleton_dragon_01_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "102-0",
+      "name": "Mega Knight Smash",
+      "family": "MegaKnight",
+      "available": true,
+      "rect": [
+        832,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_megaKnight_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "102-1",
+      "name": "Mega Knight Thumbs Up",
+      "family": "MegaKnight",
+      "available": true,
+      "rect": [
+        896,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_megaKnight_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "102-2",
+      "name": "Mega Knigh Ball Clash",
+      "family": "MegaKnight",
+      "available": true,
+      "rect": [
+        960,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_megaKnight_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "103-0",
+      "name": "Logmas",
+      "family": "Log",
+      "available": true,
+      "rect": [
+        1024,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_logmas2020_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "104-0",
+      "name": "Bowler / Sad",
+      "family": "Bowler",
+      "available": true,
+      "rect": [
+        1088,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_logmas2020_02_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "104-1",
+      "name": "Bowler / gift",
+      "family": "Bowler",
+      "available": true,
+      "rect": [
+        1152,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_logmas2020_02_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "105-0",
+      "name": "Witch Mother",
+      "family": "MotherWitch",
+      "available": true,
+      "rect": [
+        1216,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_logmas2020_03_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "106-0",
+      "name": "Lumberjack/Logmas",
+      "family": "Lumberjack",
+      "available": true,
+      "rect": [
+        1280,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_logmas2020_04_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "107-0",
+      "name": "Ice Wizard",
+      "family": "IceWizard",
+      "available": false,
+      "rect": [
+        1344,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icewizard_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "107-1",
+      "name": "Ice Wizard / Dance",
+      "family": "IceWizard",
+      "available": true,
+      "rect": [
+        1408,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icewizard_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "107-2",
+      "name": "Ice Wizard / Popcorn",
+      "family": "IceWizard",
+      "available": true,
+      "rect": [
+        1472,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icewizard_01_dl.sc",
+      "export": "icon3"
+    },
+    {
+      "id": "108-0",
+      "name": "Barb/Candy",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        1536,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_LNY_2021_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "108-1",
+      "name": "Barb Kisses",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        1600,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_LNY_2021_01_dl.sc",
+      "export": "icon2"
+    },
+    {
+      "id": "109-0",
+      "name": "Princess/Cards/LNY",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        1664,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_LNY_2021_02_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "110-0",
+      "name": "Firecracker Kisses",
+      "family": "Firecracker",
+      "available": true,
+      "rect": [
+        1728,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_LNY_2021_03_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "111-0",
+      "name": "BattleHealer Throwing Cake",
+      "family": "BattleHealer",
+      "available": true,
+      "rect": [
+        1792,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_battlehealer_cakethrow_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "112-0",
+      "name": "Elixir Golem / Cake",
+      "family": "eGolem",
+      "available": true,
+      "rect": [
+        1856,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_elixirgolem_candlehead_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "113-0",
+      "name": "Lumberjack Run",
+      "family": "Lumberjack",
+      "available": true,
+      "rect": [
+        1920,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lumberjack_cakerun_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "114-0",
+      "name": "Sparky/Birthday",
+      "family": "Sparky",
+      "available": true,
+      "rect": [
+        1984,
+        320,
+        64,
+        64
+      ],
+      "sc_file": "emotes_sparky_surprise_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "115-0",
+      "name": "King/Magic Book",
+      "family": "King",
+      "available": true,
+      "rect": [
+        0,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_book_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "116-0",
+      "name": "Pekka grow",
+      "family": "PEKKA",
+      "available": true,
+      "rect": [
+        64,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_pekka_blossom_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "117-0",
+      "name": "Mortar Sick",
+      "family": "Mortar",
+      "available": true,
+      "rect": [
+        128,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_mortar_01_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "117-1",
+      "name": "Mortar Tower Destroy",
+      "family": "Mortar",
+      "available": true,
+      "rect": [
+        192,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_mortar_01_dl.sc",
+      "export": "emote2"
+    },
+    {
+      "id": "118-0",
+      "name": "Skeleton Dragon Jaw Drop",
+      "family": "SkeletonDragon",
+      "available": true,
+      "rect": [
+        256,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeletondragon_jawdrop_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "119-0",
+      "name": "Dart Goblin backfire",
+      "family": "DartGoblin",
+      "available": true,
+      "rect": [
+        320,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_dartgoblin_backfire_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "120-0",
+      "name": "Goblin Drill",
+      "family": "GoblinDrill",
+      "available": true,
+      "rect": [
+        384,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblindrill_drive_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "121-0",
+      "name": "Basket Bowler",
+      "family": "Bowler",
+      "available": true,
+      "rect": [
+        448,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bowler_basketball_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "122-0",
+      "name": "Melting Ice Wizard",
+      "family": "IceWizard",
+      "available": true,
+      "rect": [
+        512,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icewizard_meltsweat_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "123-0",
+      "name": "Executioner Kiss",
+      "family": "Executioner",
+      "available": true,
+      "rect": [
+        576,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_executioner_chefskiss_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "124-0",
+      "name": "Executioner Fruitcake",
+      "family": "Executioner",
+      "available": true,
+      "rect": [
+        640,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_executioner_fruitcake_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "125-0",
+      "name": "Bat Kiss",
+      "family": "Bat",
+      "available": true,
+      "rect": [
+        704,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bat_embrace_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "126-0",
+      "name": "Bat Halloween",
+      "family": "Bat",
+      "available": true,
+      "rect": [
+        768,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bat_jackobat_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "127-0",
+      "name": "Archer Queen 3 Crowns",
+      "family": "ArcherQueen",
+      "available": true,
+      "rect": [
+        832,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_arrows_3crowns_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "128-0",
+      "name": "Skeleton King Victory",
+      "family": "SkeletonKing",
+      "available": true,
+      "rect": [
+        896,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeletonking_victory_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "129-0",
+      "name": "Golden Knight Gorgeous",
+      "family": "GoldenKnight",
+      "available": true,
+      "rect": [
+        960,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goldenknight_gorgeous_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "130-0",
+      "name": "Archer Queen Crown",
+      "family": "ArcherQueen",
+      "available": true,
+      "rect": [
+        1024,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_archerqueen_crown_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "131-0",
+      "name": "Archer Queen Fastaim",
+      "family": "ArcherQueen",
+      "available": true,
+      "rect": [
+        1088,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_archerqueen_fastaim_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "132-0",
+      "name": "Hog Hammer",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        1152,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hog_hammer_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "133-0",
+      "name": "Firecracker Chimney",
+      "family": "Firecracker",
+      "available": true,
+      "rect": [
+        1216,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_firecracker_chimney_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "134-0",
+      "name": "Rocket Goblin Ride",
+      "family": "Rocket",
+      "available": true,
+      "rect": [
+        1280,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_rocket_goblinride_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "135-0",
+      "name": "Golden Knight Fail",
+      "family": "GoldenKnight",
+      "available": true,
+      "rect": [
+        1344,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goldenknight_fail_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "136-0",
+      "name": "Lava Hound Dizzy",
+      "family": "LavaHound",
+      "available": true,
+      "rect": [
+        1408,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lavahound_dizzy_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "137-0",
+      "name": "FireSpirit Light-a-Candle",
+      "family": "a",
+      "available": true,
+      "rect": [
+        1472,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_firespirit_candle_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "138-0",
+      "name": "HealSpirit Healed-by-Love",
+      "family": "Spirit",
+      "available": true,
+      "rect": [
+        1536,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_healspirit_loveface_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "139-0",
+      "name": "HealSpirit Jelly-Dance",
+      "family": "Spirit",
+      "available": true,
+      "rect": [
+        1600,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_healspirit_jellydance_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "140-0",
+      "name": "HealSpirit Heal-Buddy",
+      "family": "Spirit",
+      "available": true,
+      "rect": [
+        1664,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_healspirit_thumbsup_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "141-0",
+      "name": "ElectroSpirit Electromoustache",
+      "family": "Spirit",
+      "available": true,
+      "rect": [
+        1728,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_electrospirit_moustache_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "142-0",
+      "name": "MightyMiner Bomb",
+      "family": "MightyMiner",
+      "available": true,
+      "rect": [
+        1792,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_mightyminer_bomb_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "143-0",
+      "name": "Miner Buried",
+      "family": "Miner",
+      "available": true,
+      "rect": [
+        1856,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_miner_buried_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "144-0",
+      "name": "Miner Shovel",
+      "family": "Miner",
+      "available": true,
+      "rect": [
+        1920,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_miner_shovel_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "145-0",
+      "name": "MightyMiner Almighty",
+      "family": "MightyMiner",
+      "available": true,
+      "rect": [
+        1984,
+        384,
+        64,
+        64
+      ],
+      "sc_file": "emotes_mightyminer_almighty_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "146-0",
+      "name": "RoyalGiant Gorgeous",
+      "family": "RoyalGiant",
+      "available": true,
+      "rect": [
+        0,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royalgiant_gorgeous_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "147-0",
+      "name": "MWHog Dance",
+      "family": "MotherWitch",
+      "available": true,
+      "rect": [
+        64,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_mwhog_dance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "148-0",
+      "name": "MWHog Morph",
+      "family": "MotherWitch",
+      "available": true,
+      "rect": [
+        128,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_mwhog_morph_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "149-0",
+      "name": "Witch SkeleLove",
+      "family": "Witch",
+      "available": true,
+      "rect": [
+        192,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_witch_skelelove_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "150-0",
+      "name": "Witch SkeleRise",
+      "family": "Witch",
+      "available": true,
+      "rect": [
+        256,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_witch_skelerise_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "151-0",
+      "name": "Lumberjack Bottle",
+      "family": "Lumberjack",
+      "available": false,
+      "rect": [
+        320,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lumberjack_bottle_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "152-0",
+      "name": "Goblin Bone-Ritual",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        384,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_boneritual_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "153-0",
+      "name": "Goblin Eternal Wait",
+      "family": "Goblin",
+      "available": false,
+      "rect": [
+        448,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_eternalwait_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "154-0",
+      "name": "Go-barian",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        512,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_gobarian_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "155-0",
+      "name": "Skeleton Dance",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        576,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeleton_dancing_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "156-0",
+      "name": "Skeleton Giant Clueless",
+      "family": "SkeletonGiant",
+      "available": true,
+      "rect": [
+        640,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeletongiant_clueless_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "157-0",
+      "name": "Skeleton Giant Loosejaw",
+      "family": "SkeletonGiant",
+      "available": true,
+      "rect": [
+        704,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeletongiant_loosejaw_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "158-0",
+      "name": "Mini PEKKA Pancake Rage",
+      "family": "MiniPekka",
+      "available": true,
+      "rect": [
+        768,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_minipekka_pancakerage_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "159-0",
+      "name": "Mini PEKKA Pancake Suit",
+      "family": "MiniPekka",
+      "available": true,
+      "rect": [
+        832,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_minipekka_pancakesuit_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "160-0",
+      "name": "PEKKA Battlefly",
+      "family": "PEKKA",
+      "available": true,
+      "rect": [
+        896,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_pekka_battlefly_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "161-0",
+      "name": "PEKKA Robodance",
+      "family": "PEKKA",
+      "available": true,
+      "rect": [
+        960,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_pekka_robodance_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "162-0",
+      "name": "PEKKA Activate",
+      "family": "PEKKA",
+      "available": true,
+      "rect": [
+        1024,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_pekka_activate_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "163-0",
+      "name": "Barbarian 8bit BackInTime",
+      "family": "Barbarian8bit",
+      "available": true,
+      "rect": [
+        1088,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_backintime_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "164-0",
+      "name": "Barbarian 8bit PixelFrenzy",
+      "family": "Barbarian8bit",
+      "available": true,
+      "rect": [
+        1152,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_pixelfrenzy_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "165-0",
+      "name": "Barbarian 8bit PixelUp",
+      "family": "Barbarian8bit",
+      "available": true,
+      "rect": [
+        1216,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_pixelup_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "166-0",
+      "name": "King 8bit Crown",
+      "family": "King8bit",
+      "available": true,
+      "rect": [
+        1280,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_pixelcrown_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "167-0",
+      "name": "King 8bit Pixelized",
+      "family": "King8bit",
+      "available": false,
+      "rect": [
+        1344,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_pixelized_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "168-0",
+      "name": "King 8bit PixelTower",
+      "family": "King8bit",
+      "available": true,
+      "rect": [
+        1408,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_pixeltower_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "169-0",
+      "name": "Barbarian WatchingYou",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        1472,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_watchingyou_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "170-0",
+      "name": "Battle Healer Self Heal",
+      "family": "BattleHealer",
+      "available": true,
+      "rect": [
+        1536,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_battlehealer_selfheal_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "171-0",
+      "name": "Electro Epic High Five",
+      "family": "eGiant",
+      "available": true,
+      "rect": [
+        1600,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_electrowizardgiant_epichighfive_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "172-0",
+      "name": "Elite Barbarian Gorilla",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        1664,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_elitebarbarian_gorilla_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "173-0",
+      "name": "Elixir Golem Win",
+      "family": "eGolem",
+      "available": true,
+      "rect": [
+        1728,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_elixirgolem_win_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "174-0",
+      "name": "Goblin Carnival",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1792,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_carnival_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "175-0",
+      "name": "HogRider Cheerleader",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        1856,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogrider_cheerleader_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "176-0",
+      "name": "King TV Royale",
+      "family": "King",
+      "available": true,
+      "rect": [
+        1920,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_tvroyale_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "177-0",
+      "name": "Lumberjack Third Eye",
+      "family": "Lumberjack",
+      "available": true,
+      "rect": [
+        1984,
+        448,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lumberjack_thirdeye_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "178-0",
+      "name": "Tesla Electrocuter",
+      "family": "Tesla",
+      "available": true,
+      "rect": [
+        0,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_teslatower_electrocuter_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "179-0",
+      "name": "Mother Witch Hog Charge",
+      "family": "MotherWitch",
+      "available": true,
+      "rect": [
+        64,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_motherwitch_hogcharge_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "180-0",
+      "name": "Mother Witch Knitting",
+      "family": "MotherWitch",
+      "available": true,
+      "rect": [
+        128,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_motherwitch_knitting_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "181-0",
+      "name": "Night Witch Guitar",
+      "family": "NightWitch",
+      "available": true,
+      "rect": [
+        192,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_nightwitch_guitar_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "182-0",
+      "name": "Night Witch Moon",
+      "family": "NightWitch",
+      "available": true,
+      "rect": [
+        256,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_nightwitch_moon_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "183-0",
+      "name": "Bat Crazy Dance",
+      "family": "Bat",
+      "available": true,
+      "rect": [
+        320,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bat_crazydance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "184-0",
+      "name": "Ram Scream",
+      "family": "RamRider",
+      "available": true,
+      "rect": [
+        384,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_ram_scream_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "185-0",
+      "name": "Monk Arrow",
+      "family": "Monk",
+      "available": true,
+      "rect": [
+        448,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_monk_arrow_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "186-0",
+      "name": "Monk Defense",
+      "family": "Monk",
+      "available": true,
+      "rect": [
+        512,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_monk_defense_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "187-0",
+      "name": "Monk Ready",
+      "family": "Monk",
+      "available": true,
+      "rect": [
+        576,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_monk_ready_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "188-0",
+      "name": "Phoenix Bowling",
+      "family": "Phoenix",
+      "available": true,
+      "rect": [
+        640,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_phoenix_bowling_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "189-0",
+      "name": "Phoenix Egg Crown",
+      "family": "Phoenix",
+      "available": true,
+      "rect": [
+        704,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_phoenix_eggcrown_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "190-0",
+      "name": "King Emperor",
+      "family": "King",
+      "available": true,
+      "rect": [
+        768,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_emperor_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "191-0",
+      "name": "King Belt",
+      "family": "King",
+      "available": true,
+      "rect": [
+        832,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_belt_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "192-0",
+      "name": "Hog Gingerbread",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        896,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hog_gingerbread_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "193-0",
+      "name": "Hog Reindeer",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        960,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hog_reindeerfly_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "194-0",
+      "name": "HogRider SantaSack",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        1024,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogrider_santasack_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "195-0",
+      "name": "HogRider Snowball",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        1088,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogrider_snowball_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "196-0",
+      "name": "Valkyrie Treecut",
+      "family": "Valkyrie",
+      "available": true,
+      "rect": [
+        1152,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_valkyrie_treecut_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "197-0",
+      "name": "FireSpirit Naughty",
+      "family": "Spirit",
+      "available": true,
+      "rect": [
+        1216,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_firespirit_coalnaughty_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "198-0",
+      "name": "FireSpirit Nice",
+      "family": "Spirit",
+      "available": true,
+      "rect": [
+        1280,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_firespirit_coalnice_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "199-0",
+      "name": "Ice Golem Hi",
+      "family": "IceGolem",
+      "available": true,
+      "rect": [
+        1344,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icegolem_attention_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "200-0",
+      "name": "Ice Golem Smash",
+      "family": "IceGolem",
+      "available": true,
+      "rect": [
+        1408,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icegolem_breakarm_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "201-0",
+      "name": "Ice Golem Snow",
+      "family": "IceGolem",
+      "available": true,
+      "rect": [
+        1472,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icegolem_snowpile_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "202-0",
+      "name": "Rabbit Dab",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        1536,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_rabbit_dab_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "203-0",
+      "name": "Rabbit Thumbs Up",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        1600,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_rabbit_thumbsup_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "204-0",
+      "name": "Golem Heart",
+      "family": "Golem",
+      "available": true,
+      "rect": [
+        1664,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_golem_hearttatoo_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "205-0",
+      "name": "Golem Rocker",
+      "family": "Golem",
+      "available": true,
+      "rect": [
+        1728,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_golem_rocker_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "206-0",
+      "name": "Golem Supervillan",
+      "family": "Golem",
+      "available": true,
+      "rect": [
+        1792,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_golem_supervillain_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "207-0",
+      "name": "MagicArcher Bow",
+      "family": "MagicArcher",
+      "available": true,
+      "rect": [
+        1856,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_magicarcher_magicbow_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "208-0",
+      "name": "MagicArcher Heart",
+      "family": "MagicArcher",
+      "available": true,
+      "rect": [
+        1920,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_magicarcher_magicheart_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "209-0",
+      "name": "Sparky Heart",
+      "family": "Sparky",
+      "available": true,
+      "rect": [
+        1984,
+        512,
+        64,
+        64
+      ],
+      "sc_file": "emotes_sparky_electroheart_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "210-0",
+      "name": "Sparky LoveBox",
+      "family": "Sparky",
+      "available": true,
+      "rect": [
+        0,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_sparky_lovebox_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "211-0",
+      "name": "Executioner Carrots",
+      "family": "Executioner",
+      "available": true,
+      "rect": [
+        64,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_executioner_carrots_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "212-0",
+      "name": "Goblin Giant Afraid",
+      "family": "GiantGoblin",
+      "available": true,
+      "rect": [
+        128,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblingiant_afraid_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "213-0",
+      "name": "Goblin Guitar Fire",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        192,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_guitarfire_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "214-0",
+      "name": "Goblin Micdrop",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        256,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_micdrop_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "215-0",
+      "name": "Goblin Robot Dance",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        320,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_robotdance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "216-0",
+      "name": "Wizard Disco Balls",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        384,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizard_discoballs_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "217-0",
+      "name": "Wizard Disco Dance",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        448,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizard_discodance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "218-0",
+      "name": "Archer Arrow Fail",
+      "family": "Archer",
+      "available": true,
+      "rect": [
+        512,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_archer_arrowfail_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "219-0",
+      "name": "Archer Supersight",
+      "family": "Archer",
+      "available": true,
+      "rect": [
+        576,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_archer_supersight_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "220-0",
+      "name": "DarkPrince Mace",
+      "family": "Dark Prince",
+      "available": true,
+      "rect": [
+        640,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_darkprince_mace_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "221-0",
+      "name": "DarkPrince Sleepy",
+      "family": "Dark Prince",
+      "available": true,
+      "rect": [
+        704,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_darkprince_sleepy_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "222-0",
+      "name": "Prince Epic Silly",
+      "family": "Prince",
+      "available": true,
+      "rect": [
+        768,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_prince_epicsilly_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "223-0",
+      "name": "Prince Lance Clean",
+      "family": "Prince",
+      "available": true,
+      "rect": [
+        832,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_prince_lanceclean_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "224-0",
+      "name": "HogRider Angry",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        896,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_rokkus_angry_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "225-0",
+      "name": "Hog Smash",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        960,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_pimpim_smash_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "226-0",
+      "name": "HogRider Laugh",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        1024,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_rokkus_laugh_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "227-0",
+      "name": "HogRider Plunger",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        1088,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_terry_plunger_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "228-0",
+      "name": "HogRider Transform",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        1152,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_terry_transform_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "229-0",
+      "name": "ArcherQueen Rock",
+      "family": "ArcherQueen",
+      "available": true,
+      "rect": [
+        1216,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_archerqueen_rockevolution_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "230-0",
+      "name": "BattleHealer Rainbow",
+      "family": "BattleHealer",
+      "available": true,
+      "rect": [
+        1280,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_battlehealer_rainbow_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "231-0",
+      "name": "GoldenKnight Hairspin",
+      "family": "GoldenKnight",
+      "available": true,
+      "rect": [
+        1344,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goldenknight_hairspin_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "232-0",
+      "name": "GoldenKnight Rock",
+      "family": "GoldenKnight",
+      "available": true,
+      "rect": [
+        1408,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goldenknight_rockevolution_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "233-0",
+      "name": "Rascals Lovegum",
+      "family": "Rascals",
+      "available": true,
+      "rect": [
+        1472,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_rascals_lovegum_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "234-0",
+      "name": "SkeletonKing Rock",
+      "family": "SkeletonKing",
+      "available": true,
+      "rect": [
+        1536,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeletonking_rockevolution_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "235-0",
+      "name": "Barbarian Evo",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        1600,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarianevo_power_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "236-0",
+      "name": "Firecracker Evo",
+      "family": "Firecracker",
+      "available": true,
+      "rect": [
+        1664,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_firecrackerevo_supersize_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "237-0",
+      "name": "Mortar Evo",
+      "family": "Mortar",
+      "available": true,
+      "rect": [
+        1728,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_mortarevo_goblin_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "238-0",
+      "name": "RoyalGiant Evo",
+      "family": "RoyalGiant",
+      "available": true,
+      "rect": [
+        1792,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royalgiantevo_angry_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "239-0",
+      "name": "Skeleton Evo",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        1856,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeletonevo_sword_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "240-0",
+      "name": "King No WiFi",
+      "family": "King",
+      "available": true,
+      "rect": [
+        1920,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_nowifi_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "241-0",
+      "name": "Barbarian Pecs",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        1984,
+        576,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_clasharamapecs_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "242-0",
+      "name": "Hogrider Ride",
+      "family": "Hogrider",
+      "available": true,
+      "rect": [
+        0,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogrider_clasharamaride_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "243-0",
+      "name": "Knight Evo",
+      "family": "Knight",
+      "available": true,
+      "rect": [
+        64,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_knightevo_arrow_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "244-0",
+      "name": "King Clap",
+      "family": "King",
+      "available": true,
+      "rect": [
+        128,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_clasharamaclap_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "245-0",
+      "name": "MegaMinion Mute",
+      "family": "MegaMinion",
+      "available": true,
+      "rect": [
+        192,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_megaminion_supercellmake_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "246-0",
+      "name": "King Ring",
+      "family": "King",
+      "available": true,
+      "rect": [
+        256,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_clasharamanap_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "247-0",
+      "name": "King Chess Check",
+      "family": "King Chess",
+      "available": true,
+      "rect": [
+        320,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_chesscheck_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "248-0",
+      "name": "King Chess Crush",
+      "family": "King Chess",
+      "available": true,
+      "rect": [
+        384,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_chess_chesscrush_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "249-0",
+      "name": "King Chess Quit",
+      "family": "King Chess",
+      "available": true,
+      "rect": [
+        448,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_chessquit_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "250-0",
+      "name": "King Chess Think",
+      "family": "King Chess",
+      "available": true,
+      "rect": [
+        512,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_chessthink_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "251-0",
+      "name": "Royale Recruit Evo Wakeup",
+      "family": "RoyaleRecruit",
+      "available": true,
+      "rect": [
+        576,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royalrecruitevo_wakeup_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "252-0",
+      "name": "King Red Button",
+      "family": "King",
+      "available": true,
+      "rect": [
+        640,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_redbutton_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "253-0",
+      "name": "King Unfold",
+      "family": "King",
+      "available": true,
+      "rect": [
+        704,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_unfold_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "254-0",
+      "name": "BatEvo Spin",
+      "family": "Bat",
+      "available": true,
+      "rect": [
+        768,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_batevo_spin_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "255-0",
+      "name": "Mother Witch Cook",
+      "family": "MotherWitch",
+      "available": true,
+      "rect": [
+        832,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_motherwitch_cook_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "256-0",
+      "name": "Night Witch Papercut",
+      "family": "NightWitch",
+      "available": true,
+      "rect": [
+        896,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_nightwitch_papercut_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "257-0",
+      "name": "Witch Fail",
+      "family": "Witch",
+      "available": true,
+      "rect": [
+        960,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_witch_fail_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "258-0",
+      "name": "Mother Witch Villain",
+      "family": "MotherWitch",
+      "available": true,
+      "rect": [
+        1024,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_motherwitch_villain_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "259-0",
+      "name": "Archer Arrow",
+      "family": "Archer",
+      "available": true,
+      "rect": [
+        1088,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_archerevo_arrow_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "260-0",
+      "name": "Archer Braid",
+      "family": "Archer",
+      "available": true,
+      "rect": [
+        1152,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_archerevo_braid_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "261-0",
+      "name": "Little Prince Attack",
+      "family": "LittlePrince",
+      "available": true,
+      "rect": [
+        1216,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_littleprince_attack_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "262-0",
+      "name": "Little Prince Taunt",
+      "family": "LittlePrince",
+      "available": true,
+      "rect": [
+        1280,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_littleprince_taunt_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "263-0",
+      "name": "Little Prince Wink",
+      "family": "LittlePrince",
+      "available": true,
+      "rect": [
+        1344,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_littleprince_wink_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "264-0",
+      "name": "Goblin Boohoo",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1408,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_boohoo_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "265-0",
+      "name": "Goblin Grinch",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1472,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_grinch_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "266-0",
+      "name": "Ice Spirit King Freeze",
+      "family": "Spirit",
+      "available": true,
+      "rect": [
+        1536,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icepiritevo_kingfreeze_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "267-0",
+      "name": "Ice Spirit Sword Freeze",
+      "family": "Spirit",
+      "available": true,
+      "rect": [
+        1600,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icepiritevo_swordfreeze_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "268-0",
+      "name": "Lumberjack Cheers",
+      "family": "Lumberjack",
+      "available": true,
+      "rect": [
+        1664,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lumberjack_cheers_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "269-0",
+      "name": "Lumberjack Xmas Dance",
+      "family": "Lumberjack",
+      "available": true,
+      "rect": [
+        1728,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lumberjack_xmasdance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "270-0",
+      "name": "Cannoneer boom",
+      "family": "Cannoneer",
+      "available": true,
+      "rect": [
+        1792,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_cannoneer_boom_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "271-0",
+      "name": "Cannoneer Lever",
+      "family": "Cannoneer",
+      "available": true,
+      "rect": [
+        1856,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_cannoneer_lever_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "272-0",
+      "name": "Cannoneer Pyro",
+      "family": "Cannoneer",
+      "available": true,
+      "rect": [
+        1920,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_cannoneer_pyro_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "273-0",
+      "name": "Valkyrieevo Axerise",
+      "family": "Valkyrie",
+      "available": true,
+      "rect": [
+        1984,
+        640,
+        64,
+        64
+      ],
+      "sc_file": "emotes_valkyrieevo_axerise_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "274-0",
+      "name": "Valkyrieevo hairspin",
+      "family": "Valkyrie",
+      "available": true,
+      "rect": [
+        0,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_valkyrieevo_hairspin_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "275-0",
+      "name": "Valkyrieevo reveal",
+      "family": "Valkyrie",
+      "available": true,
+      "rect": [
+        64,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_valkyrieevo_reveal_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "276-0",
+      "name": "Bomber Evo Heart",
+      "family": "Bomber",
+      "available": true,
+      "rect": [
+        128,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bomberevo_bombheart_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "277-0",
+      "name": "Bomber Evo Boom glasses",
+      "family": "Bomber",
+      "available": true,
+      "rect": [
+        192,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bomberevo_boomglasses_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "278-0",
+      "name": "Wallbreakers Evo Kamikaze",
+      "family": "Wallbreakers",
+      "available": true,
+      "rect": [
+        256,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wallbreakerevo_kamikaze_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "279-0",
+      "name": "Wallbreakers Evo Love Apocalypse",
+      "family": "Wallbreakers",
+      "available": true,
+      "rect": [
+        320,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wallbreakerevo_lovepocalypse_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "280-0",
+      "name": "Electro Giant Party Cake",
+      "family": "ElectroGiant",
+      "available": true,
+      "rect": [
+        384,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_electrogiant_partycake_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "281-0",
+      "name": "Electro Giant Zap Drink",
+      "family": "ElectroGiant",
+      "available": true,
+      "rect": [
+        448,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_electrogiant_zapdrink_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "282-0",
+      "name": "Goblin Zap Dance",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        512,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_zapdance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "283-0",
+      "name": "King Sweating",
+      "family": "King",
+      "available": true,
+      "rect": [
+        576,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_sweating_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "284-0",
+      "name": "King Zap Crown",
+      "family": "King",
+      "available": true,
+      "rect": [
+        640,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_zapcrown_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "285-0",
+      "name": "Ham Breaking In",
+      "family": "BattleRam",
+      "available": true,
+      "rect": [
+        704,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_battleramevo_breakin_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "286-0",
+      "name": "Dagger Duchess Bored",
+      "family": "DaggerDuchess",
+      "available": true,
+      "rect": [
+        768,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_daggerduchess_bored_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "287-0",
+      "name": "Dagger Duchess No Love",
+      "family": "DaggerDuchess",
+      "available": true,
+      "rect": [
+        832,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_daggerduchess_heartslash_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "288-0",
+      "name": "Dagger Duchess Full House",
+      "family": "DaggerDuchess",
+      "available": true,
+      "rect": [
+        896,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_daggerduchess_menacing_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "289-0",
+      "name": "Princess Tell me more",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        960,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_princess_goahead_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "290-0",
+      "name": "Elixir Golem Easter Eggs",
+      "family": "eGolem",
+      "available": true,
+      "rect": [
+        1024,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_elixirgolem_eastereggs_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "291-0",
+      "name": "Easter Bunny P.E.K.K.A",
+      "family": "Pekka",
+      "available": true,
+      "rect": [
+        1088,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_pekka_rabbitsuit_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "292-0",
+      "name": "Ghost King Not Pass",
+      "family": "Ghost",
+      "available": true,
+      "rect": [
+        1152,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_ghostking_notpass_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "293-0",
+      "name": "Hogrider Think",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        1216,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogrider_think_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "294-0",
+      "name": "King Darkspell",
+      "family": "King",
+      "available": true,
+      "rect": [
+        1280,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_darkspell_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "295-0",
+      "name": "King Squad Baby",
+      "family": "King",
+      "available": true,
+      "rect": [
+        1344,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_squadbaby_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "296-0",
+      "name": "King Squad Spiral",
+      "family": "King",
+      "available": true,
+      "rect": [
+        1408,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_squadspiral_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "297-0",
+      "name": "Wizard Evo Kame",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        1472,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizardevo_kame_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "298-0",
+      "name": "Wizard Evo Magic",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        1536,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizardevo_magic_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "299-0",
+      "name": "Bowler Sus",
+      "family": "Bowler",
+      "available": true,
+      "rect": [
+        1600,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bowler_sus_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "300-0",
+      "name": "King Hide",
+      "family": "King",
+      "available": true,
+      "rect": [
+        1664,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_hide_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "301-0",
+      "name": "Goblin Barrel Evo Dance",
+      "family": "GoblinBarrel",
+      "available": true,
+      "rect": [
+        1728,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinbarrelevo_dance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "302-0",
+      "name": "Bats 01",
+      "family": "Bats",
+      "available": true,
+      "rect": [
+        1792,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bat_01_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "303-0",
+      "name": "Bats sleeping",
+      "family": "Bats",
+      "available": true,
+      "rect": [
+        1856,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bat_sleep_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "304-0",
+      "name": "Goblin Queen Cry",
+      "family": "GoblinQueen",
+      "available": true,
+      "rect": [
+        1920,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinqueen_cry_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "305-0",
+      "name": "Goblin Queen Angry",
+      "family": "GoblinQueen",
+      "available": true,
+      "rect": [
+        1984,
+        704,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinqueen_angry_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "306-0",
+      "name": "Goblin Queen Thumbs Down",
+      "family": "GoblinQueen",
+      "available": true,
+      "rect": [
+        0,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinqueen_thumbsdown_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "307-0",
+      "name": "Goblin Queen Laugh",
+      "family": "GoblinQueen",
+      "available": true,
+      "rect": [
+        64,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinqueen_laugh_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "308-0",
+      "name": "Hog Flush",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        128,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hog_flush_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "309-0",
+      "name": "Skeleton Tears Pool",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        192,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeleton_tearspool_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "310-0",
+      "name": "Goblin Drill Evo Fall Apart",
+      "family": "GoblinDrill",
+      "available": true,
+      "rect": [
+        256,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblindrillevo_fallapart_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "311-0",
+      "name": "Goblin Giant Evo Parade",
+      "family": "GoblinGiant",
+      "available": true,
+      "rect": [
+        320,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblingiantevo_parade_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "312-0",
+      "name": "Barbarian Toilet Paper",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        384,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_toiletpaper_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "313-0",
+      "name": "Goblin Bush Chillin",
+      "family": "SuspiciousBush",
+      "available": true,
+      "rect": [
+        448,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinbush_chillin_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "314-0",
+      "name": "Goblin Bush Tikidance",
+      "family": "SuspiciousBush",
+      "available": true,
+      "rect": [
+        512,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinbush_tikidance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "315-0",
+      "name": "Goblin Cage Evo Break free",
+      "family": "GoblinCage",
+      "available": true,
+      "rect": [
+        576,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblincageevo_breakfree_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "316-0",
+      "name": "Goblin Cage Evo Flex",
+      "family": "GoblinCage",
+      "available": true,
+      "rect": [
+        640,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblincageevo_evoflex_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "317-0",
+      "name": "Barbarian Shirt Rip",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        704,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_shirtrip_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "318-0",
+      "name": "Mega Knight Evo Timeout",
+      "family": "MegaKnight",
+      "available": true,
+      "rect": [
+        768,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_megaknightevo_timeout_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "319-0",
+      "name": "Mega Knight Evo Wrecking Ball",
+      "family": "MegaKnight",
+      "available": true,
+      "rect": [
+        832,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_megaknightevo_wreckingball_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "320-0",
+      "name": "Pekka Evo Broken",
+      "family": "Pekka",
+      "available": true,
+      "rect": [
+        896,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_pekkaevo_broken_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "321-0",
+      "name": "Pekka Evo Slash",
+      "family": "Pekka",
+      "available": true,
+      "rect": [
+        960,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_pekkaevo_slash_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "322-0",
+      "name": "Electro Dragon Spark Play",
+      "family": "ElectroDragon",
+      "available": true,
+      "rect": [
+        1024,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_electrodragonevo_sparkplay_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "323-0",
+      "name": "Goblinstein Bolt Screw",
+      "family": "Goblinstein",
+      "available": true,
+      "rect": [
+        1088,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinstein_boltscrew_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "324-0",
+      "name": "Goblinstein Hats Off",
+      "family": "Goblinstein",
+      "available": true,
+      "rect": [
+        1152,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinstein_hatsoff_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "325-0",
+      "name": "Goblinstein Scary",
+      "family": "Goblinstein",
+      "available": true,
+      "rect": [
+        1216,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinstein_scary_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "326-0",
+      "name": "Goblinstein Doctor Evil Laugh",
+      "family": "Goblinstein",
+      "available": true,
+      "rect": [
+        1280,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinsteindoctor_evillaugh_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "327-0",
+      "name": "Barbarian Banjo",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        1344,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_banjo_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "328-0",
+      "name": "Cannon Evo Cheerful Heart",
+      "family": "Cannon",
+      "available": true,
+      "rect": [
+        1408,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_cannonevo_cheerfulheart_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "329-0",
+      "name": "Hogrider Sunset",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        1472,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogrider_sunset_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "330-0",
+      "name": "LumberJack Western",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        1536,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lumberjack_western_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "331-0",
+      "name": "Musketeer Evo Shooting Range",
+      "family": "Musketeer",
+      "available": true,
+      "rect": [
+        1600,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_musketeerevo_shootinrange_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "332-0",
+      "name": "Text Grrr",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        1664,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_text_grrr_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "333-0",
+      "name": "Text HiHiHaHa",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        1728,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_text_hihihiha_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "334-0",
+      "name": "Text LOL",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        1792,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_text_lol_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "335-0",
+      "name": "Text GG",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        1856,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_text_gg_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "336-0",
+      "name": "2v2 Rock",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        1920,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_rock_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "337-0",
+      "name": "2v2 Paper",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        1984,
+        768,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_paper_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "338-0",
+      "name": "2v2 Scissors",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        0,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_scissors_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "339-0",
+      "name": "2v2 GG",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        64,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_gg_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "340-0",
+      "name": "Chefs Kiss",
+      "family": "Chef",
+      "available": true,
+      "rect": [
+        128,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_chef_chefskiss_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "341-0",
+      "name": "Food Delivery",
+      "family": "Chef",
+      "available": true,
+      "rect": [
+        192,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_chef_fooddelivery_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "342-0",
+      "name": "Rollup Sleeves",
+      "family": "Chef",
+      "available": true,
+      "rect": [
+        256,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_chef_rollupsleeves_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "343-0",
+      "name": "Firecracker Warmup",
+      "family": "Firecracker",
+      "available": true,
+      "rect": [
+        320,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_firecracker_warmup_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "344-0",
+      "name": "Goblin Challenge 24",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        384,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_challenge24_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "345-0",
+      "name": "Hogrider Jinglebells",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        448,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogrider_jinglebells_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "346-0",
+      "name": "Snowball Evo Rolling Down",
+      "family": "Snowball",
+      "available": true,
+      "rect": [
+        512,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_snowballevo_rollingdown_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "347-0",
+      "name": "Rune Giant Big Laugh",
+      "family": "GiantBuffer",
+      "available": true,
+      "rect": [
+        576,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_blacksmith_biglaugh_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "348-0",
+      "name": "Rune Giant Buff Power",
+      "family": "GiantBuffer",
+      "available": true,
+      "rect": [
+        640,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_blacksmith_buffpower_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "349-0",
+      "name": "Rune Giant Tooth Pick",
+      "family": "GiantBuffer",
+      "available": true,
+      "rect": [
+        704,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_blacksmith_toothpick_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "350-0",
+      "name": "Dart Goblin Posion Firework",
+      "family": "BlowdartGoblin",
+      "available": true,
+      "rect": [
+        768,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_dartgoblin_poisonfireworks_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "351-0",
+      "name": "King Share Cry",
+      "family": "King",
+      "available": true,
+      "rect": [
+        832,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_sharecry_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "352-0",
+      "name": "Text Yeah",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        896,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_text_yeah_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "353-0",
+      "name": "Barbarian Sexy Face",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        960,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_sexyface_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "354-0",
+      "name": "Berserker Big Hug",
+      "family": "Berserker",
+      "available": true,
+      "rect": [
+        1024,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_berserker_bighug_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "355-0",
+      "name": "Berserker Howling",
+      "family": "Berserker",
+      "available": true,
+      "rect": [
+        1088,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_berserker_howling_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "356-0",
+      "name": "Berserker Sharpening",
+      "family": "Berserker",
+      "available": true,
+      "rect": [
+        1152,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_berserker_sharpening_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "357-0",
+      "name": "Lumberjack Evo Drinking",
+      "family": "RageBarbarian",
+      "available": true,
+      "rect": [
+        1216,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lumberjackevo_drinking_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "358-0",
+      "name": "Lumberjack Evo Log Hug",
+      "family": "RageBarbarian",
+      "available": true,
+      "rect": [
+        1280,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_lumberjackevo_loghug_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "359-0",
+      "name": "Text Ok",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        1344,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_text_ok_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "360-0",
+      "name": "King Rocket Ride",
+      "family": "King",
+      "available": true,
+      "rect": [
+        1408,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_rocketride_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "361-0",
+      "name": "Classic icon Scream",
+      "family": "King",
+      "available": true,
+      "rect": [
+        1472,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_classiciconscream_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "362-0",
+      "name": "Classic icon duel",
+      "family": "King",
+      "available": true,
+      "rect": [
+        1536,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_classiciconduel_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "363-0",
+      "name": "Hunter Evo Net drop",
+      "family": "Hunter",
+      "available": true,
+      "rect": [
+        1600,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hunterevo_netdrop_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "364-0",
+      "name": "Barbarian Bust",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        1664,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_bust_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "365-0",
+      "name": "Balloon Birthday",
+      "family": "Balloon",
+      "available": true,
+      "rect": [
+        1728,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_balloon_birthday_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "366-0",
+      "name": "Boss Bandit Baseball Hit",
+      "family": "BossBandit",
+      "available": true,
+      "rect": [
+        1792,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bigbandit_baseballhit_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "367-0",
+      "name": "Boss Bandit Bomb Toss",
+      "family": "BossBandit",
+      "available": true,
+      "rect": [
+        1856,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bigbandit_bombtoss_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "368-0",
+      "name": "Boss Bandit Ninja Focus",
+      "family": "BossBandit",
+      "available": true,
+      "rect": [
+        1920,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bigbandit_ninjafocus_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "369-0",
+      "name": "Executioner Evo Axe Lick",
+      "family": "AxeMan",
+      "available": true,
+      "rect": [
+        1984,
+        832,
+        64,
+        64
+      ],
+      "sc_file": "emotes_executionerevo_axelick_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "370-0",
+      "name": "Executioner Evo Rage",
+      "family": "AxeMan",
+      "available": true,
+      "rect": [
+        0,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_executionerevo_rage_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "371-0",
+      "name": "Princess Shush",
+      "family": "Princess",
+      "available": true,
+      "rect": [
+        64,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_princess_shush_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "372-0",
+      "name": "Text Nope",
+      "family": "Generic",
+      "available": true,
+      "rect": [
+        128,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_text_nope_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "373-0",
+      "name": "Scary Shadow",
+      "family": "Witch",
+      "available": true,
+      "rect": [
+        192,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_witchevo_scaryshadow_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "374-0",
+      "name": "Skeleton Heal",
+      "family": "Witch",
+      "available": true,
+      "rect": [
+        256,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_witchevo_skeletonheal_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "377-0",
+      "name": "Skeleton Biting Nails",
+      "family": "Skeletons",
+      "available": true,
+      "rect": [
+        320,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeleton_bitingnails_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "378-0",
+      "name": "Dragon Taming",
+      "family": "Dragon",
+      "available": true,
+      "rect": [
+        384,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_babydragon_taming_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "379-0",
+      "name": "Melting Crown",
+      "family": "Dragon",
+      "available": true,
+      "rect": [
+        448,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_infernodragonevo_crownmelt_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "380-0",
+      "name": "Too Hot To Handle",
+      "family": "Dragon",
+      "available": true,
+      "rect": [
+        512,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_infernodragonevo_hottonge_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "381-0",
+      "name": "Inferno Sign",
+      "family": "Dragon",
+      "available": true,
+      "rect": [
+        576,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_infernodragonevo_kingofthetower_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "382-0",
+      "name": "Elipisis",
+      "family": "Text",
+      "available": true,
+      "rect": [
+        640,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_text_ellipsis_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "383-0",
+      "name": "Exclamation",
+      "family": "Text",
+      "available": true,
+      "rect": [
+        704,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_text_exclamation_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "384-0",
+      "name": "Interrogation",
+      "family": "Text",
+      "available": true,
+      "rect": [
+        768,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_text_interrogation_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "385-0",
+      "name": "Hogrider Elixirpour",
+      "family": "Hog",
+      "available": false,
+      "rect": [
+        832,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogrider_elixirpour_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "386-0",
+      "name": "Mergemaiden Beatingsword",
+      "family": "Royals",
+      "available": true,
+      "rect": [
+        896,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_mergemaiden_beatingsword_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "387-0",
+      "name": "Mergemaiden Conflictingemotions",
+      "family": "Royals",
+      "available": true,
+      "rect": [
+        960,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_mergemaiden_conflictingemotions_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "388-0",
+      "name": "Mergemaiden Duality",
+      "family": "Royals",
+      "available": true,
+      "rect": [
+        1024,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_mergemaiden_duality_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "389-0",
+      "name": "Mergemaiden Moodchange",
+      "family": "Royals",
+      "available": true,
+      "rect": [
+        1088,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_mergemaiden_moodchange_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "390-0",
+      "name": "Mergemaiden Spiritpower",
+      "family": "Royals",
+      "available": true,
+      "rect": [
+        1152,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_mergemaiden_spiritpower_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "391-0",
+      "name": "Text Bye",
+      "family": "Text",
+      "available": true,
+      "rect": [
+        1216,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_text_bye_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "392-0",
+      "name": "Text Hi",
+      "family": "Text",
+      "available": true,
+      "rect": [
+        1280,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_text_hi_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "393-0",
+      "name": "Barbarianevo Usa",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        1344,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarianevo_usa_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "394-0",
+      "name": "Barbarian Hornshand",
+      "family": "Barbarian",
+      "available": false,
+      "rect": [
+        1408,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_hornshand_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "409-0",
+      "name": "Barbarian Hornshand",
+      "family": "Barbarian",
+      "available": true,
+      "rect": [
+        1472,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarian_hornshand_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "395-0",
+      "name": "Goldenknight Mewing",
+      "family": "Royals",
+      "available": true,
+      "rect": [
+        1536,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goldenknight_mewing_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "396-0",
+      "name": "Teslatower Goblinelectrocution",
+      "family": "Tesla",
+      "available": true,
+      "rect": [
+        1600,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_teslatower_goblinelectrocution_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "397-0",
+      "name": "Wizardevo Evillaugh",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        1664,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizardevo_evillaugh_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "398-0",
+      "name": "Wizardevo Superflame",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        1728,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizardevo_superflame_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "399-0",
+      "name": "Furnace Boilingpot",
+      "family": "Furnace",
+      "available": true,
+      "rect": [
+        1792,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_furnace_boilingpot_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "400-0",
+      "name": "Furnace Lavatears",
+      "family": "Furnace",
+      "available": true,
+      "rect": [
+        1856,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_furnace_lavatears_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "401-0",
+      "name": "Furnace Lockin",
+      "family": "Furnace",
+      "available": true,
+      "rect": [
+        1920,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_furnace_lockin_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "402-0",
+      "name": "Baby Dragon Egg",
+      "family": "BabyDragon",
+      "available": true,
+      "rect": [
+        1984,
+        896,
+        64,
+        64
+      ],
+      "sc_file": "emotes_babydragon_firebreak_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "403-0",
+      "name": "Beward the Dragon",
+      "family": "BabyDragon",
+      "available": true,
+      "rect": [
+        0,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_babydragonevo_beware_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "404-0",
+      "name": "Cute Yawn",
+      "family": "BabyDragon",
+      "available": true,
+      "rect": [
+        64,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_babydragonevo_cuteyawn_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "405-0",
+      "name": "Face Lick",
+      "family": "BabyDragon",
+      "available": true,
+      "rect": [
+        128,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_babydragonevo_facelick_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "406-0",
+      "name": "Tail Wagging",
+      "family": "BabyDragon",
+      "available": true,
+      "rect": [
+        192,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_babydragonevo_tailwagging_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "407-0",
+      "name": "Heart Vine",
+      "family": "Vine",
+      "available": true,
+      "rect": [
+        256,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_vinespell_heart_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "408-0",
+      "name": "Laughing Vine",
+      "family": "Vine",
+      "available": true,
+      "rect": [
+        320,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_vinespell_laugh_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "410-0",
+      "name": "Electrowizard Mercury",
+      "family": "ElectroWiz",
+      "available": true,
+      "rect": [
+        384,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_electrowizard_mercury_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "411-0",
+      "name": "Skeleton Kiss",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        448,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeleton_kiss_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "412-0",
+      "name": "Royalghostevo Thinking",
+      "family": "RoyalGhost",
+      "available": true,
+      "rect": [
+        512,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royalghostevo_thinking_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "413-0",
+      "name": "Royalghostevo Vanish",
+      "family": "RoyalGhost",
+      "available": true,
+      "rect": [
+        576,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royalghostevo_vanish_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "414-0",
+      "name": "Skeletonarmyevo Helmetcleaning",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        640,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeletonarmyevo_helmetcleaning_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "415-0",
+      "name": "Skeletonarmyevo Inmune",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        704,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeletonarmyevo_inmune_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "416-0",
+      "name": "Skeletonarmyevo Skulldown",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        768,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeletonarmyevo_skulldown_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "417-0",
+      "name": "Skeletongiant Slash",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        832,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeletongiant_slash_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "418-0",
+      "name": "Royalghostevo Cooper",
+      "family": "RoyalGhost",
+      "available": true,
+      "rect": [
+        896,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royalghostevo_cooper_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "419-0",
+      "name": "Crl 25",
+      "family": "CRL",
+      "available": true,
+      "rect": [
+        960,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_crl_25.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "420-0",
+      "name": "Royalhogsevo Porco",
+      "family": "Royal Hogs",
+      "available": true,
+      "rect": [
+        1024,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royalhogsevo_porco_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "421-0",
+      "name": "Royalhogsevo Nyanhog",
+      "family": "RoyalHogs",
+      "available": true,
+      "rect": [
+        1088,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royalhogsevo_nyanhog_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "422-0",
+      "name": "Royalhogsevo Flying",
+      "family": "RoyalHogs",
+      "available": true,
+      "rect": [
+        1152,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royalhogsevo_flying_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "423-0",
+      "name": "Royalhogsevo Phone",
+      "family": "RoyalHogs",
+      "available": true,
+      "rect": [
+        1216,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_royalhogsevo_phone_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "424-0",
+      "name": "Musketeer Animetakeaim",
+      "family": "Musketeer",
+      "available": true,
+      "rect": [
+        1280,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_musketeer_animetakeaim_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "425-0",
+      "name": "Musketeer Animeshocked",
+      "family": "Musketeer",
+      "available": true,
+      "rect": [
+        1344,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_musketeer_animeshocked_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "426-0",
+      "name": "Musketeer Animekawaii",
+      "family": "Musketeer",
+      "available": true,
+      "rect": [
+        1408,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_musketeer_animekawaii_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "427-0",
+      "name": "Musketeer Animecrying",
+      "family": "Musketeer",
+      "available": true,
+      "rect": [
+        1472,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_musketeer_animecrying_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "428-0",
+      "name": "SneakyGolem",
+      "family": "Golem",
+      "available": true,
+      "rect": [
+        1536,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_golem_sneaky_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "429-0",
+      "name": "Wizard67",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        1600,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizard_67_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "430-0",
+      "name": "EmoteChronos311",
+      "family": "",
+      "available": true,
+      "rect": [
+        1664,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_golem_susrock_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "431-0",
+      "name": "GoblinLooser",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1728,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_ldance_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "432-0",
+      "name": "MusketeerTurret",
+      "family": "Musketeer",
+      "available": true,
+      "rect": [
+        1792,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_heromusketeer_blowsmoke_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "433-0",
+      "name": "MusketeerAim",
+      "family": "Musketeer",
+      "available": true,
+      "rect": [
+        1856,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_heromusketeer_fire_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "434-0",
+      "name": "AlarmPekka",
+      "family": "MiniPekka",
+      "available": true,
+      "rect": [
+        1920,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_herominipekka_switchon_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "435-0",
+      "name": "DancingKnightShield",
+      "family": "Knight",
+      "available": true,
+      "rect": [
+        1984,
+        960,
+        64,
+        64
+      ],
+      "sc_file": "emotes_heroknight_moustachedance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "436-0",
+      "name": "SlicingPekka",
+      "family": "MiniPekka",
+      "available": true,
+      "rect": [
+        0,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_herominipekka_pancakeslash_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "437-0",
+      "name": "ChargingKnight",
+      "family": "Knight",
+      "available": true,
+      "rect": [
+        64,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_heroknight_shieldcharge_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "438-0",
+      "name": "ComeGetItGiant",
+      "family": "Giant",
+      "available": true,
+      "rect": [
+        128,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_herogiant_cometome_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "439-0",
+      "name": "Burning Wizard",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        192,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizardhero_fire_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "440-0",
+      "name": "SantaKnight",
+      "family": "Knight",
+      "available": true,
+      "rect": [
+        256,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_heroknight_santadance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "441-0",
+      "name": "SmashingBallGiant",
+      "family": "Giant",
+      "available": true,
+      "rect": [
+        320,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_herogiant_xmastreeball_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "442-0",
+      "name": "XbowXmas",
+      "family": "Xbow",
+      "available": true,
+      "rect": [
+        384,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_xbow_xmas_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "443-0",
+      "name": "ThumbsDownKing",
+      "family": "King",
+      "available": true,
+      "rect": [
+        448,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_thumbdown_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "444-0",
+      "name": "YesFirecracker",
+      "family": "Firecracker",
+      "available": true,
+      "rect": [
+        512,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_firecracker_succes_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "445-0",
+      "name": "LoveMusketeer",
+      "family": "Musketeer",
+      "available": true,
+      "rect": [
+        576,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_heromusketeer_gotcha_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "446-0",
+      "name": "SweatyKnight",
+      "family": "Knight",
+      "available": true,
+      "rect": [
+        640,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_heroknight_sweatoff_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "447-0",
+      "name": "PunchGIant",
+      "family": "Giant",
+      "available": true,
+      "rect": [
+        704,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_herogiant_shoryuken_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "448-0",
+      "name": "LighthouseMiniPekka",
+      "family": "MiniPekka",
+      "available": true,
+      "rect": [
+        768,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_herominipekka_siren_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "449-0",
+      "name": "ItsFineWizard",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        832,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizardhero_itsfine_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "450-0",
+      "name": "LetItBurnWizard",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        896,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizardhero_pyromaniac_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "451-0",
+      "name": "TrueMagicWizard",
+      "family": "Wizard",
+      "available": true,
+      "rect": [
+        960,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_wizardhero_magictrick_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "452-0",
+      "name": "WinterIceGolem",
+      "family": "IceGolem",
+      "available": true,
+      "rect": [
+        1024,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icegolemhero_rise_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "453-0",
+      "name": "YesIceGolem",
+      "family": "IceGolem",
+      "available": true,
+      "rect": [
+        1088,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icegolemhero_evil_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "454-0",
+      "name": "RageIceGolem",
+      "family": "IceGolem",
+      "available": true,
+      "rect": [
+        1152,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icegolemhero_vanish_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "455-0",
+      "name": "ScreamIceGolem",
+      "family": "IceGolem",
+      "available": true,
+      "rect": [
+        1216,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_icegolemhero_blizzard_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "456-0",
+      "name": "TimeGoblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1280,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_pocketwatch_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "457-0",
+      "name": "DerpGoblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1344,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinhero_trollface_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "458-0",
+      "name": "PeakGoblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1408,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinhero_peek_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "459-0",
+      "name": "PrayGoblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1472,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinhero_knife_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "460-0",
+      "name": "StunGoblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1536,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblinhero_headcrush_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "461-0",
+      "name": "CloakMegaMinion",
+      "family": "MegaMinion",
+      "available": true,
+      "rect": [
+        1600,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_megaminionhero_scary_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "462-0",
+      "name": "RosesMegaMinion",
+      "family": "MegaMinion",
+      "available": true,
+      "rect": [
+        1664,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_megaminionhero_ovation_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "463-0",
+      "name": "StoneMegaMinion",
+      "family": "MegaMinion",
+      "available": true,
+      "rect": [
+        1728,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_megaminionhero_gargoyle_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "464-0",
+      "name": "ConfusedMegaMinion",
+      "family": "MegaMinion",
+      "available": true,
+      "rect": [
+        1792,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_megaminionhero_what_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "465-0",
+      "name": "CheatGoblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1856,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_goblin_cheater_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "466-0",
+      "name": "MagicArcherRainbow",
+      "family": "MagicArcher",
+      "available": true,
+      "rect": [
+        1920,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_magicarcherhero_rainbowbow_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "467-0",
+      "name": "MagicArcherFacepalm",
+      "family": "MagicArcher",
+      "available": true,
+      "rect": [
+        1984,
+        1024,
+        64,
+        64
+      ],
+      "sc_file": "emotes_magicarcherhero_facepalm_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "468-0",
+      "name": "MagicArcherCrownGrab",
+      "family": "MagicArcher",
+      "available": true,
+      "rect": [
+        0,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_magicarcherhero_crowngrab_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "469-0",
+      "name": "BarbarianBarrelPopUp",
+      "family": "BarbarianBarrel",
+      "available": true,
+      "rect": [
+        64,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarianbarrelhero_popup_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "470-0",
+      "name": "BarbarianBarrelLaunch",
+      "family": "BarbarianBarrel",
+      "available": true,
+      "rect": [
+        128,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarianbarrelhero_launch_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "471-0",
+      "name": "BarbarianBarrelSelfLove",
+      "family": "BarbarianBarrel",
+      "available": true,
+      "rect": [
+        192,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_barbarianbarrelhero_selflove_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "472-0",
+      "name": "KingSillyWalk",
+      "family": "King",
+      "available": true,
+      "rect": [
+        256,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_sillywalk_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "473-0",
+      "name": "SkeletonShieldBang",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        320,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeleton_shieldbang_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "474-0",
+      "name": "King10Cake",
+      "family": "King",
+      "available": true,
+      "rect": [
+        384,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_kingcake10_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "475-0",
+      "name": "Hog10Cake",
+      "family": "HogRider",
+      "available": true,
+      "rect": [
+        448,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_hogcake10_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "476-0",
+      "name": "BallonMindBlow",
+      "family": "Balloon",
+      "available": true,
+      "rect": [
+        512,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_ballonhero_mindblown_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "477-0",
+      "name": "BallonPop",
+      "family": "Balloon",
+      "available": true,
+      "rect": [
+        576,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_ballonhero_pop_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "478-0",
+      "name": "BallonScary",
+      "family": "Balloon",
+      "available": true,
+      "rect": [
+        640,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_ballonhero_scary_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "479-0",
+      "name": "KingBegging",
+      "family": "King",
+      "available": true,
+      "rect": [
+        704,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_begging_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "480-0",
+      "name": "SkeletonBunny",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        768,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_skeletonbunny_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "481-0",
+      "name": "HopingGoblin",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        832,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bunnyhoppinggoblin_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "482-0",
+      "name": "MinionHordeHeaddance",
+      "family": "MinionHorde",
+      "available": true,
+      "rect": [
+        896,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_minionhordeevo_headdance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "483-0",
+      "name": "MinionHordeTrio",
+      "family": "MinionHorde",
+      "available": true,
+      "rect": [
+        960,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_minionhordeevo_trio_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "484-0",
+      "name": "MinionHordeCough",
+      "family": "MinionHorde",
+      "available": true,
+      "rect": [
+        1024,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_minionhordeevo_cough_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "485-0",
+      "name": "BowlerAwkward",
+      "family": "Bowler",
+      "available": true,
+      "rect": [
+        1088,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bowlerhero_awkward_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "486-0",
+      "name": "BowlerCreepy",
+      "family": "Bowler",
+      "available": true,
+      "rect": [
+        1152,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bowlerhero_creepy_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "487-0",
+      "name": "BowlerDance",
+      "family": "Bowler",
+      "available": true,
+      "rect": [
+        1216,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bowlerhero_dance_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "488-0",
+      "name": "BowlerHandsome",
+      "family": "Bowler",
+      "available": true,
+      "rect": [
+        1280,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bowlerhero_handsome_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "489-0",
+      "name": "BowlerNope",
+      "family": "Bowler",
+      "available": true,
+      "rect": [
+        1344,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_bowlerhero_nope_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "490-0",
+      "name": "DarkPrinceBuddies",
+      "family": "DarkPrince",
+      "available": true,
+      "rect": [
+        1408,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_darkprincehero_buddies_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "491-0",
+      "name": "DarkPrinceCharge",
+      "family": "DarkPrince",
+      "available": true,
+      "rect": [
+        1472,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_darkprincehero_charge_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "492-0",
+      "name": "DarkPrinceInmune",
+      "family": "DarkPrince",
+      "available": true,
+      "rect": [
+        1536,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_darkprincehero_inmune_dl.sc",
+      "export": "emote1"
+    },
+    {
+      "id": "493-0",
+      "name": "DarkPrinceFlirt",
+      "family": "DarkPrince",
+      "available": true,
+      "rect": [
+        1600,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_darkprincehero_rhinoflirt_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "494-0",
+      "name": "KingBadassWalk",
+      "family": "King",
+      "available": true,
+      "rect": [
+        1664,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_king_badasswalk_dl.sc",
+      "export": "icon1"
+    },
+    {
+      "id": "22-0",
+      "name": "Angry Ram",
+      "family": "RamRider",
+      "available": true,
+      "rect": [
+        1728,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_ram_rider_01_dl.sc",
+      "export": "legacy-image"
+    },
+    {
+      "id": "22-1",
+      "name": "Ram Rider / Scream",
+      "family": "RamRider",
+      "available": true,
+      "rect": [
+        1792,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_ram_rider_01_dl.sc",
+      "export": "legacy-image"
+    },
+    {
+      "id": "27-0",
+      "name": "20 Win Challenge",
+      "family": "Goblin",
+      "available": true,
+      "rect": [
+        1856,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_crl_20win_01_dl.sc",
+      "export": "legacy-image"
+    },
+    {
+      "id": "37-0",
+      "name": "king pirate",
+      "family": "King",
+      "available": true,
+      "rect": [
+        1920,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_shipwreck_kingPirate_dl.sc",
+      "export": "legacy-image"
+    },
+    {
+      "id": "40-0",
+      "name": "hog pirate",
+      "family": "Hog",
+      "available": true,
+      "rect": [
+        1984,
+        1088,
+        64,
+        64
+      ],
+      "sc_file": "emotes_shipwreck_03_dl.sc",
+      "export": "legacy-image"
+    },
+    {
+      "id": "40-1",
+      "name": "rascal discovers treasure",
+      "family": "Rascal",
+      "available": true,
+      "rect": [
+        0,
+        1152,
+        64,
+        64
+      ],
+      "sc_file": "emotes_shipwreck_03_dl.sc",
+      "export": "legacy-image"
+    },
+    {
+      "id": "40-2",
+      "name": "skeleton pirate flag",
+      "family": "Skeleton",
+      "available": true,
+      "rect": [
+        64,
+        1152,
+        64,
+        64
+      ],
+      "sc_file": "emotes_shipwreck_03_dl.sc",
+      "export": "generated-placeholder"
+    },
+    {
+      "id": "375-0",
+      "name": "Skull Treasure",
+      "family": "Skeletons",
+      "available": true,
+      "rect": [
+        128,
+        1152,
+        64,
+        64
+      ],
+      "sc_file": "emotes_witchevo_skulltreasure_dl.sc",
+      "export": "legacy-image"
+    },
+    {
+      "id": "376-0",
+      "name": "To Win Or Not To Win",
+      "family": "Skeletons",
+      "available": true,
+      "rect": [
+        192,
+        1152,
+        64,
+        64
+      ],
+      "sc_file": "emotes_witchevo_towinornottowin_dl.sc",
+      "export": "legacy-image"
+    }
+  ],
+  "failures": [
+    {
+      "sc_file": "emotes_ram_rider_01_dl.sc",
+      "ids": [
+        "22-0",
+        "22-1"
+      ],
+      "error": "Unsupported SC version 67108864 (expected 5)"
+    },
+    {
+      "sc_file": "emotes_crl_20win_01_dl.sc",
+      "ids": [
+        "27-0"
+      ],
+      "error": "Unsupported SC version 67108864 (expected 5)"
+    },
+    {
+      "sc_file": "emotes_shipwreck_kingPirate_dl.sc",
+      "ids": [
+        "37-0"
+      ],
+      "error": "Unsupported SC version 67108864 (expected 5)"
+    },
+    {
+      "sc_file": "emotes_shipwreck_03_dl.sc",
+      "ids": [
+        "40-0",
+        "40-1",
+        "40-2"
+      ],
+      "error": "Unsupported SC version 67108864 (expected 5)"
+    },
+    {
+      "sc_file": "emotes_witchevo_skulltreasure_dl.sc",
+      "ids": [
+        "375-0"
+      ],
+      "error": "Unsupported SC version 67108864 (expected 5)"
+    },
+    {
+      "sc_file": "emotes_witchevo_towinornottowin_dl.sc",
+      "ids": [
+        "376-0"
+      ],
+      "error": "Unsupported SC version 67108864 (expected 5)"
+    },
+    {
+      "sc_file": "emotes_feb2020_01_dl.sc",
+      "ids": [
+        "78-2"
+      ],
+      "error": "无法渲染缩略图；尝试了 icon3, emote3"
+    }
+  ]
+}
