@@ -23,10 +23,13 @@ from capture_native_entity_stream import (  # noqa: E402
 )
 from minimal_visualizer import _average_card_cost  # noqa: E402
 from proc_memory import (  # noqa: E402
+    MemoryRegion,
     BattlePointers,
     BattleStateLocator,
     CardDeckEntry,
     PlayerHandPointers,
+    _ArenaSnapshot,
+    _SnapshotRegion,
 )
 from evolution_cycles import EVOLUTION_CYCLES  # noqa: E402
 
@@ -45,6 +48,41 @@ class FakeMemory:
 
 
 class NativeSnapshotTests(unittest.TestCase):
+    def test_converts_live_account_id_to_public_player_tag(self) -> None:
+        account_id = bytes.fromhex("000000008b723c04")
+
+        self.assertEqual(
+            BattleStateLocator.player_tag_from_account_id(account_id),
+            "#UPGPUVRRL",
+        )
+
+    def test_finds_opponent_name_between_live_player_ids(self) -> None:
+        start = 0x1000
+        data = bytearray(0x500)
+        local_account = bytes.fromhex("0000000018733e04")
+        opponent_account = bytes.fromhex("000000008b723c04")
+        data[0x100:0x108] = local_account
+        data[0x140:0x14D] = "烈烈风中".encode("utf-8") + b"\0"
+        data[0x180:0x190] = b"Supercell-Magic\0"
+        data[0x1E0:0x1E8] = opponent_account
+        mapping = MemoryRegion(
+            start,
+            start + len(data),
+            "rw-p",
+            0,
+            "[anon:scudo:primary]",
+        )
+        snapshot = _ArenaSnapshot([_SnapshotRegion(mapping, bytes(data))])
+
+        self.assertEqual(
+            BattleStateLocator._find_opponent_name(
+                snapshot,
+                local_account,
+                opponent_account,
+            ),
+            "烈烈风中",
+        )
+
     def test_default_stream_interval_is_low_latency(self) -> None:
         self.assertLessEqual(DEFAULT_STREAM_INTERVAL_MS, 20)
 

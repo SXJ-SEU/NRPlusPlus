@@ -49,6 +49,12 @@ class CardDeckEntry:
 
 
 @dataclass(frozen=True)
+class BattlePlayerIdentity:
+    name: str | None
+    tag: str
+
+
+@dataclass(frozen=True)
 class BattleValues:
     own_elixir: int
     battle_clock: float
@@ -230,6 +236,7 @@ class BattleStateLocator:
     CARD_FORM_NAMES = {1: "evolution", 2: "hero"}
     ENTITY_CATEGORY_MIN = 5_000_000
     ENTITY_CATEGORY_MAX = 6_000_000
+    PLAYER_TAG_ALPHABET = "0289PYLQGRJCUV"
 
     def __init__(self, memory: RootProcessMemory) -> None:
         self.memory = memory
@@ -238,6 +245,7 @@ class BattleStateLocator:
         self._libg_base: int | None = None
         self._battle_entity_collection: int | None = None
         self._player_hand_candidates: tuple[PlayerHandPointers, ...] = ()
+        self._identity_snapshot: _ArenaSnapshot | None = None
         self.last_timing: dict[str, float | int] = {}
 
     @staticmethod
@@ -289,6 +297,7 @@ class BattleStateLocator:
         snapshot_done = time.perf_counter()
         if loaded is None:
             self._player_hand_candidates = ()
+            self._identity_snapshot = None
             self.last_timing = {
                 "snapshot_ms": (snapshot_done - started) * 1000,
                 "scan_ms": 0.0,
@@ -297,6 +306,7 @@ class BattleStateLocator:
             }
             return None
         snapshot, grouped = loaded
+        self._identity_snapshot = snapshot
         snapshot_bytes = sum(len(item.data) for item in snapshot.regions)
         arrays = grouped[1] + grouped[2]
         model_regions = grouped[self.MODEL_CLASS]
@@ -356,6 +366,7 @@ class BattleStateLocator:
         self._player_hand_candidates = tuple(player_hand_candidates.values())
 
         if not candidates:
+            self._identity_snapshot = None
             finished = time.perf_counter()
             self.last_timing = {
                 "snapshot_ms": (snapshot_done - started) * 1000,
@@ -373,6 +384,111 @@ class BattleStateLocator:
             "candidate_count": len(candidates),
         }
         return max(candidates, key=lambda item: item[0])[1]
+
+    @classmethod
+    def player_tag_from_account_id(cls, account_id: bytes) -> str | None:
+        """Convert the game's little-endian LogicLong bytes to a public tag."""
+        if len(account_id) != 8:
+            return None
+        high_id, low_id = struct.unpack("<II", account_id)
+        value = low_id * 256 + high_id
+        if value <= 0:
+            return None
+        encoded = ""
+        while value:
+            value, remainder = divmod(value, len(cls.PLAYER_TAG_ALPHABET))
+            encoded = cls.PLAYER_TAG_ALPHABET[remainder] + encoded
+        return f"#{encoded}"
+
+    @staticmethod
+    def _inline_utf8(snapshot: _ArenaSnapshot, address: int) -> str | None:
+        raw = snapshot.read(address, 64)
+        if raw is None:
+            return None
+        end = raw.find(b"\0")
+        if not 0 < end <= 48:
+            return None
+        try:
+            text = raw[:end].decode("utf-8")
+        except UnicodeDecodeError:
+            return None
+        if not 1 <= len(text) <= 32 or not all(
+            character.isprintable() for character in text
+        ):
+            return None
+        return text
+
+    @classmethod
+    def _find_opponent_name(
+        cls,
+        snapshot: _ArenaSnapshot,
+        local_account_id: bytes,
+        opponent_account_id: bytes,
+    ) -> str | None:
+        """Find the battle identity record containing both player IDs.
+
+        The record stores aligned short strings between the local and opponent
+        LogicLong values. The first string is the opponent display name; later
+        strings contain server and clan labels.
+        """
+        candidates: list[tuple[int, str]] = []
+        for region in snapshot.regions:
+            data = region.data
+            local_cursor = 0
+            while True:
+                local_offset = data.find(local_account_id, local_cursor)
+                if local_offset < 0:
+                    break
+                search_end = min(len(data), local_offset + 0x401)
+                opponent_offset = data.find(
+                    opponent_account_id,
+                    local_offset + len(local_account_id),
+                    search_end,
+                )
+                if opponent_offset >= 0:
+                    address = (region.mapping.start + local_offset + 0x0F) & ~0x0F
+                    opponent_address = region.mapping.start + opponent_offset
+                    while address < opponent_address:
+                        text = cls._inline_utf8(snapshot, address)
+                        if text is not None:
+                            name_offset = address - (region.mapping.start + local_offset)
+                            id_gap = opponent_offset - local_offset
+                            score = abs(name_offset - 0x40) + abs(id_gap - 0xE0)
+                            candidates.append((score, text))
+                            break
+                        address += 0x10
+                local_cursor = local_offset + 1
+        return min(candidates, default=(0, None), key=lambda item: item[0])[1]
+
+    def poll_opponent_identity(
+        self,
+        pointers: BattlePointers,
+        local_player_index: int,
+    ) -> BattlePlayerIdentity | None:
+        """Read the live opponent name and tag without querying profile data."""
+        if local_player_index not in (0, 1):
+            return None
+        snapshot = self._identity_snapshot
+        try:
+            local_account_id = self._poll_model_account_id(pointers.model)
+            opponent_account_id = self._poll_battle_player_account_id(
+                1 - local_player_index
+            )
+            tag = self.player_tag_from_account_id(opponent_account_id)
+            if tag is None:
+                return None
+            name = (
+                self._find_opponent_name(
+                    snapshot,
+                    local_account_id,
+                    opponent_account_id,
+                )
+                if snapshot is not None
+                else None
+            )
+            return BattlePlayerIdentity(name=name, tag=tag)
+        finally:
+            self._identity_snapshot = None
 
     def poll(self, pointers: BattlePointers) -> BattleValues:
         ui_raw, model_raw, hand_raw, queue_raw = self.memory.read_many(

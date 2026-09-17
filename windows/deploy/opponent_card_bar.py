@@ -552,7 +552,12 @@ class OpponentCardBarRenderer:
         surface.blit(detail, detail.get_rect(center=(center_x, 169)))
         surface.blit(hint, hint.get_rect(center=(center_x, 198)))
 
-    def _draw_opponent_info(self, surface: pygame.Surface, state: OpponentInfoState) -> None:
+    def _draw_opponent_info(
+        self,
+        surface: pygame.Surface,
+        state: OpponentInfoState,
+        snapshot: dict[str, Any] | None,
+    ) -> None:
         self._draw_info_panel(surface)
         if state.status in ("idle", "loading"):
             self._draw_loading(surface)
@@ -565,8 +570,14 @@ class OpponentCardBarRenderer:
         header = pygame.Rect(94, 10, 394, 61)
         pygame.draw.rect(surface, (3, 43, 91), header, border_radius=9)
         pygame.draw.rect(surface, (50, 156, 222), header, 1, border_radius=9)
-        name = self.info_title_font.render(info.name, True, (250, 253, 255))
-        tag = self.info_small_font.render(info.tag, True, (146, 207, 244))
+        live_name = snapshot.get("opponent_name") if snapshot is not None else None
+        live_tag = snapshot.get("opponent_tag") if snapshot is not None else None
+        display_name = (
+            live_name if isinstance(live_name, str) and live_name else info.name
+        )
+        display_tag = live_tag if isinstance(live_tag, str) and live_tag else info.tag
+        name = self.info_title_font.render(display_name, True, (250, 253, 255))
+        tag = self.info_small_font.render(display_tag, True, (146, 207, 244))
         clan_text = info.clan_name or "无部落"
         clan = self.info_small_font.render(clan_text, True, (190, 219, 240))
         surface.blit(name, (header.x + 11, header.y + 7))
@@ -661,7 +672,7 @@ class OpponentCardBarRenderer:
         self._draw_sidebar(surface)
         if page == "opponent_info":
             state = opponent_info_state or OpponentInfoState(status="loading")
-            self._draw_opponent_info(surface, state)
+            self._draw_opponent_info(surface, state, snapshot)
             return
         cards = snapshot.get("opponent_cards", []) if snapshot is not None else []
         if not isinstance(cards, list):

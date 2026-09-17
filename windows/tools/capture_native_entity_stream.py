@@ -156,6 +156,8 @@ SECONDARY_STATE_FIELDS = frozenset(
         "next_card",
         "state_diagnostics",
         "local_player_index",
+        "opponent_name",
+        "opponent_tag",
         "opponent_cards",
     }
 )
@@ -539,6 +541,12 @@ def normalize_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
         for item in opponent_cards
         if isinstance(item, dict)
     ]
+    opponent_name = payload.get("opponent_name")
+    if not isinstance(opponent_name, str) or not opponent_name.strip():
+        opponent_name = None
+    opponent_tag = payload.get("opponent_tag")
+    if not isinstance(opponent_tag, str) or not opponent_tag.startswith("#"):
+        opponent_tag = None
     return {
         "event": "runtime_snapshot",
         "t_ms": int(time.time() * 1000),
@@ -551,6 +559,8 @@ def normalize_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
         "battle_clock": battle_clock,
         "hand": hand,
         "next_card": next_card,
+        "opponent_name": opponent_name,
+        "opponent_tag": opponent_tag,
         "opponent_cards": opponent_cards,
         "entities": normalized_entities,
         "native_sequence": payload.get("sequence"),
@@ -581,6 +591,7 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
     opponent_deck_forms: list[str | None] = [None] * 8
     opponent_evolution_charges = [0] * 8
     local_player_index: int | None = None
+    opponent_identity = None
     previous_local_hand: tuple[int, ...] | None = None
     opponent_hand_pointers = None
     previous_opponent_hand: tuple[int, ...] | None = None
@@ -588,7 +599,7 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
     opponent_play_events: list[tuple[int, int, int]] = []
 
     def read() -> dict[str, Any] | None:
-        nonlocal pointers, retry_at, local_player_index
+        nonlocal pointers, retry_at, local_player_index, opponent_identity
         nonlocal previous_local_hand
         nonlocal opponent_hand_pointers, previous_opponent_hand
         nonlocal previous_opponent_hand_observed_ms
@@ -601,6 +612,7 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                 diagnostics.update({"status": "locating"})
                 pointers = locator.locate()
                 local_player_index = None
+                opponent_identity = None
                 previous_local_hand = None
                 opponent_hand_pointers = None
                 previous_opponent_hand = None
@@ -615,8 +627,25 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                     diagnostics.update({"status": "player_identity_failed", "error": str(exc)})
                 else:
                     diagnostics.update({"status": "player_identified"})
+                    try:
+                        opponent_identity = locator.poll_opponent_identity(
+                            pointers, local_player_index
+                        )
+                    except Exception as exc:
+                        diagnostics.update(
+                            {"status": "opponent_identity_failed", "error": str(exc)}
+                        )
+                    identity_fields = (
+                        {
+                            "opponent_name": opponent_identity.name,
+                            "opponent_tag": opponent_identity.tag,
+                        }
+                        if opponent_identity is not None
+                        else {}
+                    )
                     return {
                         "local_player_index": local_player_index,
+                        **identity_fields,
                         "state_diagnostics": dict(diagnostics),
                     }
             if local_player_index is not None and opponent_hand_pointers is None:
@@ -789,6 +818,14 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                         }
                         for slot, data_id in enumerate(opponent_deck_ids)
                     ],
+                    **(
+                        {
+                            "opponent_name": opponent_identity.name,
+                            "opponent_tag": opponent_identity.tag,
+                        }
+                        if opponent_identity is not None
+                        else {}
+                    ),
                     "state_diagnostics": dict(diagnostics)}
             if local_player_index is not None:
                 result["local_player_index"] = local_player_index

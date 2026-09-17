@@ -409,6 +409,47 @@ class OpponentCardBarTests(unittest.TestCase):
             pygame.image.tobytes(info.subsurface(card_bar.CONTENT_RECT), "RGBA"),
         )
 
+    def test_opponent_info_header_uses_live_name_and_tag_only(self) -> None:
+        info = opponent_info.OpponentInfo(
+            name="JTR_CR",
+            tag="#8JCRL98YC",
+            clan_name="Tiktok Live",
+            trophies=14_000,
+            ranked_medals=2_640,
+            recent_games=30,
+            recent_wins=20,
+            recent_losses=10,
+            recent_win_rate=2 / 3,
+            decks=(),
+        )
+        state = opponent_info.OpponentInfoState(status="ready", info=info)
+        simulated = pygame.Surface(card_bar.WINDOW_SIZE, pygame.SRCALPHA)
+        live = pygame.Surface(card_bar.WINDOW_SIZE, pygame.SRCALPHA)
+
+        self.renderer.draw(
+            simulated,
+            None,
+            page="opponent_info",
+            opponent_info_state=state,
+        )
+        self.renderer.draw(
+            live,
+            {"opponent_name": "烈烈风中", "opponent_tag": "#UPGPUVRRL"},
+            page="opponent_info",
+            opponent_info_state=state,
+        )
+
+        header = pygame.Rect(94, 10, 394, 61)
+        record = pygame.Rect(94, 79, 394, 68)
+        self.assertNotEqual(
+            pygame.image.tobytes(simulated.subsurface(header), "RGBA"),
+            pygame.image.tobytes(live.subsurface(header), "RGBA"),
+        )
+        self.assertEqual(
+            pygame.image.tobytes(simulated.subsurface(record), "RGBA"),
+            pygame.image.tobytes(live.subsurface(record), "RGBA"),
+        )
+
     def test_recent_deck_cards_can_use_cached_online_art(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "online.png"
