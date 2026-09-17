@@ -15,6 +15,19 @@ WINDOWS_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(WINDOWS_ROOT / "deploy"))
 
 import opponent_card_bar as card_bar  # noqa: E402
+import opponent_info  # noqa: E402
+
+
+class FakeOpponentInfoController:
+    def __init__(self) -> None:
+        self.requests = 0
+
+    def request(self) -> None:
+        self.requests += 1
+
+    @staticmethod
+    def current() -> opponent_info.OpponentInfoState:
+        return opponent_info.OpponentInfoState(status="loading")
 
 
 class OpponentCardBarTests(unittest.TestCase):
@@ -70,6 +83,21 @@ class OpponentCardBarTests(unittest.TestCase):
         self.assertTrue(renderer.press_sidebar(first.center))
         self.assertEqual(renderer.release_sidebar(first.center), "opponent_info")
         self.assertFalse(renderer.press_sidebar((card_bar.LEFT_RAIL_WIDTH + 1, 10)))
+
+    def test_opponent_info_action_toggles_page_and_starts_each_query(self) -> None:
+        info_controller = FakeOpponentInfoController()
+        controller = card_bar.OpponentCardBarController(info_controller)
+
+        self.assertTrue(controller.handle_sidebar_action("opponent_info"))
+        self.assertEqual(controller.page, "opponent_info")
+        self.assertEqual(info_controller.requests, 1)
+        self.assertTrue(controller.handle_sidebar_action("opponent_info"))
+        self.assertEqual(controller.page, "cards")
+        self.assertEqual(info_controller.requests, 1)
+        self.assertTrue(controller.handle_sidebar_action("opponent_info"))
+        self.assertEqual(controller.page, "opponent_info")
+        self.assertEqual(info_controller.requests, 2)
+        self.assertFalse(controller.handle_sidebar_action("battle_log"))
 
     def test_sidebar_feedback_only_exists_while_button_is_pressed(self) -> None:
         renderer = card_bar.OpponentCardBarRenderer()
@@ -359,6 +387,27 @@ class OpponentCardBarTests(unittest.TestCase):
             tuple(waiting.get_at(card_bar.card_cell_rect(0).center)[:3]),
         )
 
+    def test_opponent_info_page_replaces_only_the_right_content_area(self) -> None:
+        cards = pygame.Surface(card_bar.WINDOW_SIZE, pygame.SRCALPHA)
+        info = pygame.Surface(card_bar.WINDOW_SIZE, pygame.SRCALPHA)
+        self.renderer.draw(cards, None)
+        self.renderer.draw(
+            info,
+            None,
+            page="opponent_info",
+            opponent_info_state=opponent_info.OpponentInfoState(status="loading"),
+        )
+
+        left = pygame.Rect(0, 0, card_bar.LEFT_RAIL_WIDTH, card_bar.WINDOW_SIZE[1])
+        self.assertEqual(
+            pygame.image.tobytes(cards.subsurface(left), "RGBA"),
+            pygame.image.tobytes(info.subsurface(left), "RGBA"),
+        )
+        self.assertNotEqual(
+            pygame.image.tobytes(cards.subsurface(card_bar.CONTENT_RECT), "RGBA"),
+            pygame.image.tobytes(info.subsurface(card_bar.CONTENT_RECT), "RGBA"),
+        )
+
     def test_inset_top_edges_do_not_contain_detached_accent_lines(self) -> None:
         surface = pygame.Surface(card_bar.WINDOW_SIZE, pygame.SRCALPHA)
         self.renderer.draw(surface, None)
@@ -377,6 +426,29 @@ class OpponentCardBarTests(unittest.TestCase):
             (52, 166, 233),
         )
 
+
+class OpponentInfoParsingTests(unittest.TestCase):
+    def test_parses_recent_record_and_grouped_decks_from_royaletools_page(self) -> None:
+        page = (
+            r'\"player\":{\"name\":\"JTR_CR\",\"tag\":\"#8JCRL98YC\",'
+            r'\"trophies\":14000,\"rankedMedals\":2640,'
+            r'\"clan\":{\"name\":\"Tiktok Live\"}},'
+            r'\"recent\":{\"sampleSize\":30,\"wins\":20,\"losses\":10,'
+            r'\"winRate\":0.6666666667},\"battles\":[],'
+            r'\"recentDecks\":[{\"cards\":[{\"id\":26000064,'
+            r'\"iconUrl\":\"/card-forms/evolution-firecracker-v5.png\"},'
+            r'{\"id\":26000065,\"iconUrl\":\"/cards/mighty-miner-v1.png\"}],'
+            r'\"uses\":12,\"wins\":10,\"losses\":2,\"winRate\":0.8333333333}]'
+            r'},\"publicDistinctions\":[]'
+        )
+
+        info = opponent_info.parse_royaletools_player_page(page)
+
+        self.assertEqual((info.name, info.tag), ("JTR_CR", "#8JCRL98YC"))
+        self.assertEqual((info.recent_games, info.recent_wins, info.recent_losses), (30, 20, 10))
+        self.assertAlmostEqual(info.recent_win_rate, 2 / 3)
+        self.assertEqual(info.decks[0].uses, 12)
+        self.assertEqual(info.decks[0].form_for(26_000_064), "evolution")
 
 if __name__ == "__main__":
     unittest.main()

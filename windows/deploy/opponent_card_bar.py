@@ -9,6 +9,8 @@ from typing import Any
 
 import pygame
 
+from opponent_info import OpponentInfoController, OpponentInfoState
+
 
 WINDOW_SIZE = (500, 340)
 LEFT_RAIL_WIDTH = 82
@@ -22,6 +24,7 @@ STATUS_RECT = pygame.Rect(99, 289, 389, 44)
 ELIXIR_BADGE_RECT = pygame.Rect(96, 289, 44, 44)
 ELIXIR_METER_RECT = pygame.Rect(132, 299, 282, 25)
 AVERAGE_RECT = pygame.Rect(421, 288, 67, 45)
+CONTENT_RECT = pygame.Rect(82, 0, 418, 340)
 SIDEBAR_TITLE_RECT = pygame.Rect(4, 7, 74, 30)
 SIDEBAR_ACTIONS = (
     "opponent_info",
@@ -178,6 +181,11 @@ class OpponentCardBarRenderer:
         }
         self.label_font = _windows_font(10, bold=True)
         self.fallback_number_font = _windows_font(20, bold=True)
+        self.info_title_font = _windows_font(18, bold=True)
+        self.info_body_font = _windows_font(13)
+        self.info_small_font = _windows_font(11)
+        self.info_stat_font = _windows_font(22, bold=True)
+        self.deck_card_images: dict[tuple[int, str | None], pygame.Surface] = {}
 
     @staticmethod
     def _index_icons(icon_root: Path) -> dict[int, dict[str, Path]]:
@@ -432,9 +440,158 @@ class OpponentCardBarRenderer:
             text = f"{average:.1f}"
         self._draw_average_number(surface, text, (AVERAGE_RECT.centerx, AVERAGE_RECT.top + 31))
 
-    def draw(self, surface: pygame.Surface, snapshot: dict[str, Any] | None) -> None:
+    def _deck_card_image(self, data_id: int, form: str | None) -> pygame.Surface | None:
+        cache_key = (data_id, form)
+        if cache_key in self.deck_card_images:
+            return self.deck_card_images[cache_key]
+        variants = self.icon_paths.get(data_id)
+        if variants is None:
+            return None
+        variant = "normal"
+        if form == "hero" and "hero" in variants:
+            variant = "hero"
+        elif form == "evolution":
+            for candidate in ("evolution_2_of_2", "evolution_1_of_1"):
+                if candidate in variants:
+                    variant = candidate
+                    break
+        path = variants.get(variant) or variants["normal"]
+        image = pygame.image.load(str(path)).convert_alpha()
+        bounds = image.get_bounding_rect()
+        if bounds.width and bounds.height:
+            image = image.subsurface(bounds)
+        target_height = 43
+        target_width = max(1, round(image.get_width() * target_height / image.get_height()))
+        if target_width > 31:
+            target_width = 31
+        fitted = pygame.transform.smoothscale(image, (target_width, target_height))
+        self.deck_card_images[cache_key] = fitted
+        return fitted
+
+    def _draw_info_panel(self, surface: pygame.Surface) -> None:
+        panel = pygame.Surface(CONTENT_RECT.size, pygame.SRCALPHA)
+        _vertical_gradient(panel, panel.get_rect(), (8, 74, 137), (3, 35, 84))
+        panel.fill((4, 28, 68, 32), special_flags=pygame.BLEND_RGBA_ADD)
+        surface.blit(panel, CONTENT_RECT)
+        pygame.draw.line(surface, (39, 145, 220), CONTENT_RECT.topleft, CONTENT_RECT.bottomleft)
+
+    def _draw_loading(self, surface: pygame.Surface) -> None:
+        center = (CONTENT_RECT.centerx, CONTENT_RECT.centery - 12)
+        radius = 18
+        start = (pygame.time.get_ticks() // 6) % 360
+        for index in range(10):
+            angle = (start + index * 36) * 3.141592653589793 / 180
+            alpha = 45 + index * 20
+            point = (
+                round(center[0] + radius * pygame.math.Vector2(1, 0).rotate_rad(angle).x),
+                round(center[1] + radius * pygame.math.Vector2(1, 0).rotate_rad(angle).y),
+            )
+            pygame.draw.circle(surface, (104, 205, 255, min(alpha, 255)), point, 3)
+        label = self.info_body_font.render("正在查询对手信息…", True, (218, 239, 255))
+        surface.blit(label, label.get_rect(midtop=(center[0], center[1] + 30)))
+
+    def _draw_info_error(self, surface: pygame.Surface, message: str | None) -> None:
+        title = self.info_title_font.render("查询失败", True, (255, 211, 111))
+        detail = self.info_body_font.render(message or "暂时无法取得玩家资料", True, (220, 235, 250))
+        hint = self.info_small_font.render("返回卡牌页后再次点击即可重试", True, (149, 188, 220))
+        center_x = CONTENT_RECT.centerx
+        surface.blit(title, title.get_rect(center=(center_x, 135)))
+        surface.blit(detail, detail.get_rect(center=(center_x, 169)))
+        surface.blit(hint, hint.get_rect(center=(center_x, 198)))
+
+    def _draw_opponent_info(self, surface: pygame.Surface, state: OpponentInfoState) -> None:
+        self._draw_info_panel(surface)
+        if state.status in ("idle", "loading"):
+            self._draw_loading(surface)
+            return
+        if state.status == "error" or state.info is None:
+            self._draw_info_error(surface, state.error)
+            return
+
+        info = state.info
+        header = pygame.Rect(94, 10, 394, 61)
+        pygame.draw.rect(surface, (3, 43, 91), header, border_radius=9)
+        pygame.draw.rect(surface, (50, 156, 222), header, 1, border_radius=9)
+        name = self.info_title_font.render(info.name, True, (250, 253, 255))
+        tag = self.info_small_font.render(info.tag, True, (146, 207, 244))
+        clan_text = info.clan_name or "无部落"
+        clan = self.info_small_font.render(clan_text, True, (190, 219, 240))
+        surface.blit(name, (header.x + 11, header.y + 7))
+        surface.blit(tag, (header.x + 11, header.y + 33))
+        surface.blit(clan, clan.get_rect(right=header.right - 10, top=header.y + 9))
+        rating = info.ranked_medals if info.ranked_medals is not None else info.trophies
+        rating_label = "天梯奖牌" if info.ranked_medals is not None else "奖杯"
+        rating_text = "--" if rating is None else f"{rating:,}"
+        rendered_rating = self.info_body_font.render(
+            f"{rating_label} {rating_text}", True, (255, 222, 116)
+        )
+        rating_rect = rendered_rating.get_rect(
+            right=header.right - 10, top=header.y + 34
+        )
+        surface.blit(rendered_rating, rating_rect)
+
+        record = pygame.Rect(94, 79, 394, 68)
+        pygame.draw.rect(surface, (6, 55, 108), record, border_radius=9)
+        pygame.draw.rect(surface, (31, 123, 190), record, 1, border_radius=9)
+        rate = self.info_stat_font.render(
+            f"{info.recent_win_rate * 100:.1f}%", True, (104, 238, 177)
+        )
+        surface.blit(rate, rate.get_rect(midleft=(record.x + 13, record.centery - 4)))
+        recent_label = self.info_small_font.render(
+            f"近 {info.recent_games} 场胜率", True, (175, 214, 241)
+        )
+        surface.blit(recent_label, (record.x + 13, record.bottom - 20))
+        wins = self.info_body_font.render(f"胜  {info.recent_wins}", True, (101, 232, 169))
+        losses = self.info_body_font.render(f"负  {info.recent_losses}", True, (255, 133, 139))
+        surface.blit(wins, (record.x + 230, record.y + 13))
+        surface.blit(losses, (record.x + 310, record.y + 13))
+        source = self.info_small_font.render(f"数据来源：{info.source}", True, (129, 177, 211))
+        surface.blit(source, source.get_rect(right=record.right - 10, bottom=record.bottom - 8))
+
+        section = self.info_body_font.render("近期常用卡组", True, (229, 243, 255))
+        surface.blit(section, (96, 154))
+        for index, deck in enumerate(info.decks[:3]):
+            row = pygame.Rect(94, 177 + index * 52, 394, 47)
+            pygame.draw.rect(surface, (4, 43, 88), row, border_radius=7)
+            pygame.draw.rect(surface, (20, 99, 161), row, 1, border_radius=7)
+            x = row.x + 7
+            for data_id in deck.card_ids[:8]:
+                image = self._deck_card_image(data_id, deck.form_for(data_id))
+                if image is None:
+                    placeholder = pygame.Rect(x, row.y + 5, 28, 37)
+                    pygame.draw.rect(surface, (8, 63, 113), placeholder, border_radius=4)
+                    pygame.draw.rect(surface, (49, 129, 184), placeholder, 1, border_radius=4)
+                    x += 31
+                    continue
+                image_rect = image.get_rect(midbottom=(x + 14, row.bottom - 2))
+                surface.blit(image, image_rect)
+                x += 31
+            rate_text = self.info_body_font.render(
+                f"{deck.win_rate * 100:.0f}%", True, (255, 226, 116)
+            )
+            record_text = self.info_small_font.render(
+                f"{deck.wins}胜 {deck.losses}负", True, (172, 207, 232)
+            )
+            surface.blit(rate_text, rate_text.get_rect(right=row.right - 9, top=row.y + 5))
+            record_rect = record_text.get_rect(
+                right=row.right - 9, bottom=row.bottom - 6
+            )
+            surface.blit(record_text, record_rect)
+
+    def draw(
+        self,
+        surface: pygame.Surface,
+        snapshot: dict[str, Any] | None,
+        *,
+        page: str = "cards",
+        opponent_info_state: OpponentInfoState | None = None,
+    ) -> None:
         self._draw_background(surface)
         self._draw_sidebar(surface)
+        if page == "opponent_info":
+            state = opponent_info_state or OpponentInfoState(status="loading")
+            self._draw_opponent_info(surface, state)
+            return
         cards = snapshot.get("opponent_cards", []) if snapshot is not None else []
         if not isinstance(cards, list):
             cards = []
@@ -443,6 +600,22 @@ class OpponentCardBarRenderer:
         raw_elixir = snapshot.get("opponent_elixir") if snapshot is not None else None
         elixir = raw_elixir if isinstance(raw_elixir, int) else None
         self._draw_status(surface, elixir, average_revealed_cost(cards))
+
+
+class OpponentCardBarController:
+    def __init__(self, opponent_info: OpponentInfoController | None = None) -> None:
+        self.page = "cards"
+        self.opponent_info = opponent_info or OpponentInfoController()
+
+    def handle_sidebar_action(self, action: str | None) -> bool:
+        if action != "opponent_info":
+            return False
+        if self.page == "opponent_info":
+            self.page = "cards"
+        else:
+            self.page = "opponent_info"
+            self.opponent_info.request()
+        return True
 
 
 def _set_always_on_top() -> None:
@@ -508,6 +681,7 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
     pygame.display.set_caption("NR++ opponent cards")
     _set_always_on_top()
     renderer = OpponentCardBarRenderer()
+    controller = OpponentCardBarController()
     clock = pygame.time.Clock()
     drag_origin: tuple[tuple[int, int], tuple[int, int]] | None = None
 
@@ -527,7 +701,7 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
                 else:
                     drag_origin = (_cursor_position(), window.position)
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                renderer.release_sidebar(event.pos)
+                controller.handle_sidebar_action(renderer.release_sidebar(event.pos))
                 drag_origin = None
 
         if drag_origin is not None and pygame.mouse.get_pressed(num_buttons=3)[0]:
@@ -535,7 +709,12 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
             cursor = _cursor_position()
             window.position = _dragged_window_position(cursor_start, window_start, cursor)
 
-        renderer.draw(screen, snapshot_provider())
+        renderer.draw(
+            screen,
+            snapshot_provider(),
+            page=controller.page,
+            opponent_info_state=controller.opponent_info.current(),
+        )
         pygame.display.flip()
         clock.tick(60)
 
