@@ -9,7 +9,7 @@ from typing import Any
 
 import pygame
 
-from opponent_info import OpponentInfoController, OpponentInfoState
+from opponent_info import CardSummary, OpponentInfoController, OpponentInfoState
 
 
 WINDOW_SIZE = (500, 340)
@@ -440,22 +440,34 @@ class OpponentCardBarRenderer:
             text = f"{average:.1f}"
         self._draw_average_number(surface, text, (AVERAGE_RECT.centerx, AVERAGE_RECT.top + 31))
 
-    def _deck_card_image(self, data_id: int, form: str | None) -> pygame.Surface | None:
-        cache_key = (data_id, form)
+    def _deck_card_image(self, card: CardSummary) -> pygame.Surface | None:
+        cache_key = (card.data_id, card.form)
         if cache_key in self.deck_card_images:
             return self.deck_card_images[cache_key]
-        variants = self.icon_paths.get(data_id)
-        if variants is None:
-            return None
-        variant = "normal"
-        if form == "hero" and "hero" in variants:
-            variant = "hero"
-        elif form == "evolution":
+        variants = self.icon_paths.get(card.data_id)
+        cached_path = (
+            Path(card.cached_icon_path)
+            if card.cached_icon_path is not None
+            else None
+        )
+        path: Path | None = (
+            cached_path
+            if cached_path is not None and cached_path.is_file()
+            else None
+        )
+        if path is None and variants is not None and card.form == "hero":
+            path = variants.get("hero")
+        elif path is None and variants is not None and card.form == "evolution":
             for candidate in ("evolution_2_of_2", "evolution_1_of_1"):
                 if candidate in variants:
-                    variant = candidate
+                    path = variants[candidate]
                     break
-        path = variants.get(variant) or variants["normal"]
+        elif path is None and variants is not None:
+            path = variants.get("normal")
+        if path is None and variants is not None:
+            path = variants.get("normal")
+        if path is None:
+            return None
         image = pygame.image.load(str(path)).convert_alpha()
         bounds = image.get_bounding_rect()
         if bounds.width and bounds.height:
@@ -548,15 +560,17 @@ class OpponentCardBarRenderer:
         source = self.info_small_font.render(f"数据来源：{info.source}", True, (129, 177, 211))
         surface.blit(source, source.get_rect(right=record.right - 10, bottom=record.bottom - 8))
 
-        section = self.info_body_font.render("近期常用卡组", True, (229, 243, 255))
+        section = self.info_body_font.render(
+            "近期常用卡组 · 皇冠仅统计1v1", True, (229, 243, 255)
+        )
         surface.blit(section, (96, 154))
         for index, deck in enumerate(info.decks[:3]):
             row = pygame.Rect(94, 177 + index * 52, 394, 47)
             pygame.draw.rect(surface, (4, 43, 88), row, border_radius=7)
             pygame.draw.rect(surface, (20, 99, 161), row, 1, border_radius=7)
             x = row.x + 7
-            for data_id in deck.card_ids[:8]:
-                image = self._deck_card_image(data_id, deck.form_for(data_id))
+            for card in deck.cards[:8]:
+                image = self._deck_card_image(card)
                 if image is None:
                     placeholder = pygame.Rect(x, row.y + 5, 28, 37)
                     pygame.draw.rect(surface, (8, 63, 113), placeholder, border_radius=4)
@@ -567,10 +581,24 @@ class OpponentCardBarRenderer:
                 surface.blit(image, image_rect)
                 x += 31
             rate_text = self.info_body_font.render(
-                f"{deck.win_rate * 100:.0f}%", True, (255, 226, 116)
+                (
+                    f"{deck.win_rate * 100:.0f}% · "
+                    f"{deck.average_elixir:.1f}费"
+                    if deck.average_elixir is not None
+                    else f"{deck.win_rate * 100:.0f}%"
+                ),
+                True,
+                (255, 226, 116),
+            )
+            crowns_text = (
+                f"{deck.average_crowns_1v1:.1f}冠"
+                if deck.average_crowns_1v1 is not None
+                else "--冠"
             )
             record_text = self.info_small_font.render(
-                f"{deck.wins}胜 {deck.losses}负", True, (172, 207, 232)
+                f"{deck.wins}胜{deck.losses}负 · {crowns_text}",
+                True,
+                (172, 207, 232),
             )
             surface.blit(rate_text, rate_text.get_rect(right=row.right - 9, top=row.y + 5))
             record_rect = record_text.get_rect(

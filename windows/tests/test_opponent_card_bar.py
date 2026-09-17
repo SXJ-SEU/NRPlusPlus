@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -408,6 +409,32 @@ class OpponentCardBarTests(unittest.TestCase):
             pygame.image.tobytes(info.subsurface(card_bar.CONTENT_RECT), "RGBA"),
         )
 
+    def test_recent_deck_cards_can_use_cached_online_art(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "online.png"
+            source = pygame.Surface((40, 60), pygame.SRCALPHA)
+            source.fill((241, 72, 91, 255))
+            pygame.image.save(source, path)
+            card = opponent_info.CardSummary(
+                data_id=99_999_999,
+                form=None,
+                elixir_cost=4,
+                icon_url="/cards/example.png",
+                cached_icon_path=str(path),
+            )
+
+            rendered = self.renderer._deck_card_image(card)
+
+            self.assertIsNotNone(rendered)
+            self.assertEqual(rendered.get_height(), 43)
+            actual = tuple(rendered.get_at(rendered.get_rect().center)[:3])
+            self.assertTrue(
+                all(
+                    abs(channel - expected) <= 3
+                    for channel, expected in zip(actual, (241, 72, 91))
+                )
+            )
+
     def test_inset_top_edges_do_not_contain_detached_accent_lines(self) -> None:
         surface = pygame.Surface(card_bar.WINDOW_SIZE, pygame.SRCALPHA)
         self.renderer.draw(surface, None)
@@ -434,10 +461,22 @@ class OpponentInfoParsingTests(unittest.TestCase):
             r'\"trophies\":14000,\"rankedMedals\":2640,'
             r'\"clan\":{\"name\":\"Tiktok Live\"}},'
             r'\"recent\":{\"sampleSize\":30,\"wins\":20,\"losses\":10,'
-            r'\"winRate\":0.6666666667},\"battles\":[],'
-            r'\"recentDecks\":[{\"cards\":[{\"id\":26000064,'
+            r'\"winRate\":0.6666666667},\"battles\":['
+            r'{\"is2v2\":false,\"player\":{\"crowns\":2,\"deck\":['
+            r'{\"id\":26000064,\"elixirCost\":3,'
             r'\"iconUrl\":\"/card-forms/evolution-firecracker-v5.png\"},'
-            r'{\"id\":26000065,\"iconUrl\":\"/cards/mighty-miner-v1.png\"}],'
+            r'{\"id\":26000065,\"elixirCost\":4,'
+            r'\"iconUrl\":\"/cards/mighty-miner-v1.png\"}]}},'
+            r'{\"is2v2\":true,\"player\":{\"crowns\":3,\"deck\":['
+            r'{\"id\":26000064,\"elixirCost\":3,'
+            r'\"iconUrl\":\"/card-forms/evolution-firecracker-v5.png\"},'
+            r'{\"id\":26000065,\"elixirCost\":4,'
+            r'\"iconUrl\":\"/cards/mighty-miner-v1.png\"}]}}],'
+            r'\"recentDecks\":[{\"cards\":[{\"id\":26000064,'
+            r'\"elixirCost\":3,'
+            r'\"iconUrl\":\"/card-forms/evolution-firecracker-v5.png\"},'
+            r'{\"id\":26000065,\"elixirCost\":4,'
+            r'\"iconUrl\":\"/cards/mighty-miner-v1.png\"}],'
             r'\"uses\":12,\"wins\":10,\"losses\":2,\"winRate\":0.8333333333}]'
             r'},\"publicDistinctions\":[]'
         )
@@ -449,6 +488,12 @@ class OpponentInfoParsingTests(unittest.TestCase):
         self.assertAlmostEqual(info.recent_win_rate, 2 / 3)
         self.assertEqual(info.decks[0].uses, 12)
         self.assertEqual(info.decks[0].form_for(26_000_064), "evolution")
+        self.assertEqual(info.decks[0].average_elixir, 3.5)
+        self.assertEqual(info.decks[0].average_crowns_1v1, 2.0)
+        self.assertEqual(
+            info.decks[0].cards[0].icon_url,
+            "/card-forms/evolution-firecracker-v5.png",
+        )
 
 if __name__ == "__main__":
     unittest.main()
