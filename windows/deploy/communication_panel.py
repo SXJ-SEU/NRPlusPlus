@@ -31,6 +31,14 @@ TEXT_LABELS = (
     ("Taunt5", "精彩的比赛！"),
     ("Taunt6", "哎呦"),
 )
+TEXT_LABELS_EN = (
+    ("Taunt1", "Good luck!"),
+    ("Taunt2", "Well played!"),
+    ("Taunt3", "Wow!"),
+    ("Taunt4", "Good game!"),
+    ("Taunt5", "Nice!"),
+    ("Taunt6", "Oops"),
+)
 
 
 @dataclass(frozen=True)
@@ -199,7 +207,7 @@ class CommunicationPanel:
         surface.blit(overlay, rect)
         self._draw_prohibited(surface, rect.center, min(rect.width, rect.height) // 4)
 
-    def draw(self, surface: pygame.Surface) -> None:
+    def draw(self, surface: pygame.Surface, *, language: str = "zh-CN") -> None:
         panel = pygame.Surface((418, 340), pygame.SRCALPHA)
         panel.fill((7, 59, 112, 220))
         surface.blit(panel, (82, 0))
@@ -240,7 +248,8 @@ class CommunicationPanel:
             border_radius=4,
         )
 
-        for index, (identifier, label) in enumerate(TEXT_LABELS):
+        labels = TEXT_LABELS_EN if language == "en-US" else TEXT_LABELS
+        for index, (identifier, label) in enumerate(labels):
             rect = text_button_rect(index)
             pygame.draw.rect(surface, (6, 25, 43), rect.inflate(4, 4), border_radius=10)
             pygame.draw.rect(surface, (250, 250, 250), rect, border_radius=8)

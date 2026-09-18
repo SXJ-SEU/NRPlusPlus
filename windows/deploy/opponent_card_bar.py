@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any
 import pygame
 
 from opponent_info import CardSummary, OpponentInfoController, OpponentInfoState
+from settings_panel import PluginSettings, SettingsPanel, SettingsStore
 
 if TYPE_CHECKING:
     from communication_panel import CommunicationPanel
@@ -59,6 +60,53 @@ ICON_VARIANTS = (
     "evolution_1_of_2",
     "evolution_2_of_2",
 )
+
+INFO_TEXT = {
+    "zh-CN": {
+        "average_cost": "平均费用",
+        "loading": "正在查询对手信息…",
+        "query_failed": "查询失败",
+        "unavailable": "暂时无法取得玩家资料",
+        "retry": "返回卡牌页后再次点击即可重试",
+        "no_clan": "无部落",
+        "ranked_medals": "天梯奖牌",
+        "trophies": "奖杯",
+        "recent_rate": "近 {games} 场胜率",
+        "wins": "胜  {value}",
+        "losses": "负  {value}",
+        "source": "数据来源：{value}",
+        "recent_decks": "近期常用卡组",
+        "elixir": "{value:.1f}费",
+        "crowns": "{value:.1f}冠",
+        "unknown_crowns": "--冠",
+        "record": "{wins}胜{losses}负 · {crowns}",
+    },
+    "en-US": {
+        "average_cost": "Average",
+        "loading": "Querying opponent…",
+        "query_failed": "Query failed",
+        "unavailable": "Player information is unavailable",
+        "retry": "Return to cards and open this page to retry",
+        "no_clan": "No clan",
+        "ranked_medals": "Medals",
+        "trophies": "Trophies",
+        "recent_rate": "Last {games} games",
+        "wins": "W  {value}",
+        "losses": "L  {value}",
+        "source": "Source: {value}",
+        "recent_decks": "Recent decks",
+        "elixir": "{value:.1f} avg",
+        "crowns": "{value:.1f} crowns",
+        "unknown_crowns": "-- crowns",
+        "record": "{wins}W {losses}L · {crowns}",
+    },
+}
+
+
+def _ui_text(language: str, key: str, **values: object) -> str:
+    catalog = INFO_TEXT.get(language, INFO_TEXT["zh-CN"])
+    template = catalog.get(key, INFO_TEXT["zh-CN"].get(key, key))
+    return template.format(**values)
 
 
 def _load_card_costs(path: Path = CARD_CATALOG) -> dict[int, float]:
@@ -425,6 +473,7 @@ class OpponentCardBarRenderer:
         surface: pygame.Surface,
         elixir: int | None,
         average: float | None,
+        language: str = "zh-CN",
     ) -> None:
         self._draw_meter(surface, elixir)
         badge_key: int | str = "unknown" if elixir is None else max(0, min(round(elixir), 10))
@@ -440,7 +489,9 @@ class OpponentCardBarRenderer:
             8,
         )
         pygame.draw.rect(surface, (4, 53, 108), AVERAGE_RECT, 2, border_radius=8)
-        label = self.label_font.render("平均费用", True, (217, 237, 255))
+        label = self.label_font.render(
+            _ui_text(language, "average_cost"), True, (217, 237, 255)
+        )
         surface.blit(label, label.get_rect(midtop=(AVERAGE_RECT.centerx, AVERAGE_RECT.top + 4)))
         if average is None:
             text = "--"
@@ -531,7 +582,7 @@ class OpponentCardBarRenderer:
         surface.blit(panel, CONTENT_RECT)
         pygame.draw.line(surface, (39, 145, 220), CONTENT_RECT.topleft, CONTENT_RECT.bottomleft)
 
-    def _draw_loading(self, surface: pygame.Surface) -> None:
+    def _draw_loading(self, surface: pygame.Surface, language: str) -> None:
         center = (CONTENT_RECT.centerx, CONTENT_RECT.centery - 12)
         radius = 18
         start = (pygame.time.get_ticks() // 6) % 360
@@ -543,13 +594,23 @@ class OpponentCardBarRenderer:
                 round(center[1] + radius * pygame.math.Vector2(1, 0).rotate_rad(angle).y),
             )
             pygame.draw.circle(surface, (104, 205, 255, min(alpha, 255)), point, 3)
-        label = self.info_body_font.render("正在查询对手信息…", True, (218, 239, 255))
+        label = self.info_body_font.render(
+            _ui_text(language, "loading"), True, (218, 239, 255)
+        )
         surface.blit(label, label.get_rect(midtop=(center[0], center[1] + 30)))
 
-    def _draw_info_error(self, surface: pygame.Surface, message: str | None) -> None:
-        title = self.info_title_font.render("查询失败", True, (255, 211, 111))
-        detail = self.info_body_font.render(message or "暂时无法取得玩家资料", True, (220, 235, 250))
-        hint = self.info_small_font.render("返回卡牌页后再次点击即可重试", True, (149, 188, 220))
+    def _draw_info_error(
+        self, surface: pygame.Surface, message: str | None, language: str
+    ) -> None:
+        title = self.info_title_font.render(
+            _ui_text(language, "query_failed"), True, (255, 211, 111)
+        )
+        detail = self.info_body_font.render(
+            message or _ui_text(language, "unavailable"), True, (220, 235, 250)
+        )
+        hint = self.info_small_font.render(
+            _ui_text(language, "retry"), True, (149, 188, 220)
+        )
         center_x = CONTENT_RECT.centerx
         surface.blit(title, title.get_rect(center=(center_x, 135)))
         surface.blit(detail, detail.get_rect(center=(center_x, 169)))
@@ -560,13 +621,14 @@ class OpponentCardBarRenderer:
         surface: pygame.Surface,
         state: OpponentInfoState,
         snapshot: dict[str, Any] | None,
+        language: str,
     ) -> None:
         self._draw_info_panel(surface)
         if state.status in ("idle", "loading"):
-            self._draw_loading(surface)
+            self._draw_loading(surface, language)
             return
         if state.status == "error" or state.info is None:
-            self._draw_info_error(surface, state.error)
+            self._draw_info_error(surface, state.error, language)
             return
 
         info = state.info
@@ -581,13 +643,16 @@ class OpponentCardBarRenderer:
         display_tag = live_tag if isinstance(live_tag, str) and live_tag else info.tag
         name = self.info_title_font.render(display_name, True, (250, 253, 255))
         tag = self.info_small_font.render(display_tag, True, (146, 207, 244))
-        clan_text = info.clan_name or "无部落"
+        clan_text = info.clan_name or _ui_text(language, "no_clan")
         clan = self.info_small_font.render(clan_text, True, (190, 219, 240))
         surface.blit(name, (header.x + 11, header.y + 7))
         surface.blit(tag, (header.x + 11, header.y + 33))
         surface.blit(clan, clan.get_rect(right=header.right - 10, top=header.y + 9))
         rating = info.ranked_medals if info.ranked_medals is not None else info.trophies
-        rating_label = "天梯奖牌" if info.ranked_medals is not None else "奖杯"
+        rating_label = _ui_text(
+            language,
+            "ranked_medals" if info.ranked_medals is not None else "trophies",
+        )
         rating_text = "--" if rating is None else f"{rating:,}"
         rendered_rating = self.info_body_font.render(
             f"{rating_label} {rating_text}", True, (255, 222, 116)
@@ -605,17 +670,27 @@ class OpponentCardBarRenderer:
         )
         surface.blit(rate, rate.get_rect(midleft=(record.x + 13, record.centery - 4)))
         recent_label = self.info_small_font.render(
-            f"近 {info.recent_games} 场胜率", True, (175, 214, 241)
+            _ui_text(language, "recent_rate", games=info.recent_games),
+            True,
+            (175, 214, 241),
         )
         surface.blit(recent_label, (record.x + 13, record.bottom - 20))
-        wins = self.info_body_font.render(f"胜  {info.recent_wins}", True, (101, 232, 169))
-        losses = self.info_body_font.render(f"负  {info.recent_losses}", True, (255, 133, 139))
+        wins = self.info_body_font.render(
+            _ui_text(language, "wins", value=info.recent_wins), True, (101, 232, 169)
+        )
+        losses = self.info_body_font.render(
+            _ui_text(language, "losses", value=info.recent_losses), True, (255, 133, 139)
+        )
         surface.blit(wins, (record.x + 230, record.y + 13))
         surface.blit(losses, (record.x + 310, record.y + 13))
-        source = self.info_small_font.render(f"数据来源：{info.source}", True, (129, 177, 211))
+        source = self.info_small_font.render(
+            _ui_text(language, "source", value=info.source), True, (129, 177, 211)
+        )
         surface.blit(source, source.get_rect(right=record.right - 10, bottom=record.bottom - 8))
 
-        section = self.info_body_font.render("近期常用卡组", True, (229, 243, 255))
+        section = self.info_body_font.render(
+            _ui_text(language, "recent_decks"), True, (229, 243, 255)
+        )
         surface.blit(section, (96, 154))
         for index, deck in enumerate(info.decks[:3]):
             row = pygame.Rect(94, 177 + index * 52, 394, 47)
@@ -640,7 +715,7 @@ class OpponentCardBarRenderer:
             rate_text = self.info_body_font.render(
                 (
                     f"{deck.win_rate * 100:.0f}% · "
-                    f"{deck.average_elixir:.1f}费"
+                    + _ui_text(language, "elixir", value=deck.average_elixir)
                     if deck.average_elixir is not None
                     else f"{deck.win_rate * 100:.0f}%"
                 ),
@@ -648,12 +723,18 @@ class OpponentCardBarRenderer:
                 (255, 226, 116),
             )
             crowns_text = (
-                f"{deck.average_crowns_1v1:.1f}冠"
+                _ui_text(language, "crowns", value=deck.average_crowns_1v1)
                 if deck.average_crowns_1v1 is not None
-                else "--冠"
+                else _ui_text(language, "unknown_crowns")
             )
             record_text = self.info_small_font.render(
-                f"{deck.wins}胜{deck.losses}负 · {crowns_text}",
+                _ui_text(
+                    language,
+                    "record",
+                    wins=deck.wins,
+                    losses=deck.losses,
+                    crowns=crowns_text,
+                ),
                 True,
                 (172, 207, 232),
             )
@@ -671,16 +752,22 @@ class OpponentCardBarRenderer:
         page: str = "cards",
         opponent_info_state: OpponentInfoState | None = None,
         communication_panel: CommunicationPanel | None = None,
+        settings_panel: SettingsPanel | None = None,
+        language: str = "zh-CN",
     ) -> None:
         self._draw_background(surface)
         self._draw_sidebar(surface)
         if page == "opponent_info":
             state = opponent_info_state or OpponentInfoState(status="loading")
-            self._draw_opponent_info(surface, state, snapshot)
+            self._draw_opponent_info(surface, state, snapshot, language)
             return
         if page == "communication":
             if communication_panel is not None:
-                communication_panel.draw(surface)
+                communication_panel.draw(surface, language=language)
+            return
+        if page == "settings":
+            if settings_panel is not None:
+                settings_panel.draw(surface)
             return
         cards = snapshot.get("opponent_cards", []) if snapshot is not None else []
         if not isinstance(cards, list):
@@ -689,7 +776,7 @@ class OpponentCardBarRenderer:
         self._draw_cards(surface, cards)
         raw_elixir = snapshot.get("opponent_elixir") if snapshot is not None else None
         elixir = raw_elixir if isinstance(raw_elixir, int) else None
-        self._draw_status(surface, elixir, average_revealed_cost(cards))
+        self._draw_status(surface, elixir, average_revealed_cost(cards), language)
 
 
 class OpponentCardBarController:
@@ -698,12 +785,21 @@ class OpponentCardBarController:
         opponent_info: OpponentInfoController | None = None,
         communication: CommunicationPanel | None = None,
         communication_factory: Callable[[], CommunicationPanel] | None = None,
+        settings_store: SettingsStore | None = None,
+        settings_panel: SettingsPanel | None = None,
     ) -> None:
         self.page = "cards"
         self.opponent_info = opponent_info or OpponentInfoController()
         self.communication = communication
         self._communication_factory = communication_factory
         self.communication_error: str | None = None
+        self.settings_store = (
+            settings_store
+            or (settings_panel.store if settings_panel is not None else None)
+            or SettingsStore()
+        )
+        self.settings_panel = settings_panel
+        self._auto_query_requested_in_battle = False
 
     def _ensure_communication(self) -> bool:
         if self.communication is not None:
@@ -721,21 +817,40 @@ class OpponentCardBarController:
         self.communication_error = None
         return True
 
+    def _ensure_settings(self) -> SettingsPanel:
+        if self.settings_panel is None:
+            self.settings_panel = SettingsPanel(self.settings_store)
+        return self.settings_panel
+
+    def observe_snapshot(self, snapshot: dict[str, Any] | None) -> None:
+        active = bool(snapshot and snapshot.get("battle_active") is True)
+        if not active:
+            self._auto_query_requested_in_battle = False
+            return
+        if not self.settings_store.current.auto_query_opponent:
+            self._auto_query_requested_in_battle = False
+            return
+        if not self._auto_query_requested_in_battle:
+            self.opponent_info.request()
+            self._auto_query_requested_in_battle = True
+
     def handle_sidebar_action(self, action: str | None) -> bool:
-        if action not in {"opponent_info", "communication"}:
+        if action not in {"opponent_info", "communication", "settings"}:
             return False
         if self.page == action:
             self.page = "cards"
         else:
             if action == "communication" and not self._ensure_communication():
                 return False
+            if action == "settings":
+                self._ensure_settings()
             self.page = action
             if action == "opponent_info":
                 self.opponent_info.request()
         return True
 
 
-def _set_always_on_top() -> None:
+def _set_always_on_top(enabled: bool = True) -> None:
     if sys.platform != "win32":
         return
     window = pygame.display.get_wm_info().get("window")
@@ -757,12 +872,21 @@ def _set_always_on_top() -> None:
     set_window_pos.restype = ctypes.c_int
     set_window_pos(
         ctypes.c_void_p(window),
-        ctypes.c_void_p(-1),
+        ctypes.c_void_p(-1 if enabled else -2),
         0,
         0,
         0,
         0,
         swp_nomove | swp_nosize | swp_noactivate,
+    )
+
+
+def _should_window_be_visible(
+    settings: PluginSettings,
+    snapshot: dict[str, Any] | None,
+) -> bool:
+    return not settings.auto_hide_outside_game or bool(
+        snapshot and snapshot.get("battle_active") is True
     )
 
 
@@ -796,8 +920,9 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
     pygame.init()
     screen = pygame.display.set_mode(WINDOW_SIZE, pygame.NOFRAME)
     pygame.display.set_caption("NR++ opponent cards")
-    _set_always_on_top()
     controller = OpponentCardBarController()
+    applied_settings = controller.settings_store.current
+    _set_always_on_top(applied_settings.always_on_top)
     renderer = OpponentCardBarRenderer()
     clock = pygame.time.Clock()
     drag_origin: tuple[tuple[int, int], tuple[int, int]] | None = None
@@ -805,6 +930,12 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
     from pygame._sdl2 import Window
 
     window = Window.from_display_module()
+    if (
+        applied_settings.remember_window_position
+        and applied_settings.window_position is not None
+    ):
+        window.position = applied_settings.window_position
+    window_visible = True
     running = True
     while running:
         for event in pygame.event.get():
@@ -821,6 +952,12 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
                     and controller.communication.press(event.pos)
                 ):
                     drag_origin = None
+                elif (
+                    controller.page == "settings"
+                    and controller.settings_panel is not None
+                    and controller.settings_panel.press(event.pos)
+                ):
+                    drag_origin = None
                 else:
                     drag_origin = (_cursor_position(), window.position)
             elif event.type == pygame.MOUSEMOTION and controller.page == "communication":
@@ -829,10 +966,19 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 if controller.page == "communication" and controller.communication is not None:
                     controller.communication.release(event.pos)
+                if controller.page == "settings" and controller.settings_panel is not None:
+                    controller.settings_panel.release(event.pos)
                 action = renderer.release_sidebar(event.pos)
                 if controller.handle_sidebar_action(action):
                     if controller.communication is not None:
                         controller.communication.cancel_pointer()
+                    if controller.settings_panel is not None:
+                        controller.settings_panel.cancel_pointer()
+                if (
+                    drag_origin is not None
+                    and controller.settings_store.current.remember_window_position
+                ):
+                    controller.settings_store.update(window_position=window.position)
                 drag_origin = None
             elif event.type == pygame.MOUSEWHEEL and controller.page == "communication":
                 if controller.communication is not None:
@@ -846,14 +992,36 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
             cursor = _cursor_position()
             window.position = _dragged_window_position(cursor_start, window_start, cursor)
 
+        settings = controller.settings_store.current
+        if settings.remember_window_position and not applied_settings.remember_window_position:
+            settings = controller.settings_store.update(window_position=window.position)
+        if settings.always_on_top != applied_settings.always_on_top:
+            _set_always_on_top(settings.always_on_top)
+        applied_settings = settings
+
+        snapshot = snapshot_provider()
+        controller.observe_snapshot(snapshot)
+        should_be_visible = _should_window_be_visible(settings, snapshot)
+        if should_be_visible != window_visible:
+            if should_be_visible:
+                window.show()
+                _set_always_on_top(settings.always_on_top)
+            else:
+                window.hide()
+            window_visible = should_be_visible
+
         renderer.draw(
             screen,
-            snapshot_provider(),
+            snapshot,
             page=controller.page,
             opponent_info_state=controller.opponent_info.current(),
             communication_panel=controller.communication,
+            settings_panel=controller.settings_panel,
+            language=settings.language,
         )
         pygame.display.flip()
         clock.tick(60)
 
+    if controller.settings_store.current.remember_window_position:
+        controller.settings_store.update(window_position=window.position)
     pygame.quit()
