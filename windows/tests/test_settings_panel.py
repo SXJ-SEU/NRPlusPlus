@@ -56,6 +56,9 @@ class SettingsPanelTests(unittest.TestCase):
         self.assertFalse(defaults.auto_query_opponent)
         self.assertFalse(defaults.remember_window_position)
         self.assertFalse(defaults.auto_hide_outside_game)
+        self.assertEqual(defaults.card_sort_order, "deck")
+        self.assertTrue(defaults.show_card_details)
+        self.assertEqual(defaults.card_image_quality, "standard")
         self.assertIsNone(defaults.window_position)
 
     def test_store_persists_validated_settings_and_window_position(self) -> None:
@@ -65,12 +68,18 @@ class SettingsPanelTests(unittest.TestCase):
                 language="en-US",
                 always_on_top=False,
                 remember_window_position=True,
+                card_sort_order="rarity",
+                show_card_details=False,
+                card_image_quality="high",
                 window_position=(321, 123),
             )
             loaded = self.make_store(directory).current
             self.assertEqual(loaded.language, "en-US")
             self.assertFalse(loaded.always_on_top)
             self.assertTrue(loaded.remember_window_position)
+            self.assertEqual(loaded.card_sort_order, "rarity")
+            self.assertFalse(loaded.show_card_details)
+            self.assertEqual(loaded.card_image_quality, "high")
             self.assertEqual(loaded.window_position, (321, 123))
 
     def test_invalid_payload_falls_back_field_by_field(self) -> None:
@@ -82,6 +91,9 @@ class SettingsPanelTests(unittest.TestCase):
                         "language": "invalid",
                         "always_on_top": "yes",
                         "auto_query_opponent": True,
+                        "card_sort_order": "alphabetical",
+                        "show_card_details": "yes",
+                        "card_image_quality": "ultra",
                         "window_position": ["x", 2],
                     }
                 ),
@@ -91,6 +103,9 @@ class SettingsPanelTests(unittest.TestCase):
             self.assertEqual(loaded.language, "zh-CN")
             self.assertTrue(loaded.always_on_top)
             self.assertTrue(loaded.auto_query_opponent)
+            self.assertEqual(loaded.card_sort_order, "deck")
+            self.assertTrue(loaded.show_card_details)
+            self.assertEqual(loaded.card_image_quality, "standard")
             self.assertIsNone(loaded.window_position)
 
     def test_panel_controls_all_five_values_and_restores_defaults(self) -> None:
@@ -110,6 +125,28 @@ class SettingsPanelTests(unittest.TestCase):
             store.update(window_position=(40, 80))
             self.click(panel, panel.RESET_RECT.center)
             self.assertEqual(store.current, settings_ui.PluginSettings())
+
+    def test_card_list_dropdown_exposes_and_persists_ui_options(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            store = self.make_store(directory)
+            panel = settings_ui.SettingsPanel(store)
+
+            self.click(panel, panel.CARD_LIST_RECT.center)
+            self.assertTrue(panel.card_list_open)
+            self.click(panel, panel.CARD_SORT_RECTS["elixir"].center)
+            self.click(panel, panel.CARD_DETAILS_RECT.center)
+            self.click(panel, panel.CARD_QUALITY_RECTS["high"].center)
+            self.assertEqual(store.current.card_sort_order, "elixir")
+            self.assertFalse(store.current.show_card_details)
+            self.assertEqual(store.current.card_image_quality, "high")
+
+            loaded = self.make_store(directory).current
+            self.assertEqual(loaded.card_sort_order, "elixir")
+            self.assertFalse(loaded.show_card_details)
+            self.assertEqual(loaded.card_image_quality, "high")
+
+            self.click(panel, panel.CARD_LIST_RECT.center)
+            self.assertFalse(panel.card_list_open)
 
     def test_settings_sidebar_toggles_page(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
