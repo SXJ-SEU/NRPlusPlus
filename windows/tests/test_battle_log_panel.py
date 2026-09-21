@@ -95,8 +95,20 @@ class BattleLogPanelTests(unittest.TestCase):
                     "t_ms": 1_000,
                     "local_side": 0,
                     "entities": [
-                        {"address": 10, "side": 0, "hp": 1_000, "max_hp": 1_000},
-                        {"address": 20, "side": 1, "hp": 800, "max_hp": 800},
+                        {
+                            "address": 10,
+                            "side": 0,
+                            "card_id": 26_000_000,
+                            "hp": 1_000,
+                            "max_hp": 1_000,
+                        },
+                        {
+                            "address": 20,
+                            "side": 1,
+                            "card_id": 28_000_000,
+                            "hp": 800,
+                            "max_hp": 800,
+                        },
                     ],
                 }
             )
@@ -106,8 +118,20 @@ class BattleLogPanelTests(unittest.TestCase):
                     "t_ms": 2_500,
                     "local_side": 0,
                     "entities": [
-                        {"address": 10, "side": 0, "hp": 880, "max_hp": 1_000},
-                        {"address": 20, "side": 1, "hp": 750, "max_hp": 800},
+                        {
+                            "address": 10,
+                            "side": 0,
+                            "card_id": 26_000_000,
+                            "hp": 880,
+                            "max_hp": 1_000,
+                        },
+                        {
+                            "address": 20,
+                            "side": 1,
+                            "card_id": 28_000_000,
+                            "hp": 750,
+                            "max_hp": 800,
+                        },
                     ],
                 }
             )
@@ -117,8 +141,20 @@ class BattleLogPanelTests(unittest.TestCase):
                     "t_ms": 4_000,
                     "local_side": 0,
                     "entities": [
-                        {"address": 10, "side": 0, "hp": 880, "max_hp": 1_000},
-                        {"address": 20, "side": 1, "hp": 750, "max_hp": 800},
+                        {
+                            "address": 10,
+                            "side": 0,
+                            "card_id": 26_000_000,
+                            "hp": 880,
+                            "max_hp": 1_000,
+                        },
+                        {
+                            "address": 20,
+                            "side": 1,
+                            "card_id": 28_000_000,
+                            "hp": 750,
+                            "max_hp": 800,
+                        },
                     ],
                 }
             )
@@ -131,8 +167,16 @@ class BattleLogPanelTests(unittest.TestCase):
                 }
             )
 
-            self.assertEqual(len(panel.entries), 1)
-            summary = panel.entries[0]
+            self.assertEqual(len(panel.entries), 3)
+            local_detail, opponent_detail, summary = panel.entries
+            self.assertEqual(local_detail.kind, "damage_target")
+            self.assertEqual(local_detail.side, "local")
+            self.assertEqual(local_detail.target_name, "Fireball")
+            self.assertEqual(local_detail.damage, 50)
+            self.assertEqual(opponent_detail.kind, "damage_target")
+            self.assertEqual(opponent_detail.side, "opponent")
+            self.assertEqual(opponent_detail.target_name, "Knight")
+            self.assertEqual(opponent_detail.damage, 120)
             self.assertEqual(summary.kind, "damage_summary")
             self.assertEqual(summary.elapsed_ms, 3_000)
             self.assertEqual(summary.local_damage, 50)
@@ -171,6 +215,77 @@ class BattleLogPanelTests(unittest.TestCase):
             )
 
             self.assertEqual(panel.entries, ())
+
+    def test_groups_same_card_targets_and_names_crown_towers(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            panel = self.make_panel(directory)
+            baseline = [
+                {
+                    "address": 21,
+                    "side": 1,
+                    "card_id": 26_000_000,
+                    "hp": 500,
+                    "max_hp": 500,
+                },
+                {
+                    "address": 22,
+                    "side": 1,
+                    "card_id": 203_000_000,
+                    "hp": 400,
+                    "max_hp": 400,
+                },
+                {
+                    "address": 30,
+                    "kind": 13,
+                    "side": 1,
+                    "card_id": None,
+                    "x": 3_500,
+                    "hp": 3_000,
+                    "max_hp": 3_000,
+                },
+            ]
+            damaged = [
+                {**baseline[0], "hp": 480},
+                {**baseline[1], "hp": 370},
+                {**baseline[2], "hp": 2_900},
+            ]
+            panel.observe(
+                {
+                    "battle_active": True,
+                    "t_ms": 1_000,
+                    "local_side": 0,
+                    "entities": baseline,
+                }
+            )
+            panel.observe(
+                {
+                    "battle_active": True,
+                    "t_ms": 2_000,
+                    "local_side": 0,
+                    "entities": damaged,
+                }
+            )
+            panel.observe(
+                {
+                    "battle_active": True,
+                    "t_ms": 4_000,
+                    "local_side": 0,
+                    "entities": damaged,
+                }
+            )
+
+            details = [entry for entry in panel.entries if entry.kind == "damage_target"]
+            self.assertEqual(
+                [(entry.target_kind, entry.target_name, entry.damage) for entry in details],
+                [
+                    ("card", "Knight", 50),
+                    ("left_princess_tower", "Left Princess Tower", 100),
+                ],
+            )
+            self.assertEqual(
+                battle_log.format_entry(details[1], "zh-CN"),
+                "[00:03] 我方 → 对方左侧公主塔：造成 100 点伤害",
+            )
 
     def test_formats_card_and_damage_entries_in_both_languages(self) -> None:
         card = battle_log.BattleLogEntry(

@@ -16,6 +16,9 @@ LOG_HEADER_RECT = pygame.Rect(92, 10, 396, 38)
 LOG_BODY_RECT = pygame.Rect(100, 55, 380, 265)
 ROW_HEIGHT = 25
 VISIBLE_ROWS = LOG_BODY_RECT.height // ROW_HEIGHT
+HERO_ENTITY_CARD_BASE = 203_000_000
+HERO_ENTITY_CARD_LIMIT = 204_000_000
+HERO_DECK_CARD_BASE = 26_000_000
 
 
 def _font(size: int, *, bold: bool = False) -> pygame.font.Font:
@@ -46,6 +49,10 @@ class BattleLogEntry:
     elixir_after: int | None = None
     local_damage: int = 0
     opponent_damage: int = 0
+    target_side: str | None = None
+    target_name: str | None = None
+    target_kind: str | None = None
+    damage: int = 0
 
 
 @dataclass(frozen=True)
@@ -65,6 +72,27 @@ def _number(value: int | float) -> str:
 
 def format_entry(entry: BattleLogEntry, language: str = "zh-CN") -> str:
     timestamp = _timestamp(entry.elapsed_ms)
+    if entry.kind == "damage_target":
+        target_name = entry.target_name or "Unknown Unit"
+        if language == "en-US":
+            actor = "You" if entry.side == "local" else "Opponent"
+            target_owner = "Your" if entry.target_side == "local" else "Opponent"
+            return (
+                f"{timestamp} {actor} → {target_owner} {target_name}: "
+                f"{entry.damage} damage"
+            )
+        target_name = {
+            "king_tower": "国王塔",
+            "left_princess_tower": "左侧公主塔",
+            "right_princess_tower": "右侧公主塔",
+            "unknown": "未知单位",
+        }.get(entry.target_kind, target_name)
+        actor = "我方" if entry.side == "local" else "对方"
+        target_owner = "我方" if entry.target_side == "local" else "对方"
+        return (
+            f"{timestamp} {actor} → {target_owner}{target_name}："
+            f"造成 {entry.damage} 点伤害"
+        )
     if entry.kind == "damage_summary":
         if language == "en-US":
             return (
@@ -114,6 +142,7 @@ class BattleLogPanel:
         self._has_battle = False
         self._entity_health: dict[object, tuple[int, int, int]] = {}
         self._damage_by_actor = {"local": 0, "opponent": 0}
+        self._damage_by_target: dict[tuple[str, str, str, str, str], int] = {}
         self._next_damage_summary_ms = 3_000
         self._scroll_index = 0
         self._follow_latest = True
@@ -154,6 +183,7 @@ class BattleLogPanel:
         self._has_battle = True
         self._entity_health.clear()
         self._damage_by_actor = {"local": 0, "opponent": 0}
+        self._damage_by_target.clear()
         self._next_damage_summary_ms = 3_000
         self._scroll_index = 0
         self._follow_latest = True
@@ -163,6 +193,24 @@ class BattleLogPanel:
             local_damage = self._damage_by_actor["local"]
             opponent_damage = self._damage_by_actor["opponent"]
             if local_damage or opponent_damage:
+                for (
+                    actor,
+                    target_side,
+                    target_kind,
+                    target_name,
+                    _,
+                ), damage in sorted(self._damage_by_target.items()):
+                    self._entries.append(
+                        BattleLogEntry(
+                            elapsed_ms=self._next_damage_summary_ms,
+                            kind="damage_target",
+                            side=actor,
+                            target_side=target_side,
+                            target_name=target_name,
+                            target_kind=target_kind,
+                            damage=damage,
+                        )
+                    )
                 self._entries.append(
                     BattleLogEntry(
                         elapsed_ms=self._next_damage_summary_ms,
@@ -172,6 +220,7 @@ class BattleLogPanel:
                     )
                 )
             self._damage_by_actor = {"local": 0, "opponent": 0}
+            self._damage_by_target.clear()
             self._next_damage_summary_ms += 3_000
 
     def _observe_entity_health(
@@ -205,8 +254,55 @@ class BattleLogPanel:
             if health_loss <= 0:
                 continue
             actor = "opponent" if side == local_side else "local"
+            target_side = "local" if side == local_side else "opponent"
+            target_kind, target_name, target_group = self._target_description(
+                entity, address
+            )
             self._damage_by_actor[actor] += health_loss
+            target_key = (
+                actor,
+                target_side,
+                target_kind,
+                target_name,
+                target_group,
+            )
+            self._damage_by_target[target_key] = (
+                self._damage_by_target.get(target_key, 0) + health_loss
+            )
         self._entity_health = current
+
+    def _target_description(
+        self,
+        entity: dict[str, Any],
+        address: object,
+    ) -> tuple[str, str, str]:
+        card_id = entity.get("card_id")
+        if isinstance(card_id, int):
+            catalog_id = (
+                HERO_DECK_CARD_BASE + card_id - HERO_ENTITY_CARD_BASE
+                if HERO_ENTITY_CARD_BASE <= card_id < HERO_ENTITY_CARD_LIMIT
+                else card_id
+            )
+            definition = self._cards.get(catalog_id)
+            name = definition.name if definition is not None else f"#{catalog_id}"
+            return "card", name, f"card:{catalog_id}"
+
+        x = entity.get("x")
+        if entity.get("kind") == 13 and isinstance(x, int):
+            if 8_000 <= x <= 10_000:
+                return "king_tower", "King Tower", "tower:king"
+            if x < 9_000:
+                return (
+                    "left_princess_tower",
+                    "Left Princess Tower",
+                    "tower:princess:left",
+                )
+            return (
+                "right_princess_tower",
+                "Right Princess Tower",
+                "tower:princess:right",
+            )
+        return "unknown", "Unknown Unit", f"unknown:{address}"
 
     def _sampled_elixir(
         self,
