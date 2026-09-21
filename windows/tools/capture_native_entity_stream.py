@@ -159,6 +159,7 @@ SECONDARY_STATE_FIELDS = frozenset(
         "opponent_name",
         "opponent_tag",
         "opponent_cards",
+        "card_play_events",
     }
 )
 
@@ -593,6 +594,8 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
     local_player_index: int | None = None
     opponent_identity = None
     previous_local_hand: tuple[int, ...] | None = None
+    previous_local_hand_observed_ms: int | None = None
+    local_play_events: list[tuple[int, int, int]] = []
     opponent_hand_pointers = None
     previous_opponent_hand: tuple[int, ...] | None = None
     previous_opponent_hand_observed_ms: int | None = None
@@ -600,7 +603,7 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
 
     def read() -> dict[str, Any] | None:
         nonlocal pointers, retry_at, local_player_index, opponent_identity
-        nonlocal previous_local_hand
+        nonlocal previous_local_hand, previous_local_hand_observed_ms
         nonlocal opponent_hand_pointers, previous_opponent_hand
         nonlocal previous_opponent_hand_observed_ms
         try:
@@ -614,6 +617,7 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                 local_player_index = None
                 opponent_identity = None
                 previous_local_hand = None
+                previous_local_hand_observed_ms = None
                 opponent_hand_pointers = None
                 previous_opponent_hand = None
                 diagnostics.update({"status": "located" if pointers else "no_candidate",
@@ -703,12 +707,21 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
                 for deck_index in played_hand_indices(previous_local_hand, indices):
                     if not 0 <= deck_index < 8:
                         continue
+                    if previous_local_hand_observed_ms is not None:
+                        local_play_events.append(
+                            (
+                                previous_local_hand_observed_ms,
+                                observed_ms,
+                                deck_index,
+                            )
+                        )
                     cycles = EVOLUTION_CYCLES.get(deck_ids[deck_index])
                     if deck_forms[deck_index] == "evolution" and cycles is not None:
                         deck_evolution_charges[deck_index] = advance_evolution_charge(
                             deck_evolution_charges[deck_index], cycles
                         )
                 previous_local_hand = indices
+                previous_local_hand_observed_ms = observed_ms
             if opponent_hand_pointers is not None:
                 try:
                     current_opponent_hand = locator.poll_player_hand_indices(
@@ -770,7 +783,31 @@ def make_battle_reader(adb_path: Path, serial: str, pid: int):
             ]
             diagnostics.update({"status": "ready", "resolved_card_ids":
                                 sum(value is not None for value in deck_ids)})
+            card_play_events = sorted(
+                [
+                    {
+                        "side": side,
+                        "observed_after_ms": observed_after_ms,
+                        "observed_ms": event_observed_ms,
+                        "data_id": card_ids[deck_index],
+                        "form": card_forms[deck_index],
+                    }
+                    for side, events, card_ids, card_forms in (
+                        ("local", local_play_events, deck_ids, deck_forms),
+                        (
+                            "opponent",
+                            opponent_play_events,
+                            opponent_deck_ids,
+                            opponent_deck_forms,
+                        ),
+                    )
+                    for observed_after_ms, event_observed_ms, deck_index in events
+                    if 0 <= deck_index < 8 and card_ids[deck_index] is not None
+                ],
+                key=lambda event: (event["observed_ms"], event["side"]),
+            )
             result = {"battle_clock": clock, "hand": hand,
+                    "card_play_events": card_play_events,
                     "next_card": {
                         "deck_index": next_index,
                         "data_id": deck_ids[next_index] if 0 <= next_index < 8 else None,

@@ -13,6 +13,7 @@ from opponent_info import CardSummary, OpponentInfoController, OpponentInfoState
 from settings_panel import PluginSettings, SettingsPanel, SettingsStore
 
 if TYPE_CHECKING:
+    from battle_log_panel import BattleLogPanel
     from communication_panel import CommunicationPanel
 
 
@@ -751,6 +752,7 @@ class OpponentCardBarRenderer:
         *,
         page: str = "cards",
         opponent_info_state: OpponentInfoState | None = None,
+        battle_log_panel: BattleLogPanel | None = None,
         communication_panel: CommunicationPanel | None = None,
         settings_panel: SettingsPanel | None = None,
         language: str = "zh-CN",
@@ -760,6 +762,10 @@ class OpponentCardBarRenderer:
         if page == "opponent_info":
             state = opponent_info_state or OpponentInfoState(status="loading")
             self._draw_opponent_info(surface, state, snapshot, language)
+            return
+        if page == "battle_log":
+            if battle_log_panel is not None:
+                battle_log_panel.draw(surface, language=language)
             return
         if page == "communication":
             if communication_panel is not None:
@@ -787,6 +793,8 @@ class OpponentCardBarController:
         communication_factory: Callable[[], CommunicationPanel] | None = None,
         settings_store: SettingsStore | None = None,
         settings_panel: SettingsPanel | None = None,
+        battle_log: BattleLogPanel | None = None,
+        battle_log_factory: Callable[[], BattleLogPanel] | None = None,
     ) -> None:
         self.page = "cards"
         self.opponent_info = opponent_info or OpponentInfoController()
@@ -799,7 +807,26 @@ class OpponentCardBarController:
             or SettingsStore()
         )
         self.settings_panel = settings_panel
+        self.battle_log = battle_log
+        self._battle_log_factory = battle_log_factory
+        self.battle_log_error: str | None = None
         self._auto_query_requested_in_battle = False
+
+    def _ensure_battle_log(self) -> bool:
+        if self.battle_log is not None:
+            return True
+        try:
+            if self._battle_log_factory is not None:
+                self.battle_log = self._battle_log_factory()
+            else:
+                from battle_log_panel import BattleLogPanel
+
+                self.battle_log = BattleLogPanel()
+        except (OSError, ValueError, pygame.error) as exc:
+            self.battle_log_error = str(exc)
+            return False
+        self.battle_log_error = None
+        return True
 
     def _ensure_communication(self) -> bool:
         if self.communication is not None:
@@ -824,6 +851,11 @@ class OpponentCardBarController:
 
     def observe_snapshot(self, snapshot: dict[str, Any] | None) -> None:
         active = bool(snapshot and snapshot.get("battle_active") is True)
+        if self.battle_log is not None:
+            self.battle_log.observe(snapshot)
+        elif active and self.battle_log_error is None and self._ensure_battle_log():
+            assert self.battle_log is not None
+            self.battle_log.observe(snapshot)
         if not active:
             self._auto_query_requested_in_battle = False
             return
@@ -835,12 +867,14 @@ class OpponentCardBarController:
             self._auto_query_requested_in_battle = True
 
     def handle_sidebar_action(self, action: str | None) -> bool:
-        if action not in {"opponent_info", "communication", "settings"}:
+        if action not in {"opponent_info", "battle_log", "communication", "settings"}:
             return False
         if self.page == action:
             self.page = "cards"
         else:
             if action == "communication" and not self._ensure_communication():
+                return False
+            if action == "battle_log" and not self._ensure_battle_log():
                 return False
             if action == "settings":
                 self._ensure_settings()
@@ -970,6 +1004,8 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
                     controller.settings_panel.release(event.pos)
                 action = renderer.release_sidebar(event.pos)
                 if controller.handle_sidebar_action(action):
+                    if controller.battle_log is not None:
+                        controller.battle_log.cancel_pointer()
                     if controller.communication is not None:
                         controller.communication.cancel_pointer()
                     if controller.settings_panel is not None:
@@ -986,6 +1022,9 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
                     controller.communication.wheel(
                         pygame.mouse.get_pos(), horizontal * 82
                     )
+            elif event.type == pygame.MOUSEWHEEL and controller.page == "battle_log":
+                if controller.battle_log is not None:
+                    controller.battle_log.wheel(pygame.mouse.get_pos(), event.y * 3)
 
         if drag_origin is not None and pygame.mouse.get_pressed(num_buttons=3)[0]:
             cursor_start, window_start = drag_origin
@@ -1015,6 +1054,7 @@ def run(snapshot_provider: Callable[[], dict[str, Any] | None]) -> None:
             snapshot,
             page=controller.page,
             opponent_info_state=controller.opponent_info.current(),
+            battle_log_panel=controller.battle_log,
             communication_panel=controller.communication,
             settings_panel=controller.settings_panel,
             language=settings.language,

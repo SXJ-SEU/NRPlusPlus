@@ -31,6 +31,22 @@ class FakeOpponentInfoController:
         return opponent_info.OpponentInfoState(status="loading")
 
 
+class FakeBattleLogPanel:
+    def __init__(self) -> None:
+        self.snapshots: list[dict[str, object] | None] = []
+        self.draw_calls = 0
+        self.cancel_calls = 0
+
+    def observe(self, snapshot: dict[str, object] | None) -> None:
+        self.snapshots.append(snapshot)
+
+    def draw(self, _surface: pygame.Surface, *, language: str = "zh-CN") -> None:
+        self.draw_calls += 1
+
+    def cancel_pointer(self) -> None:
+        self.cancel_calls += 1
+
+
 class OpponentCardBarTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -98,7 +114,55 @@ class OpponentCardBarTests(unittest.TestCase):
         self.assertTrue(controller.handle_sidebar_action("opponent_info"))
         self.assertEqual(controller.page, "opponent_info")
         self.assertEqual(info_controller.requests, 2)
+
+    def test_battle_log_action_lazily_opens_toggles_and_observes_snapshots(self) -> None:
+        panel = FakeBattleLogPanel()
+        controller = card_bar.OpponentCardBarController(
+            battle_log_factory=lambda: panel
+        )
+
+        self.assertIsNone(controller.battle_log)
+        controller.observe_snapshot({"battle_active": True, "t_ms": 1_000})
+        self.assertIs(controller.battle_log, panel)
+        self.assertEqual(panel.snapshots[-1]["t_ms"], 1_000)
+        self.assertTrue(controller.handle_sidebar_action("battle_log"))
+        self.assertEqual(controller.page, "battle_log")
+        self.assertTrue(controller.handle_sidebar_action("battle_log"))
+        self.assertEqual(controller.page, "cards")
+
+    def test_battle_log_failure_does_not_disable_existing_pages(self) -> None:
+        info_controller = FakeOpponentInfoController()
+        controller = card_bar.OpponentCardBarController(
+            info_controller,
+            battle_log_factory=lambda: (_ for _ in ()).throw(
+                ValueError("card catalog is damaged")
+            ),
+        )
+
         self.assertFalse(controller.handle_sidebar_action("battle_log"))
+        self.assertEqual(controller.page, "cards")
+        self.assertTrue(controller.handle_sidebar_action("opponent_info"))
+        self.assertEqual(controller.page, "opponent_info")
+
+    def test_battle_log_page_draws_only_in_the_right_content_area(self) -> None:
+        panel = FakeBattleLogPanel()
+        cards = pygame.Surface(card_bar.WINDOW_SIZE, pygame.SRCALPHA)
+        log = pygame.Surface(card_bar.WINDOW_SIZE, pygame.SRCALPHA)
+        self.renderer.draw(cards, None)
+        self.renderer.draw(
+            log,
+            None,
+            page="battle_log",
+            battle_log_panel=panel,
+            language="en-US",
+        )
+
+        left = pygame.Rect(0, 0, card_bar.LEFT_RAIL_WIDTH, card_bar.WINDOW_SIZE[1])
+        self.assertEqual(panel.draw_calls, 1)
+        self.assertEqual(
+            pygame.image.tobytes(cards.subsurface(left), "RGBA"),
+            pygame.image.tobytes(log.subsurface(left), "RGBA"),
+        )
 
     def test_existing_pages_start_when_communication_assets_are_unavailable(self) -> None:
         info_controller = FakeOpponentInfoController()

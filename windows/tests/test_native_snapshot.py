@@ -1181,6 +1181,22 @@ class NativeSnapshotTests(unittest.TestCase):
         self.assertEqual(played["opponent_cards"][0]["evolution_cycles"], 1)
         self.assertEqual(played["opponent_cards"][0]["evolution_charge"], 1)
         self.assertTrue(played["opponent_cards"][0]["evolution_ready"])
+        self.assertEqual(
+            [
+                (event["side"], event["data_id"], event["form"])
+                for event in played["card_play_events"]
+            ],
+            [
+                ("local", 26_000_001, "evolution"),
+                ("opponent", 26_000_047, "evolution"),
+            ],
+        )
+        self.assertTrue(
+            all(
+                event["observed_after_ms"] <= event["observed_ms"]
+                for event in played["card_play_events"]
+            )
+        )
 
     def test_uses_player_resource_when_ui_elixir_is_unavailable(self) -> None:
         snapshot = normalize_snapshot(
