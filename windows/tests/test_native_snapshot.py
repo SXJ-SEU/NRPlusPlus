@@ -86,6 +86,43 @@ class NativeSnapshotTests(unittest.TestCase):
     def test_default_stream_interval_is_low_latency(self) -> None:
         self.assertLessEqual(DEFAULT_STREAM_INTERVAL_MS, 20)
 
+    def test_coordinator_keeps_last_live_opponent_identity_when_reader_blanks_name(self) -> None:
+        coordinator = BattleStateCoordinator(
+            lambda: iter(
+                [
+                    {
+                        "local_player_index": 1,
+                        "opponent_name": "Supercell-Magic",
+                        "opponent_tag": "#UPGPUVRRL",
+                    },
+                    {
+                        "local_player_index": 1,
+                        "opponent_name": None,
+                        "opponent_tag": "#UPGPUVRRL",
+                    },
+                ]
+            ).__next__
+        )
+        coordinator.set_active(True)
+        snapshot = normalize_snapshot({"battle_active": True, "entities": []})
+
+        coordinator.poll()
+        first = coordinator.merge(dict(snapshot))
+        coordinator.poll()
+        after_transient_blank = coordinator.merge(dict(snapshot))
+
+        self.assertEqual(
+            (first["opponent_name"], first["opponent_tag"]),
+            ("Supercell-Magic", "#UPGPUVRRL"),
+        )
+        self.assertEqual(
+            (
+                after_transient_blank["opponent_name"],
+                after_transient_blank["opponent_tag"],
+            ),
+            ("Supercell-Magic", "#UPGPUVRRL"),
+        )
+
     def test_evolution_charge_fills_then_resets_after_evolved_deployment(self) -> None:
         charge = 0
         observed = []

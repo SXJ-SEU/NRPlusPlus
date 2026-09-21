@@ -224,7 +224,18 @@ class BattleStateCoordinator:
                 if self._active and reader is self._reader:
                     if self._state is None:
                         self._state = {}
-                    self._state.update(state)
+                    stable_state = dict(state)
+                    for identity_key in ("opponent_name", "opponent_tag"):
+                        identity_value = stable_state.get(identity_key)
+                        if (
+                            identity_key in stable_state
+                            and (
+                                not isinstance(identity_value, str)
+                                or not identity_value.strip()
+                            )
+                        ):
+                            stable_state.pop(identity_key)
+                    self._state.update(stable_state)
 
     def merge(self, snapshot: dict[str, Any]) -> dict[str, Any]:
         with self._lock:
