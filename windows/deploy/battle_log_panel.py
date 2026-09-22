@@ -19,6 +19,8 @@ VISIBLE_ROWS = LOG_BODY_RECT.height // ROW_HEIGHT
 HERO_ENTITY_CARD_BASE = 203_000_000
 HERO_ENTITY_CARD_LIMIT = 204_000_000
 HERO_DECK_CARD_BASE = 26_000_000
+DAMAGE_DETAIL_INTERVAL_MS = 3_000
+CYCLE_SUMMARY_INTERVAL_MS = 18_000
 
 
 def _font(size: int, *, bold: bool = False) -> pygame.font.Font:
@@ -47,12 +49,14 @@ class BattleLogEntry:
     elixir_cost: int | float | None = None
     elixir_before: int | None = None
     elixir_after: int | None = None
-    local_damage: int = 0
-    opponent_damage: int = 0
     target_side: str | None = None
     target_name: str | None = None
     target_kind: str | None = None
     damage: int = 0
+    tower_hp_before: int | None = None
+    tower_hp_after: int | None = None
+    local_elixir_spent: int | float = 0
+    opponent_elixir_spent: int | float = 0
 
 
 @dataclass(frozen=True)
@@ -72,6 +76,39 @@ def _number(value: int | float) -> str:
 
 def format_entry(entry: BattleLogEntry, language: str = "zh-CN") -> str:
     timestamp = _timestamp(entry.elapsed_ms)
+    if entry.kind == "cycle_tower":
+        owner = (
+            "Your" if entry.side == "local" else "Opponent"
+        ) if language == "en-US" else (
+            "我方" if entry.side == "local" else "对方"
+        )
+        before = "--" if entry.tower_hp_before is None else str(entry.tower_hp_before)
+        after = "--" if entry.tower_hp_after is None else str(entry.tower_hp_after)
+        change = (
+            None
+            if entry.tower_hp_before is None or entry.tower_hp_after is None
+            else entry.tower_hp_after - entry.tower_hp_before
+        )
+        change_text = "--" if change is None else f"{change:+d}" if change else "0"
+        if language == "en-US":
+            return (
+                f"{timestamp} {owner} total tower HP: {before} → {after} "
+                f"({change_text})"
+            )
+        return (
+            f"{timestamp} {owner}防御塔总血量："
+            f"{before} → {after}（{change_text}）"
+        )
+    if entry.kind == "cycle_elixir":
+        if language == "en-US":
+            return (
+                f"{timestamp} Cycle cost: you {_number(entry.local_elixir_spent)}, "
+                f"opponent {_number(entry.opponent_elixir_spent)}"
+            )
+        return (
+            f"{timestamp} 周期费用：我方 {_number(entry.local_elixir_spent)}，"
+            f"对方 {_number(entry.opponent_elixir_spent)}"
+        )
     if entry.kind == "damage_target":
         target_name = entry.target_name or "Unknown Unit"
         if language == "en-US":
@@ -93,17 +130,6 @@ def format_entry(entry: BattleLogEntry, language: str = "zh-CN") -> str:
             f"{timestamp} {actor} → {target_owner}{target_name}："
             f"造成 {entry.damage} 点伤害"
         )
-    if entry.kind == "damage_summary":
-        if language == "en-US":
-            return (
-                f"{timestamp} Damage: you {entry.local_damage}, "
-                f"opponent {entry.opponent_damage}"
-            )
-        return (
-            f"{timestamp} 伤害汇总：我方造成 {entry.local_damage}，"
-            f"对方造成 {entry.opponent_damage}"
-        )
-
     name = entry.card_name or (
         f"#{entry.card_id}" if entry.card_id is not None else "Unknown"
     )
@@ -140,10 +166,17 @@ class BattleLogPanel:
         self._battle_start_ms: int | None = None
         self._battle_was_active = False
         self._has_battle = False
+        self._entity_local_side: int | None = None
         self._entity_health: dict[object, tuple[int, int, int]] = {}
-        self._damage_by_actor = {"local": 0, "opponent": 0}
         self._damage_by_target: dict[tuple[str, str, str, str, str], int] = {}
-        self._next_damage_summary_ms = 3_000
+        self._next_damage_detail_ms = DAMAGE_DETAIL_INTERVAL_MS
+        self._tower_health_current: dict[str, int] = {}
+        self._tower_health_cycle_start: dict[str, int] = {}
+        self._elixir_spent_in_cycle: dict[str, int | float] = {
+            "local": 0,
+            "opponent": 0,
+        }
+        self._next_cycle_summary_ms = CYCLE_SUMMARY_INTERVAL_MS
         self._scroll_index = 0
         self._follow_latest = True
         self._title_font = _font(17, bold=True)
@@ -181,18 +214,20 @@ class BattleLogPanel:
         self._elixir_samples.clear()
         self._battle_start_ms = observed_ms
         self._has_battle = True
+        self._entity_local_side = None
         self._entity_health.clear()
-        self._damage_by_actor = {"local": 0, "opponent": 0}
         self._damage_by_target.clear()
-        self._next_damage_summary_ms = 3_000
+        self._next_damage_detail_ms = DAMAGE_DETAIL_INTERVAL_MS
+        self._tower_health_current.clear()
+        self._tower_health_cycle_start.clear()
+        self._elixir_spent_in_cycle = {"local": 0, "opponent": 0}
+        self._next_cycle_summary_ms = CYCLE_SUMMARY_INTERVAL_MS
         self._scroll_index = 0
         self._follow_latest = True
 
-    def _flush_damage_summaries(self, elapsed_ms: int) -> None:
-        while elapsed_ms >= self._next_damage_summary_ms:
-            local_damage = self._damage_by_actor["local"]
-            opponent_damage = self._damage_by_actor["opponent"]
-            if local_damage or opponent_damage:
+    def _flush_damage_details(self, elapsed_ms: int) -> None:
+        while elapsed_ms >= self._next_damage_detail_ms:
+            if self._damage_by_target:
                 for (
                     actor,
                     target_side,
@@ -202,7 +237,7 @@ class BattleLogPanel:
                 ), damage in sorted(self._damage_by_target.items()):
                     self._entries.append(
                         BattleLogEntry(
-                            elapsed_ms=self._next_damage_summary_ms,
+                            elapsed_ms=self._next_damage_detail_ms,
                             kind="damage_target",
                             side=actor,
                             target_side=target_side,
@@ -211,17 +246,35 @@ class BattleLogPanel:
                             damage=damage,
                         )
                     )
-                self._entries.append(
-                    BattleLogEntry(
-                        elapsed_ms=self._next_damage_summary_ms,
-                        kind="damage_summary",
-                        local_damage=local_damage,
-                        opponent_damage=opponent_damage,
-                    )
-                )
-            self._damage_by_actor = {"local": 0, "opponent": 0}
             self._damage_by_target.clear()
-            self._next_damage_summary_ms += 3_000
+            self._next_damage_detail_ms += DAMAGE_DETAIL_INTERVAL_MS
+
+    def _flush_cycle_summaries(self, elapsed_ms: int) -> None:
+        while elapsed_ms >= self._next_cycle_summary_ms:
+            for side in ("local", "opponent"):
+                before = self._tower_health_cycle_start.get(side)
+                after = self._tower_health_current.get(side)
+                if before is not None or after is not None:
+                    self._entries.append(
+                        BattleLogEntry(
+                            elapsed_ms=self._next_cycle_summary_ms,
+                            kind="cycle_tower",
+                            side=side,
+                            tower_hp_before=before,
+                            tower_hp_after=after,
+                        )
+                    )
+            self._entries.append(
+                BattleLogEntry(
+                    elapsed_ms=self._next_cycle_summary_ms,
+                    kind="cycle_elixir",
+                    local_elixir_spent=self._elixir_spent_in_cycle["local"],
+                    opponent_elixir_spent=self._elixir_spent_in_cycle["opponent"],
+                )
+            )
+            self._tower_health_cycle_start = dict(self._tower_health_current)
+            self._elixir_spent_in_cycle = {"local": 0, "opponent": 0}
+            self._next_cycle_summary_ms += CYCLE_SUMMARY_INTERVAL_MS
 
     def _observe_entity_health(
         self,
@@ -230,7 +283,15 @@ class BattleLogPanel:
     ) -> None:
         if not isinstance(entities, list) or local_side not in (0, 1):
             return
+        if self._entity_local_side is not None and local_side != self._entity_local_side:
+            self._entity_health.clear()
+            self._damage_by_target.clear()
+            self._tower_health_current.clear()
+            self._tower_health_cycle_start.clear()
+        self._entity_local_side = local_side
         current: dict[object, tuple[int, int, int]] = {}
+        tower_health = {"local": 0, "opponent": 0}
+        tower_sides_seen: set[str] = set()
         for entity in entities:
             if not isinstance(entity, dict):
                 continue
@@ -247,6 +308,13 @@ class BattleLogPanel:
             ):
                 continue
             current[address] = (side, hp, max_hp)
+            target_kind, target_name, target_group = self._target_description(
+                entity, address
+            )
+            target_side = "local" if side == local_side else "opponent"
+            if target_kind.endswith("_tower"):
+                tower_health[target_side] += hp
+                tower_sides_seen.add(target_side)
             previous = self._entity_health.get(address)
             if previous is None or previous[0] != side or previous[2] != max_hp:
                 continue
@@ -254,11 +322,6 @@ class BattleLogPanel:
             if health_loss <= 0:
                 continue
             actor = "opponent" if side == local_side else "local"
-            target_side = "local" if side == local_side else "opponent"
-            target_kind, target_name, target_group = self._target_description(
-                entity, address
-            )
-            self._damage_by_actor[actor] += health_loss
             target_key = (
                 actor,
                 target_side,
@@ -270,6 +333,9 @@ class BattleLogPanel:
                 self._damage_by_target.get(target_key, 0) + health_loss
             )
         self._entity_health = current
+        for side in tower_sides_seen:
+            self._tower_health_current[side] = tower_health[side]
+            self._tower_health_cycle_start.setdefault(side, tower_health[side])
 
     def _target_description(
         self,
@@ -341,7 +407,6 @@ class BattleLogPanel:
             observed_ms if self._battle_start_ms is None else self._battle_start_ms
         )
         elapsed_ms = max(0, observed_ms - battle_start_ms)
-        self._flush_damage_summaries(elapsed_ms)
         self._observe_entity_health(
             snapshot.get("entities"), snapshot.get("local_side")
         )
@@ -405,6 +470,10 @@ class BattleLogPanel:
                     elixir_after=after,
                 )
             )
+            if definition is not None and definition.elixir_cost is not None:
+                self._elixir_spent_in_cycle[side] += definition.elixir_cost
+        self._flush_damage_details(elapsed_ms)
+        self._flush_cycle_summaries(elapsed_ms)
         self._entries.sort(key=lambda entry: entry.elapsed_ms)
         if self._follow_latest:
             self._scroll_index = max(0, len(self._entries) - VISIBLE_ROWS)
@@ -473,7 +542,7 @@ class BattleLogPanel:
             y = LOG_BODY_RECT.top + row * ROW_HEIGHT
             time_image = font.render(timestamp, True, (128, 148, 162))
             surface.blit(time_image, (LOG_BODY_RECT.left, y))
-            if entry.kind == "damage_summary":
+            if entry.kind.startswith("cycle_"):
                 color = (238, 211, 132)
             elif entry.side == "local":
                 color = (99, 190, 255)

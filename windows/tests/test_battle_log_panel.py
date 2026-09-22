@@ -167,8 +167,8 @@ class BattleLogPanelTests(unittest.TestCase):
                 }
             )
 
-            self.assertEqual(len(panel.entries), 3)
-            local_detail, opponent_detail, summary = panel.entries
+            self.assertEqual(len(panel.entries), 2)
+            local_detail, opponent_detail = panel.entries
             self.assertEqual(local_detail.kind, "damage_target")
             self.assertEqual(local_detail.side, "local")
             self.assertEqual(local_detail.target_name, "Fireball")
@@ -177,10 +177,9 @@ class BattleLogPanelTests(unittest.TestCase):
             self.assertEqual(opponent_detail.side, "opponent")
             self.assertEqual(opponent_detail.target_name, "Knight")
             self.assertEqual(opponent_detail.damage, 120)
-            self.assertEqual(summary.kind, "damage_summary")
-            self.assertEqual(summary.elapsed_ms, 3_000)
-            self.assertEqual(summary.local_damage, 50)
-            self.assertEqual(summary.opponent_damage, 120)
+            self.assertNotIn(
+                "damage_summary", {entry.kind for entry in panel.entries}
+            )
 
     def test_reused_entity_address_with_different_max_health_is_not_damage(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -287,7 +286,134 @@ class BattleLogPanelTests(unittest.TestCase):
                 "[00:03] 我方 → 对方左侧公主塔：造成 100 点伤害",
             )
 
-    def test_formats_card_and_damage_entries_in_both_languages(self) -> None:
+    def test_summarizes_tower_health_and_card_costs_every_eighteen_seconds(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            panel = self.make_panel(directory)
+            baseline = [
+                {
+                    "address": 10,
+                    "kind": 13,
+                    "side": 0,
+                    "card_id": None,
+                    "x": 9_000,
+                    "hp": 1_000,
+                    "max_hp": 1_000,
+                },
+                {
+                    "address": 11,
+                    "kind": 13,
+                    "side": 0,
+                    "card_id": None,
+                    "x": 3_500,
+                    "hp": 500,
+                    "max_hp": 500,
+                },
+                {
+                    "address": 20,
+                    "kind": 13,
+                    "side": 1,
+                    "card_id": None,
+                    "x": 9_000,
+                    "hp": 1_200,
+                    "max_hp": 1_200,
+                },
+                {
+                    "address": 21,
+                    "kind": 13,
+                    "side": 1,
+                    "card_id": None,
+                    "x": 14_500,
+                    "hp": 600,
+                    "max_hp": 600,
+                },
+            ]
+            events = [
+                {
+                    "side": "local",
+                    "observed_after_ms": 1_500,
+                    "observed_ms": 2_000,
+                    "data_id": 26_000_000,
+                },
+                {
+                    "side": "opponent",
+                    "observed_after_ms": 2_500,
+                    "observed_ms": 3_000,
+                    "data_id": 28_000_000,
+                },
+                {
+                    "side": "local",
+                    "observed_after_ms": 10_000,
+                    "observed_ms": 10_500,
+                    "data_id": 26_000_000,
+                },
+            ]
+            final = [
+                {**baseline[0], "hp": 900},
+                {**baseline[1], "hp": 400},
+                {**baseline[2], "hp": 1_000},
+                {**baseline[3], "hp": 500},
+            ]
+            panel.observe(
+                {
+                    "battle_active": True,
+                    "t_ms": 1_000,
+                    "local_side": 1,
+                    "entities": baseline,
+                    "card_play_events": [],
+                }
+            )
+            panel.observe(
+                {
+                    "battle_active": True,
+                    "t_ms": 1_100,
+                    "local_side": 0,
+                    "entities": baseline,
+                    "card_play_events": [],
+                }
+            )
+            panel.observe(
+                {
+                    "battle_active": True,
+                    "t_ms": 19_000,
+                    "local_side": 0,
+                    "entities": final,
+                    "card_play_events": events,
+                }
+            )
+
+            cycle = [entry for entry in panel.entries if entry.kind.startswith("cycle_")]
+            self.assertEqual([entry.kind for entry in cycle], [
+                "cycle_tower",
+                "cycle_tower",
+                "cycle_elixir",
+            ])
+            local_tower, opponent_tower, elixir = cycle
+            self.assertEqual(
+                (local_tower.side, local_tower.tower_hp_before, local_tower.tower_hp_after),
+                ("local", 1_500, 1_300),
+            )
+            self.assertEqual(
+                (
+                    opponent_tower.side,
+                    opponent_tower.tower_hp_before,
+                    opponent_tower.tower_hp_after,
+                ),
+                ("opponent", 1_800, 1_500),
+            )
+            self.assertEqual(
+                (elixir.local_elixir_spent, elixir.opponent_elixir_spent),
+                (6, 4),
+            )
+            self.assertEqual(
+                battle_log.format_entry(local_tower, "zh-CN"),
+                "[00:18] 我方防御塔总血量：1500 → 1300（-200）",
+            )
+            self.assertEqual(
+                battle_log.format_entry(elixir, "zh-CN"),
+                "[00:18] 周期费用：我方 6，对方 4",
+            )
+
+    def test_formats_card_entries_in_both_languages(self) -> None:
         card = battle_log.BattleLogEntry(
             elapsed_ms=7_400,
             kind="card_play",
@@ -299,13 +425,6 @@ class BattleLogPanelTests(unittest.TestCase):
             elixir_before=8,
             elixir_after=6,
         )
-        damage = battle_log.BattleLogEntry(
-            elapsed_ms=9_000,
-            kind="damage_summary",
-            local_damage=326,
-            opponent_damage=184,
-        )
-
         self.assertEqual(
             battle_log.format_entry(card, "zh-CN"),
             "[00:07] 我方使用了进化 Knight，消耗 3 圣水（8 → 6）",
@@ -313,10 +432,6 @@ class BattleLogPanelTests(unittest.TestCase):
         self.assertEqual(
             battle_log.format_entry(card, "en-US"),
             "[00:07] You played Evolved Knight, cost 3 elixir (8 → 6)",
-        )
-        self.assertEqual(
-            battle_log.format_entry(damage, "zh-CN"),
-            "[00:09] 伤害汇总：我方造成 326，对方造成 184",
         )
 
     def test_draws_the_log_area_bilingually_and_scrolls_inside_it(self) -> None:
