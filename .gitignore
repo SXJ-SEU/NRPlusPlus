@@ -1,9 +1,23 @@
-# Python cache
+# Python caches and test artifacts
 __pycache__/
 *.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local Python environments
+.venv/
+venv/
 
 # Runtime captures / generated outputs
 /windows/captures/
+/build/
+/.work/
+
+# Historical card-art workspaces. Runtime assets live in resources/icons/.
+/icons/
+/tools/
+/windows/prototypes/
 
 # Zig build cache and local toolchain
 /windows/runtime/zig-cache/
@@ -12,5 +26,9 @@ __pycache__/
 # Local notes / commands
 /windows/运行命令.txt
 
-# Local development handoff documents
-/docs/
+# Logs and editor/OS metadata
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
